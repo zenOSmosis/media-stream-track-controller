@@ -1,0 +1,33 @@
+{
+  "name": "phantom-media-stream-controller",
+  "version": "0.0.1",
+  "description": "Controller library for browser-based MediaStream objects",
+  "main": "src/index.js",
+  "scripts": {
+    "test-remote": "dotenv airtap test/*.test.js",
+    "test-local": "airtap --coverage --preset local test/*.test.js",
+    "coverage": "nyc npm run test-local"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zenOSmosis/media-stream-track-controller.git"
+  },
+  "author": "jeremy.harris@zenosmosis.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zenOSmosis/media-stream-track-controller/issues"
+  },
+  "homepage": "hhttps://github.com/zenOSmosis/media-stream-track-controller/issues#readme",
+  "dependencies": {
+    "phantom-core": "github:zenosmosis/phantom-core"
+  },
+  "devDependencies": {
+    "airtap": "^4.0.3",
+    "airtap-sauce": "^1.1.2",
+    "airtap-system": "^0.1.0",
+    "dotenv-cli": "^4.0.0",
+    "nyc": "^15.1.0",
+    "tape": "^5.2.2",
+    "tape-async": "^2.3.0"
+  }
+}
