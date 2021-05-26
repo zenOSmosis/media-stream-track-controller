@@ -166,10 +166,12 @@ function MediaElement({ trackController }) {
 
         const track = trackController.getOutputMediaStreamTrack();
 
-        videoEl.srcObject = new MediaStream([track]);
+        if (track) {
+          videoEl.srcObject = new MediaStream([track]);
 
-        videoEl.muted = false;
-        videoEl.play();
+          videoEl.muted = false;
+          videoEl.play();
+        }
       }
     })();
   }, [trackController, videoEl]);
