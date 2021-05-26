@@ -1,3 +1,14 @@
+[![MIT License][license-image]][license-url]
+[![ci][ci-image]][ci-url]
+[![CodeQL][codeql-image]][codeql-url]
+
+[license-image]: https://img.shields.io/github/license/zenosmosis/media-stream-track-controller
+[license-url]: https://raw.githubusercontent.com/zenOSmosis/media-stream-track-controller/main/LICENSE
+[ci-image]: https://github.com/zenosmosis/media-stream-track-controller/actions/workflows/ci.yml/badge.svg
+[ci-url]: https://github.com/zenOSmosis/media-stream-track-controller/actions/workflows/ci.yml
+[codeql-image]: https://github.com/zenosmosis/media-stream-track-controller/workflows/CodeQL/badge.svg
+[codeql-url]: https://github.com/zenOSmosis/media-stream-track-controller/actions/workflows/codeql-analysis.yml
+
 # Phantom MediaStreamTrack Controller
 
 Work-in-progress / Not recommended for usage at this time
