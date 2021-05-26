@@ -17,7 +17,7 @@
   "bugs": {
     "url": "https://github.com/zenOSmosis/media-stream-track-controller/issues"
   },
-  "homepage": "hhttps://github.com/zenOSmosis/media-stream-track-controller/issues#readme",
+  "homepage": "https://github.com/zenOSmosis/media-stream-track-controller/issues#readme",
   "dependencies": {
     "phantom-core": "github:zenosmosis/phantom-core"
   },
