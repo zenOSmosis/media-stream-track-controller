@@ -6,6 +6,7 @@ import {
   utils,
   debug,
 } from "./media-stream-controller";
+import { MediaStreamTrackAudioLevelMeter } from "./components/AudioLevelMeter";
 
 function App() {
   const [
@@ -165,10 +166,12 @@ function MediaElement({ trackController }) {
 
         const track = trackController.getOutputMediaStreamTrack();
 
-        videoEl.srcObject = new MediaStream([track]);
+        if (track) {
+          videoEl.srcObject = new MediaStream([track]);
 
-        videoEl.muted = false;
-        videoEl.play();
+          videoEl.muted = false;
+          videoEl.play();
+        }
       }
     })();
   }, [trackController, videoEl]);
@@ -184,6 +187,10 @@ function MediaElement({ trackController }) {
       />
       {trackController.getTrackKind() === "audio" && (
         <div>
+          <MediaStreamTrackAudioLevelMeter
+            mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
+            style={{ height: 100 }}
+          />
           <button onClick={() => trackController.mute()}>Mute</button>
           <button onClick={() => trackController.unmute()}>Unmute</button>
         </div>
