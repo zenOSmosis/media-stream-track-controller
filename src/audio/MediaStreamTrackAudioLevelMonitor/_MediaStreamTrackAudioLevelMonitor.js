@@ -117,6 +117,12 @@ class MediaStreamTrackAudioLevelMonitor extends PhantomCore {
   async destroy() {
     clearTimeout(this._silenceErrorDetectionTimeout);
 
+    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+    // track on its own (nor should it).  This prevents an issue in Google
+    // Chrome (maybe others) where the recording indicator would stay lit after
+    // the source has been stopped.
+    this._mediaStreamTrack.stop();
+
     // Reset the levels
     this.emit(EVT_AUDIO_LEVEL_TICK, {
       rms: 0,
