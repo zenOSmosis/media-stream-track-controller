@@ -65,7 +65,9 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
 
       _monitorInstances[mediaStreamTrack.id] = monitor;
 
-      this.log.debug("Proxied audio monitor created", monitor);
+      // TODO: Enable logging outside of PhantomCore instances
+      console.debug("Proxied audio monitor created", monitor);
+      // this.log.debug("Proxied audio monitor created", monitor);
     }
 
     if (!_proxyCounts[mediaStreamTrack.id]) {
@@ -112,7 +114,8 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
 
         await monitor.destroy();
 
-        this.log.debug("Proxied audio monitor destroyed", monitor);
+        // TODO: Enable logging outside of PhantomCore instances
+        console.debug("Proxied audio monitor destroyed", monitor);
       }
     });
   }
