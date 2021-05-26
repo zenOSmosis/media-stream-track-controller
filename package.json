@@ -1,7 +1,7 @@
 {
-  "name": "phantom-media-stream-controller",
+  "name": "media-stream-track-controller",
   "version": "0.0.1",
-  "description": "Controller library for browser-based MediaStream objects",
+  "description": "Controller library for browser-based MediaStreamTrack objects",
   "main": "src/index.js",
   "scripts": {
     "test-remote": "dotenv airtap test/*.test.js",
