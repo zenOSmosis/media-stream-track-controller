@@ -1,6 +1,9 @@
 const MediaStreamTrackControllerBase = require("../_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 
+/**
+ * Utilized for live-manipulation of video MediaStreamTrack instances.
+ */
 class VideoMediaStreamTrackController extends MediaStreamTrackControllerBase {
   /**
    * @param {MediaStreamTrack} inputMediaStreamTrack

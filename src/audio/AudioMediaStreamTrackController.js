@@ -5,8 +5,9 @@ const {
   getSharedAudioContext,
   untilAudioContextResumed,
 } = require("../utils/getAudioContext");
+
 /**
- * Utilized for live-manipulation of MediaStream audio.
+ * Utilized for live-manipulation of audio MediaStreamTrack instances.
  */
 class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
   /**
