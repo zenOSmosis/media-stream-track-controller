@@ -171,6 +171,9 @@ function MediaElement({ trackController }) {
 
           videoEl.muted = false;
           videoEl.play();
+
+          // Force the UI to scroll to the video element
+          videoEl.scrollIntoView();
         }
       }
     })();
@@ -180,6 +183,7 @@ function MediaElement({ trackController }) {
     <div style={{ display: "inline-block" }}>
       <video
         muted={true}
+        playsInline={true}
         ref={setVideoEl}
         controls={true}
         width={300}
