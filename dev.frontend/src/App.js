@@ -6,7 +6,7 @@ import {
   utils,
   debug,
 } from "./media-stream-controller";
-import { MediaStreamTrackAudioLevelMeter } from "./components/AudioLevelMeter";
+import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 
 function App() {
   const [
@@ -191,7 +191,7 @@ function MediaElement({ trackController }) {
       />
       {trackController.getTrackKind() === "audio" && (
         <div>
-          <MediaStreamTrackAudioLevelMeter
+          <AudioMediaStreamTrackLevelMeter
             mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
             style={{ height: 100 }}
           />

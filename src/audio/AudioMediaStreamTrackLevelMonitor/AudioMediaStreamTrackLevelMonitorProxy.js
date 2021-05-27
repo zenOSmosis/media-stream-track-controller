@@ -1,18 +1,18 @@
 const PhantomCore = require("phantom-core");
-const MediaStreamTrackAudioLevelMonitor = require("./_MediaStreamTrackAudioLevelMonitor");
+const AudioMediaStreamTrackLevelMonitor = require("./_AudioMediaStreamTrackLevelMonitor");
 const {
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
   EVT_AUDIO_LEVEL_TICK,
   EVT_AUDIO_ERROR,
   EVT_AUDIO_ERROR_RECOVERED,
   EVT_DESTROYED,
-} = MediaStreamTrackAudioLevelMonitor;
+} = AudioMediaStreamTrackLevelMonitor;
 
 /**
  * The underlying audio monitors which are being proxied to, keyed by the
  * respective MediaStreamTrack id.
  *
- * @type {{key: string, value: MediaStreamTrackAudioLevelMonitor}}
+ * @type {{key: string, value: AudioMediaStreamTrackLevelMonitor}}
  */
 const _monitorInstances = {};
 
@@ -24,14 +24,14 @@ const _monitorInstances = {};
 const _proxyCounts = {};
 
 /**
- * Exposed proxy for MediaStreamTrackAudioLevelMonitor.
+ * Exposed proxy for AudioMediaStreamTrackLevelMonitor.
  *
  * This class acts a one-to-many proxy between the monitor and any consumers on
  * top of it.  The goal of this class is to improve efficiency of duplicate
  * monitored MediaStreamTracks so their events can be utilized in more than one
  * place without reading the track multiple times.
  */
-class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
+class AudioMediaStreamTrackLevelMonitorProxy extends PhantomCore {
   /**
    * Adds a proxy instance to the audio level monitor.
    *
@@ -41,7 +41,7 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
    * On proxy destruct, if no remaining proxies for the monitor are present, it
    * will destroy the audio level monitor.
    *
-   * @param {MediaStreamTrackAudioLevelMonitorProxy} proxy
+   * @param {AudioMediaStreamTrackLevelMonitorProxy} proxy
    * @return {void}
    */
   static addProxyInstance(proxy) {
@@ -50,7 +50,7 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
     let monitor = _monitorInstances[mediaStreamTrack.id];
 
     if (!monitor) {
-      monitor = new MediaStreamTrackAudioLevelMonitor(mediaStreamTrack);
+      monitor = new AudioMediaStreamTrackLevelMonitor(mediaStreamTrack);
 
       // Handle monitor destroy
       //
@@ -124,13 +124,13 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
    * @param {MediaStreamTrack} mediaStreamTrack
    */
   constructor(mediaStreamTrack) {
-    MediaStreamTrackAudioLevelMonitor.validateAudioTrack(mediaStreamTrack);
+    AudioMediaStreamTrackLevelMonitor.validateAudioTrack(mediaStreamTrack);
 
     super();
 
     this._mediaStreamTrack = mediaStreamTrack;
 
-    MediaStreamTrackAudioLevelMonitorProxy.addProxyInstance(this);
+    AudioMediaStreamTrackLevelMonitorProxy.addProxyInstance(this);
   }
 
   /**
@@ -141,7 +141,7 @@ class MediaStreamTrackAudioLevelMonitorProxy extends PhantomCore {
   }
 }
 
-module.exports = MediaStreamTrackAudioLevelMonitorProxy;
+module.exports = AudioMediaStreamTrackLevelMonitorProxy;
 module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;

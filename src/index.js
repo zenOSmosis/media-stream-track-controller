@@ -8,13 +8,13 @@ const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackCo
 const MediaStreamTrackControllerFactory = require("./MediaStreamTrackControllerFactory");
 const utils = require("./utils");
 const debug = require("./debug");
-const MediaStreamTrackAudioLevelMonitor = require("./audio/MediaStreamTrackAudioLevelMonitor");
+const AudioMediaStreamTrackLevelMonitor = require("./audio/AudioMediaStreamTrackLevelMonitor");
 const {
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
   EVT_AUDIO_LEVEL_TICK,
   EVT_AUDIO_ERROR,
   EVT_AUDIO_ERROR_RECOVERED,
-} = MediaStreamTrackAudioLevelMonitor;
+} = AudioMediaStreamTrackLevelMonitor;
 
 module.exports = {
   AudioMediaStreamTrackController,
@@ -27,8 +27,8 @@ module.exports = {
   MediaStreamTrackControllerFactory,
   utils,
   debug,
-  MediaStreamTrackAudioLevelMonitor,
-  MediaStreamTrackAudioLevelMonitorEvents: {
+  AudioMediaStreamTrackLevelMonitor,
+  AudioMediaStreamTrackLevelMonitorEvents: {
     EVT_DESTROYED,
     EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
     EVT_AUDIO_LEVEL_TICK,
