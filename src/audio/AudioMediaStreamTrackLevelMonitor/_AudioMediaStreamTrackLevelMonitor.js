@@ -2,7 +2,7 @@
  * NOTE: This file is intentionally prefixed with an underline because it's not
  * to be exposed directly.
  *
- * Implementations should use the MediaStreamTrackAudioLevelMonitorProxy
+ * Implementations should use the AudioMediaStreamTrackLevelMonitorProxy
  * instead.
  */
 
@@ -30,7 +30,7 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // whether there is audio in the stream or not
 const MUTED_AUDIO_LEVEL = -1;
 
-class MediaStreamTrackAudioLevelMonitor extends PhantomCore {
+class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
    * Validates the given MediaStreamTrack, throwing an exception if it is not
    * of valid type for use here.
@@ -56,7 +56,7 @@ class MediaStreamTrackAudioLevelMonitor extends PhantomCore {
    * the audio levels. Must be of audio type.
    */
   constructor(mediaStreamTrack) {
-    MediaStreamTrackAudioLevelMonitor.validateAudioTrack(mediaStreamTrack);
+    AudioMediaStreamTrackLevelMonitor.validateAudioTrack(mediaStreamTrack);
 
     super();
 
@@ -368,7 +368,7 @@ class MediaStreamTrackAudioLevelMonitor extends PhantomCore {
   }
 }
 
-module.exports = MediaStreamTrackAudioLevelMonitor;
+module.exports = AudioMediaStreamTrackLevelMonitor;
 module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
