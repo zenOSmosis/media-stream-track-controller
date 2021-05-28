@@ -41,6 +41,6 @@ Mac
 
 gyp: No Xcode or CLT version detected!
 
-bash```
+```bash
 $ sudo xcode-select --reset
 ```
