@@ -9,7 +9,7 @@ import {
   MediaStreamTrackControllerEvents,
   utils,
   debug,
-} from "./media-stream-controller";
+} from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 
 function App() {
