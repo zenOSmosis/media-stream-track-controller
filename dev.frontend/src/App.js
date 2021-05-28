@@ -1,3 +1,7 @@
+/**
+ * Prototype React application for debugging media-stream-track-controller tools.
+ */
+
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import {
@@ -14,6 +18,12 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
+  /**
+   * Registers controller factory w/ UI component state.
+   *
+   * @param {MediaStreamTrackControllerFactory} controllerFactory
+   * @return {void}
+   */
   const registerControllerFactory = useCallback(controllerFactory => {
     setMediaStreamTrackControllerFactories(prev => [
       ...prev,
@@ -153,6 +163,9 @@ function App() {
   );
 }
 
+/**
+ * Renders UI element for monitoring Audio/VideoMediaStreamTrackController state.
+ */
 function MediaElement({ trackController }) {
   const [videoEl, setVideoEl] = useState(null);
 
