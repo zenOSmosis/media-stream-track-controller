@@ -3,7 +3,7 @@ const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 
-// TODO: Use PhantomCollection?
+// TODO: Use PhantomCollection instead?
 const _factoryInstances = {};
 
 /**
@@ -138,10 +138,27 @@ class MediaStreamControllerFactory extends PhantomCore {
   }
 
   /**
+   * IMPORTANT: This MediaStream should be considered "read-only" and if it
+   * should be stopped by a programmatic interaction, either this factory
+   * instance should be destructed or the relevant track controller.
+   *
+   * This MediaStream should automatically go into an ended state once this
+   * factory has been destructed.
+   *
    * @return {MediaStream}
    */
   getOutputMediaStream() {
     return this._outputMediaStream;
+  }
+
+  /**
+   * Alias for this.destroy().
+   *
+   *
+   * @return {Promise<void>}
+   */
+  async stop() {
+    return this.destroy();
   }
 
   /**
