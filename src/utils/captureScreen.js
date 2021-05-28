@@ -1,3 +1,5 @@
+const MediaStreamTrackControllerFactory = require("../MediaStreamTrackControllerFactory");
+
 const {
   mergeConstraints,
   createAudioConstraints,
@@ -5,19 +7,23 @@ const {
 } = require("./constraints");
 
 /**
- * @return {Promise<MediaStream>}
+ * @param {Object} constraints? [optional; default = {}]
+ * @param {Object} factoryOptions? [optional; default = {}]
+ * @return {Promise<MediaStreamTrackControllerFactory>}
  */
-function captureScreen(constraints = {}) {
+async function captureScreen(constraints = {}, factoryOptions = {}) {
   DEFAULT_CONSTRAINTS = {
-    video: createVideoConstraints(constraints.video),
+    video: createVideoConstraints(constraints && constraints.video),
 
     // Audio capturing requires additional UI check in browsers which support it (Chromium based)
-    audio: createAudioConstraints(constraints.audio),
+    audio: createAudioConstraints(constraints && constraints.audio),
   };
 
-  return navigator.mediaDevices.getDisplayMedia(
+  const mediaStream = await navigator.mediaDevices.getDisplayMedia(
     mergeConstraints(DEFAULT_CONSTRAINTS, constraints)
   );
+
+  return new MediaStreamTrackControllerFactory(mediaStream, factoryOptions);
 }
 
 /**

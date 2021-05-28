@@ -14,10 +14,10 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
-  const initControllerFactory = useCallback((inputMediaStream, title) => {
+  const registerControllerFactory = useCallback(controllerFactory => {
     setMediaStreamTrackControllerFactories(prev => [
       ...prev,
-      new MediaStreamTrackControllerFactory(inputMediaStream, { title }),
+      controllerFactory,
     ]);
   }, []);
 
@@ -53,8 +53,10 @@ function App() {
   const createPulsatingAudio = useCallback(() => {
     const mediaStream = debug.getPulsingAudioMediaStream();
 
-    initControllerFactory(mediaStream, "pulsatingAudio");
-  }, [initControllerFactory]);
+    registerControllerFactory(
+      new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
+    );
+  }, [registerControllerFactory]);
 
   return (
     <div className="App">
@@ -93,14 +95,11 @@ function App() {
           <button
             onClick={() =>
               utils
-                .captureDeviceMedia()
-                .then(mediaStream =>
-                  initControllerFactory(mediaStream, "captureDeviceMedia")
-                )
+                .captureDeviceMedia(null, "captureDeviceMedia")
+                .then(registerControllerFactory)
             }
           >
-            utils.captureDeviceMedia() => new
-            MediaStreamTrackControllerFactory()
+            utils.captureDeviceMedia()
           </button>
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
@@ -112,13 +111,11 @@ function App() {
             <button
               onClick={() =>
                 utils
-                  .captureScreen()
-                  .then(mediaStream =>
-                    initControllerFactory(mediaStream, "captureScreen")
-                  )
+                  .captureScreen(null, "captureScreen")
+                  .then(registerControllerFactory)
               }
             >
-              utils.captureScreen() => new MediaStreamTrackControllerFactory()
+              utils.captureScreen()
             </button>
             <button onClick={() => alert(utils.getIsScreenCaptureSupported())}>
               utils.getIsScreenCaptureSupported()

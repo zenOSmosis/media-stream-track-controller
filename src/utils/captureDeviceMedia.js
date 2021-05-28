@@ -1,18 +1,22 @@
+const MediaStreamTrackControllerFactory = require("../MediaStreamTrackControllerFactory");
 const { mergeConstraints } = require("./constraints");
 
 /**
- * @param {Object} constraints? [default = {}]
- * @return {Promise<MediaStream>}
+ * @param {Object} constraints? [optional; default = {}]
+ * @param {Object} factoryOptions? [optional; default = {}]
+ * @return {Promise<MediaStreamTrackControllerFactory>}
  */
-function captureDeviceMedia(constraints = {}) {
+async function captureDeviceMedia(constraints = {}, factoryOptions = {}) {
   DEFAULT_CONSTRAINTS = {
     audio: true,
     video: false,
   };
 
-  return navigator.mediaDevices.getUserMedia(
+  const mediaStream = await navigator.mediaDevices.getUserMedia(
     mergeConstraints(DEFAULT_CONSTRAINTS, constraints)
   );
+
+  return new MediaStreamTrackControllerFactory(mediaStream, factoryOptions);
 }
 
 /**
@@ -27,4 +31,5 @@ function getIsDeviceMediaCaptureSupported() {
 }
 
 module.exports = captureDeviceMedia;
-module.exports.getIsDeviceMediaCaptureSupported = getIsDeviceMediaCaptureSupported;
+module.exports.getIsDeviceMediaCaptureSupported =
+  getIsDeviceMediaCaptureSupported;
