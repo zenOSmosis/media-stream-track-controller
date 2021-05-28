@@ -25,6 +25,14 @@ function App() {
    * @return {void}
    */
   const registerControllerFactory = useCallback(controllerFactory => {
+    console.log("registering controller factory", {
+      controllerFactory,
+      outputMediaStream: controllerFactory.getOutputMediaStream(),
+      outputMediaStreamTracks: controllerFactory
+        .getOutputMediaStream()
+        .getTracks(),
+    });
+
     setMediaStreamTrackControllerFactories(prev => [
       ...prev,
       controllerFactory,
@@ -164,7 +172,8 @@ function App() {
 }
 
 /**
- * Renders UI element for monitoring Audio/VideoMediaStreamTrackController state.
+ * Renders UI element for monitoring Audio/VideoMediaStreamTrackController
+ * state.
  */
 function MediaElement({ trackController }) {
   const [videoEl, setVideoEl] = useState(null);

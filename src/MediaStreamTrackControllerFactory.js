@@ -6,10 +6,8 @@ const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackCo
 // TODO: Use PhantomCollection?
 const _factoryInstances = {};
 
-// TODO: Add ability to get outputMediaStream
-
 /**
- * Accepts a MediaStream object and breaks it down into
+ * Factory class which breaks down a given MediaStream into
  * Audio/VideoMediaStreamTrackController constituents.
  */
 class MediaStreamControllerFactory extends PhantomCore {
@@ -122,6 +120,14 @@ class MediaStreamControllerFactory extends PhantomCore {
         this.destroy();
       }
     })();
+
+    // A MediaStream based on the output tracks of the associated track
+    // controllers
+    this._outputMediaStream = new MediaStream([
+      ...this._trackControllers.map(controller =>
+        controller.getOutputMediaStreamTrack()
+      ),
+    ]);
   }
 
   /**
@@ -129,6 +135,13 @@ class MediaStreamControllerFactory extends PhantomCore {
    */
   getTrackControllers() {
     return this._trackControllers;
+  }
+
+  /**
+   * @return {MediaStream}
+   */
+  getOutputMediaStream() {
+    return this._outputMediaStream;
   }
 
   /**
