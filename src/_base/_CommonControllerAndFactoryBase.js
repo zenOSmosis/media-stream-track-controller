@@ -14,6 +14,7 @@ class CommonControllerAndFactoryBase extends PhantomCore {
 
   /**
    * @param {boolean} isMuted
+   * @return {void}
    */
   setIsMuted(isMuted) {
     this._isMuted = isMuted;
@@ -28,16 +29,24 @@ class CommonControllerAndFactoryBase extends PhantomCore {
     return this._isMuted;
   }
 
+  /**
+   * @return {void}
+   */
   mute() {
     this.setIsMuted(true);
   }
 
+  /**
+   * @return {void}
+   */
   unmute() {
     this.setIsMuted(false);
   }
 
   /**
    * Sets muting state to alternate state.
+   *
+   * @return {void}
    */
   toggleMute() {
     this.setIsMuted(!this._isMuted);
