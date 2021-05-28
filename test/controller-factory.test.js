@@ -107,7 +107,7 @@ test("stop calls destruct", async t => {
   await Promise.all([
     new Promise(resolve => {
       factory1.once(EVT_DESTROYED, () => {
-        t.ok(true, "calling stop() destroys factory");
+        t.ok(true, "calling stop() destructs factory");
 
         resolve();
       });
@@ -130,7 +130,7 @@ test("stop calls destruct", async t => {
 
     new Promise(resolve => {
       factory2TrackController.once(EVT_DESTROYED, () => {
-        t.ok(true, "calling stop() destroys track controller");
+        t.ok(true, "calling stop() destructs track controller");
 
         resolve();
       });
