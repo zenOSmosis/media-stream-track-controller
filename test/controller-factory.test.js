@@ -5,7 +5,7 @@ const {
   debug,
 } = require("../src");
 
-const { EVT_UPDATED } = MediaStreamTrackControllerEvents;
+const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.plan(4);
@@ -67,6 +67,33 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 
     factory.getTrackControllers()[0].destroy(),
   ]);
+
+  t.end();
+});
+
+test("empty MediaStream initialization", async t => {
+  t.plan(2);
+
+  const selfDestructFactory = new MediaStreamTrackControllerFactory(
+    new MediaStream()
+  );
+
+  await new Promise(resolve => {
+    selfDestructFactory.once(EVT_DESTROYED, () => {
+      t.equals(
+        selfDestructFactory.getTrackControllers().length,
+        0,
+        "factory instantiated with empty MediaStream does not have track controllers"
+      );
+
+      t.ok(
+        true,
+        "factory automatically destructs when there are no associated track controllers"
+      );
+
+      resolve();
+    });
+  });
 
   t.end();
 });
