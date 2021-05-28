@@ -131,9 +131,9 @@ class MediaStreamControllerFactory extends PhantomCore {
     delete _instances[this._uuid];
 
     // Auto-destruct audio / video controllers
-    await Promise.all([
-      this._trackControllers.map(controller => controller.destroy()),
-    ]);
+    await Promise.all(
+      this._trackControllers.map(controller => controller.destroy())
+    );
 
     super.destroy();
   }
