@@ -1,10 +1,7 @@
 const PhantomCore = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
-const {
-  getSharedAudioContext,
-  untilAudioContextResumed,
-} = require("../utils/getAudioContext");
+const { getSharedAudioContext } = require("../utils/getAudioContext");
 
 /**
  * Utilized for live-manipulation of audio MediaStreamTrack instances.
@@ -35,8 +32,6 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     this._unmutedGain = 1;
 
     (async () => {
-      await untilAudioContextResumed(this._audioCtx);
-
       this._src = this._audioCtx.createMediaStreamSource(
         new MediaStream([inputMediaStreamTrack])
       );

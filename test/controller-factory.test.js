@@ -20,10 +20,7 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 
   const factory = new MediaStreamTrackControllerFactory(mediaStream1);
 
-  // FIXME: This does not work w/ Chrome for some strange reason w/ tape-async testing
-  // await factory.onceReady();
-  // or...
-  // await new Promise(resolve => factory.once(EVT_READY, resolve));
+  await factory.onceReady();
 
   t.ok(
     factory,
