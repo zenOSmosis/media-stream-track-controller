@@ -3,7 +3,7 @@ import AudioLevelMeter from "./AudioLevelMeter";
 import {
   AudioMediaStreamTrackLevelMonitor,
   AudioMediaStreamTrackLevelMonitorEvents,
-} from "../../media-stream-controller";
+} from "../../media-stream-track-controller";
 
 const { EVT_AUDIO_LEVEL_TICK } = AudioMediaStreamTrackLevelMonitorEvents;
 

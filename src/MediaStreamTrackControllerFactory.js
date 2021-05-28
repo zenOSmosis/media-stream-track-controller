@@ -3,14 +3,21 @@ const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 
-const _instances = {};
+// TODO: Use PhantomCollection?
+const _factoryInstances = {};
 
+// TODO: Add ability to get outputMediaStream
+
+/**
+ * Accepts a MediaStream object and breaks it down into
+ * Audio/VideoMediaStreamTrackController constituents.
+ */
 class MediaStreamControllerFactory extends PhantomCore {
   /**
    * @return {MediaStreamControllerFactory[]}
    */
   static getFactoryInstances() {
-    return Object.values(_instances);
+    return Object.values(_factoryInstances);
   }
 
   /**
@@ -58,7 +65,7 @@ class MediaStreamControllerFactory extends PhantomCore {
 
     super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
 
-    _instances[this._uuid] = this;
+    _factoryInstances[this._uuid] = this;
 
     this._trackControllers =
       MediaStreamControllerFactory.createTrackControllers(
@@ -128,12 +135,12 @@ class MediaStreamControllerFactory extends PhantomCore {
    * @return {Promise<void>}
    */
   async destroy() {
-    delete _instances[this._uuid];
+    delete _factoryInstances[this._uuid];
 
     // Auto-destruct audio / video controllers
-    await Promise.all([
-      this._trackControllers.map(controller => controller.destroy()),
-    ]);
+    await Promise.all(
+      this._trackControllers.map(controller => controller.destroy())
+    );
 
     super.destroy();
   }

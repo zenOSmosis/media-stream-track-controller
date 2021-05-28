@@ -1,3 +1,7 @@
+/**
+ * Prototype React application for debugging media-stream-track-controller tools.
+ */
+
 import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import {
@@ -5,7 +9,7 @@ import {
   MediaStreamTrackControllerEvents,
   utils,
   debug,
-} from "./media-stream-controller";
+} from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 
 function App() {
@@ -14,10 +18,16 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
-  const initControllerFactory = useCallback((inputMediaStream, title) => {
+  /**
+   * Registers controller factory w/ UI component state.
+   *
+   * @param {MediaStreamTrackControllerFactory} controllerFactory
+   * @return {void}
+   */
+  const registerControllerFactory = useCallback(controllerFactory => {
     setMediaStreamTrackControllerFactories(prev => [
       ...prev,
-      new MediaStreamTrackControllerFactory(inputMediaStream, { title }),
+      controllerFactory,
     ]);
   }, []);
 
@@ -53,8 +63,10 @@ function App() {
   const createPulsatingAudio = useCallback(() => {
     const mediaStream = debug.getPulsingAudioMediaStream();
 
-    initControllerFactory(mediaStream, "pulsatingAudio");
-  }, [initControllerFactory]);
+    registerControllerFactory(
+      new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
+    );
+  }, [registerControllerFactory]);
 
   return (
     <div className="App">
@@ -93,14 +105,11 @@ function App() {
           <button
             onClick={() =>
               utils
-                .captureDeviceMedia()
-                .then(mediaStream =>
-                  initControllerFactory(mediaStream, "captureDeviceMedia")
-                )
+                .captureDeviceMedia(null, "captureDeviceMedia")
+                .then(registerControllerFactory)
             }
           >
-            utils.captureDeviceMedia() => new
-            MediaStreamTrackControllerFactory()
+            utils.captureDeviceMedia()
           </button>
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
@@ -112,13 +121,11 @@ function App() {
             <button
               onClick={() =>
                 utils
-                  .captureScreen()
-                  .then(mediaStream =>
-                    initControllerFactory(mediaStream, "captureScreen")
-                  )
+                  .captureScreen(null, "captureScreen")
+                  .then(registerControllerFactory)
               }
             >
-              utils.captureScreen() => new MediaStreamTrackControllerFactory()
+              utils.captureScreen()
             </button>
             <button onClick={() => alert(utils.getIsScreenCaptureSupported())}>
               utils.getIsScreenCaptureSupported()
@@ -156,6 +163,9 @@ function App() {
   );
 }
 
+/**
+ * Renders UI element for monitoring Audio/VideoMediaStreamTrackController state.
+ */
 function MediaElement({ trackController }) {
   const [videoEl, setVideoEl] = useState(null);
 

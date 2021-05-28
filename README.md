@@ -22,6 +22,19 @@ TODO: Describe a bit better
 - Captures device audio / video / screenshare
 - Wraps audio streams with methods to control gain (volume) and mute, directly on the stream itself
 
+## Development
+
+There is a React-based frontend for prototyping this utility in a browser, and is not to be utilized directly in a browser.  It utilizes a Unix symlink to link the dev.frontend to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).
+
+To start the dev frontend:
+
+```bash
+$ cd dev.frontend
+$ npm run start
+```
+
+Then navigate to https://localhost:3000
+
 ## Troubleshooting
 
 Mac
