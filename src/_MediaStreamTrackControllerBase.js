@@ -1,6 +1,7 @@
 const PhantomCore = require("phantom-core");
 const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 
+// TODO: Use PhantomCollection instead?
 const _instances = {};
 
 /**
@@ -65,6 +66,16 @@ class MediaStreamTrackControllerBase extends PhantomCore {
         });
       });
     })();
+  }
+
+  /**
+   * Alias for this.destroy().
+   *
+   *
+   * @return {Promise<void>}
+   */
+  async stop() {
+    return this.destroy();
   }
 
   /**
