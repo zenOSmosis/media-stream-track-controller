@@ -1,5 +1,5 @@
-const PhantomCore = require("phantom-core");
-const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const CommonBase = require("./_base/_CommonControllerAndFactoryBase");
+const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = CommonBase;
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 
@@ -10,7 +10,7 @@ const _factoryInstances = {};
  * Factory class which breaks down a given MediaStream into
  * Audio/VideoMediaStreamTrackController constituents.
  */
-class MediaStreamControllerFactory extends PhantomCore {
+class MediaStreamControllerFactory extends CommonBase {
   /**
    * @return {MediaStreamControllerFactory[]}
    */
@@ -61,7 +61,7 @@ class MediaStreamControllerFactory extends PhantomCore {
       isReady: false,
     };
 
-    super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
+    super(CommonBase.mergeOptions(DEFAULT_OPTIONS, options));
 
     _factoryInstances[this._uuid] = this;
 
@@ -150,15 +150,6 @@ class MediaStreamControllerFactory extends PhantomCore {
    */
   getOutputMediaStream() {
     return this._outputMediaStream;
-  }
-
-  /**
-   * Alias for this.destroy().
-   *
-   * @return {Promise<void>}
-   */
-  async stop() {
-    return this.destroy();
   }
 
   /**
