@@ -4,6 +4,7 @@ const {
   MediaStreamTrackControllerEvents,
   debug,
 } = require("../src");
+const MediaStreamControllerFactory = require("../src/MediaStreamTrackControllerFactory");
 
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
 
@@ -94,6 +95,49 @@ test("empty MediaStream initialization", async t => {
       resolve();
     });
   });
+
+  t.end();
+});
+
+test("stop calls destruct", async t => {
+  t.plan(3);
+
+  const mediaStream1 = debug.getPulsingAudioMediaStream();
+  const factory1 = new MediaStreamControllerFactory(mediaStream1);
+  await Promise.all([
+    new Promise(resolve => {
+      factory1.once(EVT_DESTROYED, () => {
+        t.ok(true, "calling stop() destroys factory");
+
+        resolve();
+      });
+    }),
+
+    factory1.stop(),
+  ]);
+
+  const mediaStream2 = debug.getPulsingAudioMediaStream();
+  const factory2 = new MediaStreamControllerFactory(mediaStream2);
+  const factory2TrackController = factory2.getTrackControllers()[0];
+  await Promise.all([
+    new Promise(resolve => {
+      factory2.once(EVT_DESTROYED, () => {
+        t.ok(true, "track controller destruct destructs factory");
+
+        resolve();
+      });
+    }),
+
+    new Promise(resolve => {
+      factory2TrackController.once(EVT_DESTROYED, () => {
+        t.ok(true, "calling stop() destroys track controller");
+
+        resolve();
+      });
+    }),
+
+    factory2TrackController.stop(),
+  ]);
 
   t.end();
 });
