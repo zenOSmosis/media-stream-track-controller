@@ -24,7 +24,7 @@ TODO: Describe a bit better
 
 ## Development
 
-There is a React-based frontend for prototyping this utility in a browser, and is not to be utilized directly in a browser.  It utilizes a Unix symlink to link the dev.frontend to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).
+There is a React-based frontend for prototyping this utility in a browser, which is not to be utilized in a production setting.  It utilizes a Unix symlink to link the dev.frontend/src to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).
 
 To start the dev frontend:
 
