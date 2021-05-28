@@ -116,6 +116,15 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   }
 
   /**
+   * Alias of this.getOutputMediaStreamTrack().
+   *
+   * @return {MediaStreamTrack}
+   */
+  getOutputTrack() {
+    return this._outputMediaStreamTrack;
+  }
+
+  /**
    * @return {"audio" | "video"}
    */
   getTrackKind() {
