@@ -154,7 +154,6 @@ class MediaStreamControllerFactory extends PhantomCore {
   /**
    * Alias for this.destroy().
    *
-   *
    * @return {Promise<void>}
    */
   async stop() {
