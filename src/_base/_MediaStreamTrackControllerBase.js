@@ -1,5 +1,5 @@
-const PhantomCore = require("phantom-core");
-const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const CommonBase = require("./_CommonControllerAndFactoryBase");
+const { EVT_UPDATED, EVT_DESTROYED } = CommonBase;
 
 // TODO: Use PhantomCollection instead?
 const _instances = {};
@@ -9,7 +9,7 @@ const _instances = {};
  * utilized by the AudioMediaStreamTrackController and
  * VideoMediaStreamTrackController extension classes.
  */
-class MediaStreamTrackControllerBase extends PhantomCore {
+class MediaStreamTrackControllerBase extends CommonBase {
   /**
    * @return {MediaStreamTrackControllerBase[]}
    */
@@ -31,8 +31,6 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     super(options);
 
     _instances[this._uuid] = this;
-
-    this._isMuted = false;
 
     this._inputMediaStreamTrack = inputMediaStreamTrack;
     // TODO: Dynamically handle w/ passed option
@@ -69,56 +67,6 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   }
 
   /**
-   * Alias for this.destroy().
-   *
-   * @return {Promise<void>}
-   */
-  async stop() {
-    return this.destroy();
-  }
-
-  /**
-   * @return {Promise<void>}
-   */
-  async destroy() {
-    // Automatically stop input and output tracks
-    this._inputMediaStreamTrack.stop();
-    this._outputMediaStreamTrack.stop();
-
-    delete _instances[this._uuid];
-
-    super.destroy();
-  }
-
-  setIsMuted(isMuted) {
-    this._isMuted = isMuted;
-
-    this.emit(EVT_UPDATED);
-  }
-
-  mute() {
-    this.setIsMuted(true);
-  }
-
-  unmute() {
-    this.setIsMuted(false);
-  }
-
-  /**
-   * Sets muting state to alternate state.
-   */
-  toggleMute() {
-    this.setIsMuted(!this._isMuted);
-  }
-
-  /**
-   * @return {boolean}
-   */
-  getIsMuted() {
-    return this._isMuted;
-  }
-
-  /**
    * @return {MediaStreamTrack}
    */
   getOutputMediaStreamTrack() {
@@ -139,6 +87,19 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   getTrackKind() {
     return this._outputMediaStreamTrack.kind;
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    // Automatically stop input and output tracks
+    this._inputMediaStreamTrack.stop();
+    this._outputMediaStreamTrack.stop();
+
+    delete _instances[this._uuid];
+
+    super.destroy();
   }
 }
 

@@ -1,7 +1,8 @@
-const PhantomCore = require("phantom-core");
-const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const CommonBase = require("./_base/_CommonControllerAndFactoryBase");
+const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = CommonBase;
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
+const debounce = require("debounce");
 
 // TODO: Use PhantomCollection instead?
 const _factoryInstances = {};
@@ -10,7 +11,7 @@ const _factoryInstances = {};
  * Factory class which breaks down a given MediaStream into
  * Audio/VideoMediaStreamTrackController constituents.
  */
-class MediaStreamControllerFactory extends PhantomCore {
+class MediaStreamControllerFactory extends CommonBase {
   /**
    * @return {MediaStreamControllerFactory[]}
    */
@@ -58,10 +59,11 @@ class MediaStreamControllerFactory extends PhantomCore {
     }
 
     const DEFAULT_OPTIONS = {
+      // Async init
       isReady: false,
     };
 
-    super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
+    super(CommonBase.mergeOptions(DEFAULT_OPTIONS, options));
 
     _factoryInstances[this._uuid] = this;
 
@@ -87,9 +89,22 @@ class MediaStreamControllerFactory extends PhantomCore {
           }
         });
 
-        const handleTrackUpdated = (...args) => {
-          this.emit(EVT_UPDATED, ...args);
-        };
+        // Propagate EVT_UPDATED from track controllers up to factory
+        //
+        // IMPORTANT! This is debounced due to the fact that multiple track
+        // controllers may update at the same time
+        const handleTrackUpdated = debounce(
+          () => {
+            // Potentially flip this._isMuted flag before calling EVT_UPDATED
+            this._syncTrackControllersMuteState();
+
+            // Propagate EVT_UPDATED event through factory
+            this.emit(EVT_UPDATED);
+          },
+          0,
+          // Run on tail end of debounce
+          false
+        );
 
         controller.on(EVT_UPDATED, handleTrackUpdated);
 
@@ -131,6 +146,46 @@ class MediaStreamControllerFactory extends PhantomCore {
   }
 
   /**
+   * Checks the state of all of the associated track controllers and flips the
+   * this._isMuted flag accordingly without calling EVT_UPDATED.
+   *
+   * This is internally called once each track controller is updated.
+   *
+   * @return {void}
+   */
+  _syncTrackControllersMuteState() {
+    const areAllControllersMuted = this._trackControllers.every(controller =>
+      controller.getIsMuted()
+    );
+
+    if (areAllControllersMuted) {
+      this._isMuted = true;
+    } else {
+      const areSomeControllersUnmuted = this._trackControllers.some(
+        controller => !controller.getIsMuted()
+      );
+
+      if (areSomeControllersUnmuted) {
+        this._isMuted = false;
+      }
+    }
+  }
+
+  /**
+   * Mutes all associated track controllers.
+   *
+   * @param {boolean} isMuted
+   * @return {void}
+   */
+  setIsMuted(isMuted) {
+    this._trackControllers.forEach(controller =>
+      controller.setIsMuted(isMuted)
+    );
+
+    return super.setIsMuted();
+  }
+
+  /**
     @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}
    */
   getTrackControllers() {
@@ -149,15 +204,6 @@ class MediaStreamControllerFactory extends PhantomCore {
    */
   getOutputMediaStream() {
     return this._outputMediaStream;
-  }
-
-  /**
-   * Alias for this.destroy().
-   *
-   * @return {Promise<void>}
-   */
-  async stop() {
-    return this.destroy();
   }
 
   /**

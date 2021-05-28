@@ -1,4 +1,4 @@
-const MediaStreamTrackControllerBase = require("../_MediaStreamTrackControllerBase");
+const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 
 /**

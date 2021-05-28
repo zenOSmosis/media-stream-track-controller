@@ -20,10 +20,7 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 
   const factory = new MediaStreamTrackControllerFactory(mediaStream1);
 
-  // FIXME: This does not work w/ Chrome for some strange reason w/ tape-async testing
-  // await factory.onceReady();
-  // or...
-  // await new Promise(resolve => factory.once(EVT_READY, resolve));
+  await factory.onceReady();
 
   t.ok(
     factory,
@@ -137,6 +134,84 @@ test("stop calls destruct", async t => {
     }),
 
     factory2TrackController.stop(),
+  ]);
+
+  t.end();
+});
+
+test("factory muting", async t => {
+  // TODO: Add t.plan()
+
+  const ms1 = debug.getPulsingAudioMediaStream();
+  const ms2 = debug.getPulsingAudioMediaStream();
+  const ms3 = debug.getPulsingAudioMediaStream();
+  const ms4 = debug.getPulsingAudioMediaStream();
+
+  const mediaStream = new MediaStream([
+    ...ms1.getTracks(),
+    ...ms2.getTracks(),
+    ...ms3.getTracks(),
+    ...ms4.getTracks(),
+  ]);
+
+  t.equals(
+    mediaStream.getTracks().length,
+    4,
+    "converged media stream has 4 tracks"
+  );
+
+  const factory = new MediaStreamTrackControllerFactory(mediaStream);
+
+  await factory.onceReady();
+
+  factory.getTrackControllers().forEach((controller, idx) => {
+    t.equals(
+      controller.getIsMuted(),
+      false,
+      `controller ${idx} is not muted by default`
+    );
+  });
+
+  factory.mute();
+
+  factory.getTrackControllers().forEach((controller, idx) => {
+    t.equals(
+      controller.getIsMuted(),
+      true,
+      `controller ${idx} is muted after factory is muted`
+    );
+  });
+
+  await Promise.all([
+    new Promise(resolve => {
+      factory.once(EVT_UPDATED, () => {
+        t.equals(
+          factory.getIsMuted(),
+          false,
+          "factory changes to unmuted state once a track controller unmutes"
+        );
+
+        resolve();
+      });
+    }),
+
+    factory.getTrackControllers()[2].unmute(),
+  ]);
+
+  await Promise.all([
+    new Promise(resolve => {
+      factory.once(EVT_UPDATED, () => {
+        t.equals(
+          factory.getIsMuted(),
+          true,
+          "factory changes back to muted state once all track controllers are muted"
+        );
+
+        resolve();
+      });
+    }),
+
+    factory.getTrackControllers()[2].mute(),
   ]);
 
   t.end();
