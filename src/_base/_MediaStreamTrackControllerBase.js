@@ -90,10 +90,20 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     super.destroy();
   }
 
+  /**
+   * @param {boolean} isMuted
+   */
   setIsMuted(isMuted) {
     this._isMuted = isMuted;
 
     this.emit(EVT_UPDATED);
+  }
+
+  /**
+   * @return {boolean}
+   */
+  getIsMuted() {
+    return this._isMuted;
   }
 
   mute() {
@@ -109,13 +119,6 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   toggleMute() {
     this.setIsMuted(!this._isMuted);
-  }
-
-  /**
-   * @return {boolean}
-   */
-  getIsMuted() {
-    return this._isMuted;
   }
 
   /**

@@ -2,7 +2,7 @@ const {
   EVT_READY,
   EVT_UPDATED,
   EVT_DESTROYED,
-} = require("./_MediaStreamTrackControllerBase");
+} = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 const MediaStreamTrackControllerFactory = require("./MediaStreamTrackControllerFactory");

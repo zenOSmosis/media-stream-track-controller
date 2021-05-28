@@ -1,4 +1,4 @@
-const BaseTrackController = require("../_MediaStreamTrackControllerBase");
+const BaseTrackController = require("../_base/_MediaStreamTrackControllerBase");
 
 /**
  * @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}

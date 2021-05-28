@@ -87,6 +87,7 @@ class MediaStreamControllerFactory extends PhantomCore {
           }
         });
 
+        // Propagate EVT_UPDATED from track controllers up to factory
         const handleTrackUpdated = (...args) => {
           this.emit(EVT_UPDATED, ...args);
         };
