@@ -36,8 +36,26 @@ function createVideoConstraints(userConstraints = {}) {
   return mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints);
 }
 
+/**
+ * @param {Object} userConstraints? [default = {}]
+ * @return {Object}
+ */
+function createScreenCaptureConstraints(userConstraints = {}) {
+  DEFAULT_CONSTRAINTS = {
+    // Audio capturing requires additional UI check in browsers which support it (Chromium based)
+    audio: createAudioConstraints({
+      cursor: "always",
+    }),
+
+    video: createVideoConstraints(),
+  };
+
+  return mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints);
+}
+
 module.exports = {
   mergeConstraints,
   createAudioConstraints,
   createVideoConstraints,
+  createScreenCaptureConstraints,
 };
