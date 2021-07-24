@@ -54,6 +54,9 @@ function createScreenCaptureConstraints(userConstraints = {}) {
     // capture, and is sometimes easy to miss.
     audio: createAudioConstraints(userConstraints && userConstraints.audio),
 
+    // NOTE: Video constraints add cursor capturing capability on top of
+    // existing default video constraints, hence why mergeConstraints is used
+    // in the createVideoConstraints argument.
     video: createVideoConstraints(
       mergeConstraints(
         {
