@@ -52,9 +52,7 @@ function createScreenCaptureConstraints(userConstraints = {}) {
     // To enable audio capturing in Chromium-based browsers, the user typically
     // needs to enable it in the UI dialog presented when initiating the screen
     // capture, and is sometimes easy to miss.
-    audio: createAudioConstraints(
-      createAudioConstraints(userConstraints && userConstraints.audio)
-    ),
+    audio: createAudioConstraints(userConstraints && userConstraints.audio),
 
     video: createVideoConstraints(
       mergeConstraints(
