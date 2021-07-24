@@ -22,6 +22,10 @@ TODO: Describe a bit better
 - Captures device audio / video / screenshare
 - Wraps audio streams with methods to control gain (volume) and mute, directly on the stream itself
 
+## Testing
+
+Due to the complexity of setting up a fully-automated testing environment for capturing and managing media streams, a React-based frontend has been created to do manual testing on various devices.
+
 ## Development
 
 There is a React-based frontend for prototyping this utility in a browser, which is not to be utilized in a production setting.  It utilizes a Unix symlink to link the dev.frontend/src to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).

@@ -42,12 +42,29 @@ function createVideoConstraints(userConstraints = {}) {
  */
 function createScreenCaptureConstraints(userConstraints = {}) {
   DEFAULT_CONSTRAINTS = {
-    // Audio capturing requires additional UI check in browsers which support it (Chromium based)
-    audio: createAudioConstraints({
-      cursor: "always",
-    }),
+    // NOTE: Audio capturing is typically only available in Chromium-based
+    // browsers and typically only works for capturing audio in browser tabs.
+    //
+    // Windows can capture full system audio this way, and Mac can be made to
+    // capture full system audio with a third party virtual audio device
+    // driver.
+    //
+    // To enable audio capturing in Chromium-based browsers, the user typically
+    // needs to enable it in the UI dialog presented when initiating the screen
+    // capture, and is sometimes easy to miss.
+    audio: createAudioConstraints(userConstraints && userConstraints.audio),
 
-    video: createVideoConstraints(),
+    // NOTE: Video constraints add cursor capturing capability on top of
+    // existing default video constraints, hence why mergeConstraints is used
+    // in the createVideoConstraints argument.
+    video: createVideoConstraints(
+      mergeConstraints(
+        {
+          cursor: "always",
+        },
+        userConstraints && userConstraints.video
+      )
+    ),
   };
 
   return mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints);
