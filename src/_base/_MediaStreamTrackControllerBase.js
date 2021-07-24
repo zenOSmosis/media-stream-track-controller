@@ -36,12 +36,22 @@ class MediaStreamTrackControllerBase extends CommonBase {
     // TODO: Dynamically handle w/ passed option
     this._outputMediaStreamTrack = inputMediaStreamTrack;
 
+    this._isTrackEnded = false;
+
     // Destroy instance once track ends
     (() => {
       // IMPORTANT: This timeout is set so that _outputMediaStreamTrack can be
       // overridden by extender's constructor.
       setTimeout(() => {
-        const _handleTrackEnded = () => this.destroy();
+        const _handleTrackEnded = () => {
+          // This check is here to prevent an infinite loop resulting in
+          // Maximum Callstack Error
+          if (!this._isTrackEnded) {
+            this._isTrackEnded = true;
+
+            this.destroy();
+          }
+        };
 
         this._inputMediaStreamTrack.addEventListener(
           "ended",
@@ -96,6 +106,10 @@ class MediaStreamTrackControllerBase extends CommonBase {
     // Automatically stop input and output tracks
     this._inputMediaStreamTrack.stop();
     this._outputMediaStreamTrack.stop();
+
+    // This is needed for any "ended" listeners, since we may be stopping the
+    // track programmatically (instead of it ending on its own)
+    this._outputMediaStreamTrack.dispatchEvent(new Event("ended"));
 
     delete _instances[this._uuid];
 
