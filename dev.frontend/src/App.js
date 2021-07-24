@@ -11,6 +11,7 @@ import {
   debug,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
+import { logger } from "phantom-core";
 
 function App() {
   const [
@@ -25,7 +26,7 @@ function App() {
    * @return {void}
    */
   const registerControllerFactory = useCallback(controllerFactory => {
-    console.log("registering controller factory", {
+    logger.log("registering controller factory", {
       controllerFactory,
       outputMediaStream: controllerFactory.getOutputMediaStream(),
       outputMediaStreamTracks: controllerFactory
@@ -45,7 +46,7 @@ function App() {
       const factoryInstances =
         MediaStreamTrackControllerFactory.getFactoryInstances();
 
-      console.log("updating registered controller factory instances", {
+      logger.log("updating registered controller factory instances", {
         factoryInstances,
       });
 

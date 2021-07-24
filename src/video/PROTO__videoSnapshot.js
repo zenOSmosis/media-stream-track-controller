@@ -1,6 +1,7 @@
 // TODO: Incorporate into this project
 
 import { useCallback } from "react";
+import { logger } from "phantom-core";
 
 /**
  * Source code idea borrowed from:
@@ -35,7 +36,7 @@ export default function useVideoMediaStreamTrackSnapshot() {
 
     // TODO: Remove
     /*
-    console.log({
+    logger.log({
       videoMediaStreamTrack,
       videoEl,
       canvasEl,
