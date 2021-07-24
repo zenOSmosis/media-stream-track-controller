@@ -1,4 +1,5 @@
 const PhantomCore = require("phantom-core");
+const { logger } = PhantomCore;
 const AudioMediaStreamTrackLevelMonitor = require("./_AudioMediaStreamTrackLevelMonitor");
 const {
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
@@ -65,9 +66,7 @@ class AudioMediaStreamTrackLevelMonitorProxy extends PhantomCore {
 
       _monitorInstances[mediaStreamTrack.id] = monitor;
 
-      // TODO: Enable logging outside of PhantomCore instances
-      console.debug("Proxied audio monitor created", monitor);
-      // this.log.debug("Proxied audio monitor created", monitor);
+      logger.debug("Proxied audio monitor created", monitor);
     }
 
     if (!_proxyCounts[mediaStreamTrack.id]) {
@@ -114,8 +113,7 @@ class AudioMediaStreamTrackLevelMonitorProxy extends PhantomCore {
 
         await monitor.destroy();
 
-        // TODO: Enable logging outside of PhantomCore instances
-        console.debug("Proxied audio monitor destroyed", monitor);
+        logger.debug("Proxied audio monitor destroyed", monitor);
       }
     });
   }
