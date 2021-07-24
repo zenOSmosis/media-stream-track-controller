@@ -11,6 +11,7 @@ import {
   debug,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
+import { logger } from "phantom-core";
 
 function App() {
   const [
@@ -25,7 +26,7 @@ function App() {
    * @return {void}
    */
   const registerControllerFactory = useCallback(controllerFactory => {
-    console.log("registering controller factory", {
+    logger.log("registering controller factory", {
       controllerFactory,
       outputMediaStream: controllerFactory.getOutputMediaStream(),
       outputMediaStreamTracks: controllerFactory
@@ -41,16 +42,23 @@ function App() {
 
   // Sync mediaStreamTrackControllerFactories once a factory has been destroyed
   useEffect(() => {
-    const handleUpdate = () =>
-      setMediaStreamTrackControllerFactories(
-        MediaStreamTrackControllerFactory.getFactoryInstances()
-      );
+    const handleUpdate = () => {
+      const factoryInstances =
+        MediaStreamTrackControllerFactory.getFactoryInstances();
+
+      logger.log("updating registered controller factory instances", {
+        factoryInstances,
+      });
+
+      setMediaStreamTrackControllerFactories(factoryInstances);
+    };
 
     mediaStreamTrackControllerFactories.forEach(controller => {
       controller.once(
         MediaStreamTrackControllerEvents.EVT_DESTROYED,
         handleUpdate
       );
+
       controller.on(MediaStreamTrackControllerEvents.EVT_UPDATED, handleUpdate);
     });
 
@@ -60,6 +68,7 @@ function App() {
           MediaStreamTrackControllerEvents.EVT_DESTROYED,
           handleUpdate
         );
+
         controller.off(
           MediaStreamTrackControllerEvents.EVT_UPDATED,
           handleUpdate

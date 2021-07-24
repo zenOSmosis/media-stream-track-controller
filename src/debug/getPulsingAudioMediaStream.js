@@ -1,4 +1,5 @@
 const { getNewAudioContext, stopMediaStream } = require("../utils");
+const { logger } = require("phantom-core");
 
 /**
  * @param {number} pulseTime? [default = 5] Number of seconds the pulse should
@@ -39,9 +40,9 @@ function getPulsingAudioMediaStream(pulseTime = 5) {
   setTimeout(() => {
     stopMediaStream(mediaStream);
 
-    console.log("stopped media stream");
+    logger.log("stopped media stream");
 
-    audioCtx.close().then(() => console.log("audio context closed"));
+    audioCtx.close().then(() => logger.log("audio context closed"));
   }, pulseTime * 1000);
 
   return mediaStream;
