@@ -43,11 +43,18 @@ function createVideoConstraints(userConstraints = {}) {
 function createScreenCaptureConstraints(userConstraints = {}) {
   DEFAULT_CONSTRAINTS = {
     // Audio capturing requires additional UI check in browsers which support it (Chromium based)
-    audio: createAudioConstraints({
-      cursor: "always",
-    }),
+    audio: createAudioConstraints(
+      createAudioConstraints(userConstraints && userConstraints.audio)
+    ),
 
-    video: createVideoConstraints(),
+    video: createVideoConstraints(
+      mergeConstraints(
+        {
+          cursor: "always",
+        },
+        userConstraints && userConstraints.video
+      )
+    ),
   };
 
   return mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints);
