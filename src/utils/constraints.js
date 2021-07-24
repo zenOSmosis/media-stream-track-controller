@@ -42,7 +42,16 @@ function createVideoConstraints(userConstraints = {}) {
  */
 function createScreenCaptureConstraints(userConstraints = {}) {
   DEFAULT_CONSTRAINTS = {
-    // Audio capturing requires additional UI check in browsers which support it (Chromium based)
+    // NOTE: Audio capturing is typically only available in Chromium-based
+    // browsers and typically only works for capturing audio in browser tabs.
+    //
+    // Windows can capture full system audio this way, and Mac can be made to
+    // capture full system audio with a third party virtual audio device
+    // driver.
+    //
+    // To enable audio capturing in Chromium-based browsers, the user typically
+    // needs to enable it in the UI dialog presented when initiating the screen
+    // capture, and is sometimes easy to miss.
     audio: createAudioConstraints(
       createAudioConstraints(userConstraints && userConstraints.audio)
     ),
