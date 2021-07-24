@@ -1,6 +1,8 @@
 const test = require("tape-async");
 const { debug, utils } = require("../src");
 
+// TODO: Add tests for constraints
+
 test("pulsing audio media stream is a MediaStream", t => {
   t.plan(1);
 
