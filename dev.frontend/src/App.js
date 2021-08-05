@@ -99,7 +99,7 @@ function App() {
           </button>
         </div>
         <div style={{ border: "1px #ccc solid", margin: 5 }}>
-          <h2>Media Device Capture</h2>
+          <h2>Media Devices</h2>
           <div>
             <button
               onClick={() =>
