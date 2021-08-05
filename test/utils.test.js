@@ -55,8 +55,6 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
-// TODO: Add additional tests for constraints (including video getSpecificDeviceIdCaptureConstraints)
-
 test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.plan(5);
 
@@ -142,3 +140,80 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
 
   t.end();
 });
+
+test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
+  t.plan(4);
+
+  t.deepEquals(
+    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      utils.constraints.createVideoConstraints()
+    ),
+    {
+      video: {
+        ...utils.constraints.createVideoConstraints(),
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "exact deviceId spliced onto default video constraints (without video userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: utils.constraints.createVideoConstraints(),
+      }
+    ),
+    {
+      video: {
+        ...utils.constraints.createVideoConstraints(),
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "exact deviceId spliced onto default video constraints (with video userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: true,
+      }
+    ),
+    {
+      video: {
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "passing boolean true as userConstraints[video] does not override deviceId"
+  );
+
+  t.deepEquals(
+    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: false,
+      }
+    ),
+    {},
+    "passing boolean false as userConstraints[video] returns empty object"
+  );
+
+  t.end();
+});
+
+// TODO: Add additional tests for constraints
