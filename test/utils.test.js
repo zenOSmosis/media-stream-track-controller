@@ -37,7 +37,10 @@ test("utils.getSharedAudioContext", t => {
 
   const AudioContext = window.AudioContext || window.webkitAudioContext;
 
-  t.ok(AudioContext, "audioCtx is of AudioContext type");
+  t.ok(
+    audioCtx instanceof AudioContext,
+    "audioCtx is of browser's AudioContext type"
+  );
 
   const audioCtx2 = utils.getSharedAudioContext();
 
