@@ -11,7 +11,10 @@ const getNewAudioContext = () => {
 };
 
 /**
- * See enclosed function.
+ * Retrieves a memoized shared audio context, or creates a new one and memoizes
+ * it for subsequent calls.
+ *
+ * @return {AudioContext}
  */
 const getSharedAudioContext = (() => {
   // Use for caching
@@ -31,7 +34,7 @@ const getSharedAudioContext = (() => {
  *
  * @param {AudioContext} audioCtx? [optional; default = null] If not specified,
  * a shared audio context is utilized instead.
- * @return {void}
+ * @return {Promise<void>}
  */
 const untilAudioContextResumed = async (audioCtx = null) => {
   if (!audioCtx) {
