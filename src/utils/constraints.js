@@ -5,7 +5,7 @@ const PhantomCore = require("phantom-core");
 
 /**
  * Deep merges the given user constraints onto the default constraints, where
- * user constraints take precidence.
+ * user constraints take precedence.
  *
  * @param {Object} defaultConstraints
  * @param {Object} userConstraints
