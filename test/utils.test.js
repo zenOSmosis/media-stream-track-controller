@@ -84,6 +84,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
           exact: "test-audio-device-id",
         },
       },
+      video: false,
     },
     "exact deviceId spliced onto default audio constraints (without audio userConstraints root object)"
   );
@@ -103,6 +104,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
           exact: "test-audio-device-id",
         },
       },
+      video: false,
     },
     "exact deviceId spliced onto default audio constraints (with audio userConstraints root object)"
   );
@@ -121,6 +123,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
           exact: "test-audio-device-id",
         },
       },
+      video: false,
     },
     "passing boolean true as userConstraints[audio] does not override deviceId"
   );

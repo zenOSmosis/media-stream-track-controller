@@ -19,6 +19,11 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
+  const [mediaDevices, setMediaDevices] = useState([]);
+
+  // TODO: Remove
+  console.log({ mediaDevices });
+
   /**
    * Registers controller factory w/ UI component state.
    *
@@ -102,7 +107,7 @@ function App() {
               onClick={() =>
                 utils
                   .fetchMediaDevices()
-                  .then(devices => alert(JSON.stringify(devices)))
+                  .then(devices => setMediaDevices(devices))
               }
             >
               utils.fetchMediaDevices() [aggressive]
@@ -111,7 +116,7 @@ function App() {
               onClick={() =>
                 utils
                   .fetchMediaDevices(false)
-                  .then(devices => alert(JSON.stringify(devices)))
+                  .then(devices => setMediaDevices(devices))
               }
             >
               utils.fetchMediaDevices() [non-aggressive]
@@ -137,6 +142,34 @@ function App() {
           >
             utils.captureDeviceMedia() (with video)
           </button>
+
+          <div>
+            {mediaDevices.map((device, idx) => (
+              <div
+                key={idx}
+                style={{
+                  textAlign: "left",
+                  border: "1px #000 solid",
+                  overflow: "auto",
+                  padding: 8,
+                  backgroundColor: idx % 2 ? "#ccc" : "#fff",
+                }}
+              >
+                {device.kind} {device.label}
+                <button
+                  style={{ float: "right" }}
+                  onClick={() => {
+                    utils.captureDeviceMedia
+                      .captureSpecificMediaDevice(device)
+                      .then(registerControllerFactory);
+                  }}
+                >
+                  Capture
+                </button>
+              </div>
+            ))}
+          </div>
+
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
             {/**

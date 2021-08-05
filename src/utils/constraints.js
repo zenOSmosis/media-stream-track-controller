@@ -83,21 +83,24 @@ function createScreenCaptureConstraints(userConstraints = {}) {
 
 /**
  * Helper method for obtaining constaints to capture from a specific media
- * device.
+ * device with a given device id and type.
  *
  * IMPORTANT: This DOES EXPOSE the "audio" or "video" base object.
  *
  * @param {string} deviceId
  * @param {"audio" | "video"} deviceType
  * @param {Object} userConstraints? [default = {}]
- * @returns
+ * @return {Object}
  */
 function getSpecificDeviceIdCaptureConstraints(
   deviceId,
   deviceType,
   userConstraints = {}
 ) {
-  if (deviceType !== "audio" && deviceType !== "video") {
+  const AUDIO_DEVICE_TYPE = "audio";
+  const VIDEO_DEVICE_TYPE = "video";
+
+  if (deviceType !== AUDIO_DEVICE_TYPE && deviceType !== VIDEO_DEVICE_TYPE) {
     throw new TypeError("deviceType must be audio or video");
   }
 
@@ -107,6 +110,11 @@ function getSpecificDeviceIdCaptureConstraints(
         exact: deviceId,
       },
     },
+    // Prevent device of alternate type from starting (especially prevents mic
+    // from starting when wanting to only capture video)
+    [deviceType === AUDIO_DEVICE_TYPE
+      ? VIDEO_DEVICE_TYPE
+      : AUDIO_DEVICE_TYPE]: false,
   };
 
   // Fix issue where passing null as userConstaints will throw error
@@ -137,10 +145,38 @@ function getSpecificDeviceIdCaptureConstraints(
   return mergeConstraints(userConstraints, OVERRIDE_CONSTRAINTS);
 }
 
+/**
+ * Helper method for obtaining constaints to capture from a specific media
+ * device.
+ *
+ * IMPORTANT: This DOES EXPOSE the "audio" or "video" base object.
+ *
+ * @param {MediaDeviceInfo} mediaDeviceInfo @see fetchMediaDevices
+ * @param {Object} userConstraints? [default = {}]
+ * @return {Object}
+ */
+function getSpecificDeviceCaptureConstraints(
+  mediaDeviceInfo,
+  userConstraints = {}
+) {
+  if (!(mediaDeviceInfo instanceof MediaDeviceInfo)) {
+    console.warn(typeof mediaDeviceInfo);
+
+    throw new TypeError("mediaDeviceInfo must be of MediaDeviceInfo type");
+  }
+
+  return getSpecificDeviceIdCaptureConstraints(
+    mediaDeviceInfo.deviceId,
+    mediaDeviceInfo.kind === "audioinput" ? "audio" : "video",
+    userConstraints
+  );
+}
+
 module.exports = {
   mergeConstraints,
   createAudioConstraints,
   createVideoConstraints,
   createScreenCaptureConstraints,
   getSpecificDeviceIdCaptureConstraints,
+  getSpecificDeviceCaptureConstraints,
 };
