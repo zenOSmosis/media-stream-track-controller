@@ -1,10 +1,10 @@
 /**
- * List cameras, microphones, etc.
+ * Lists all input and output media devices.
  *
- * @param {boolean} isAggressive? [optional; default=tre]
+ * @param {boolean} isAggressive? [optional; default=true]
  * @return {Promise<MediaDeviceInfo[]>}
  */
-const fetchMediaInputDevices = async (isAggressive = true) => {
+const fetchMediaDevices = async (isAggressive = true) => {
   if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
     console.warn("enumerateDevices() not supported.");
     return [];
@@ -31,4 +31,30 @@ const fetchMediaInputDevices = async (isAggressive = true) => {
   return devices;
 };
 
-module.exports = fetchMediaInputDevices;
+/**
+ * Retrieves media devices filtered to inputs.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchInputMediaDevices = async (isAggressive = true) => {
+  const devices = await fetchMediaDevices(isAggressive);
+
+  return devices.filter(device => device.kind.includes("input"));
+};
+
+/**
+ * Retrieves media devices filtered to outputs.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchOutputMediaDevices = async (isAggressive = true) => {
+  const devices = await fetchMediaDevices(isAggressive);
+
+  return devices.filter(device => device.kind.includes("output"));
+};
+
+module.exports = fetchMediaDevices;
+module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
+module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;

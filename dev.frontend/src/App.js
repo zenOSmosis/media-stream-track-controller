@@ -19,6 +19,9 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
+  const [inputMediaDevices, setInputMediaDevices] = useState([]);
+  const [outputMediaDevices, setOutputMediaDevices] = useState([]);
+
   /**
    * Registers controller factory w/ UI component state.
    *
@@ -100,21 +103,40 @@ function App() {
           <div>
             <button
               onClick={() =>
-                utils
-                  .fetchMediaDevices()
-                  .then(devices => alert(JSON.stringify(devices)))
+                utils.fetchMediaDevices
+                  .fetchInputMediaDevices()
+                  .then(devices => setInputMediaDevices(devices))
               }
             >
-              utils.fetchMediaDevices() [aggressive]
+              utils.fetchMediaDevices.fetchInputMediaDevices() [aggressive]
             </button>
             <button
               onClick={() =>
-                utils
-                  .fetchMediaDevices(false)
-                  .then(devices => alert(JSON.stringify(devices)))
+                utils.fetchMediaDevices
+                  .fetchInputMediaDevices(false)
+                  .then(devices => setInputMediaDevices(devices))
               }
             >
-              utils.fetchMediaDevices() [non-aggressive]
+              utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]
+            </button>
+
+            <button
+              onClick={() =>
+                utils.fetchMediaDevices
+                  .fetchOutputMediaDevices()
+                  .then(devices => setOutputMediaDevices(devices))
+              }
+            >
+              utils.fetchMediaDevices.fetchOutputMediaDevices() [aggressive]
+            </button>
+            <button
+              onClick={() =>
+                utils.fetchMediaDevices
+                  .fetchOutputMediaDevices(false)
+                  .then(devices => setOutputMediaDevices(devices))
+              }
+            >
+              utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]
             </button>
           </div>
         </div>
@@ -128,6 +150,66 @@ function App() {
           >
             utils.captureDeviceMedia()
           </button>
+          <button
+            onClick={() =>
+              utils
+                .captureDeviceMedia({ video: true }, "captureDeviceMedia")
+                .then(registerControllerFactory)
+            }
+          >
+            utils.captureDeviceMedia() (with video)
+          </button>
+
+          {inputMediaDevices.length > 0 && (
+            <div>
+              <h3>Input Media Devices</h3>
+              {inputMediaDevices.map((device, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    textAlign: "left",
+                    border: "1px #000 solid",
+                    overflow: "auto",
+                    padding: 8,
+                    backgroundColor: idx % 2 ? "#ccc" : "#fff",
+                  }}
+                >
+                  {device.kind} {device.label}
+                  <button
+                    style={{ float: "right" }}
+                    onClick={() => {
+                      utils.captureDeviceMedia
+                        .captureSpecificMediaDevice(device)
+                        .then(registerControllerFactory);
+                    }}
+                  >
+                    Capture
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {outputMediaDevices.length > 0 && (
+            <div>
+              <h3>Output Media Devices</h3>
+              {outputMediaDevices.map((device, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    textAlign: "left",
+                    border: "1px #000 solid",
+                    overflow: "auto",
+                    padding: 8,
+                    backgroundColor: idx % 2 ? "#ccc" : "#fff",
+                  }}
+                >
+                  {device.kind} {device.label}
+                </div>
+              ))}
+            </div>
+          )}
+
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
             {/**
