@@ -128,6 +128,15 @@ function App() {
           >
             utils.captureDeviceMedia()
           </button>
+          <button
+            onClick={() =>
+              utils
+                .captureDeviceMedia({ video: true }, "captureDeviceMedia")
+                .then(registerControllerFactory)
+            }
+          >
+            utils.captureDeviceMedia() (with video)
+          </button>
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
             {/**

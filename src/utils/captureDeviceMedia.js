@@ -2,6 +2,8 @@ const MediaStreamTrackControllerFactory = require("../MediaStreamTrackController
 const { mergeConstraints } = require("./constraints");
 
 /**
+ * IMPORTANT: At this time, video is not captured by default.
+ *
  * @param {Object} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
