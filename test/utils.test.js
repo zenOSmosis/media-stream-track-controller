@@ -41,7 +41,7 @@ test("utils.getSharedAudioContext", t => {
 
   t.ok(
     audioCtx instanceof AudioContext,
-    "const AudioContext is of browser's AudioContext type"
+    "audioCtx is of browser's AudioContext type"
   );
 
   const audioCtx2 = utils.getSharedAudioContext();
