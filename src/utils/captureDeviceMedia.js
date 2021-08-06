@@ -14,7 +14,7 @@ const {
  */
 async function captureDeviceMedia(constraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
-    ...createAudioConstraints,
+    ...createAudioConstraints(constraints && constraints.audio),
 
     video: false,
   };
