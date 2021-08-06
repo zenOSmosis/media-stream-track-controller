@@ -94,7 +94,7 @@ const fetchVideoOutputMediaDevices = async (isAggressive = true) => {
  * will use it for mock data.
  * @return {Promise<MediaDeviceInfo | Object | null>}
  */
-const fetchMatchAudioInputMediaDevice = async (
+const fetchAudioInputMediaDeviceMatch = async (
   previousDeviceInfo,
   isAggressiveOrMockObject = true
 ) => {
@@ -147,5 +147,5 @@ module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;
 module.exports.fetchAudioOutputMediaDevices = fetchAudioOutputMediaDevices;
 module.exports.fetchVideoOutputMediaDevices = fetchVideoOutputMediaDevices;
 
-module.exports.fetchMatchAudioInputMediaDevice =
-  fetchMatchAudioInputMediaDevice;
+module.exports.fetchAudioInputMediaDeviceMatch =
+  fetchAudioInputMediaDeviceMatch;
