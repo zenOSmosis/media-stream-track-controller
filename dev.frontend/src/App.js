@@ -235,7 +235,9 @@ function App() {
                     style={{ float: "right" }}
                     onClick={() => {
                       utils.captureDeviceMedia
-                        .captureSpecificMediaDevice(device)
+                        .captureSpecificMediaDevice(device, null, {
+                          title: device.label,
+                        })
                         .then(registerControllerFactory);
                     }}
                   >
