@@ -62,6 +62,146 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
+test("utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice", async t => {
+  t.plan(7);
+
+  const mockDevices = [
+    {
+      deviceId: "default",
+      kind: "audioinput",
+      label: "Default",
+      groupId:
+        "48c8c6ce93bca18d7268113b6bdad4934ca6f68b5aa9ca17254e4019b99b6898",
+    },
+    {
+      deviceId:
+        "d52f39bf56b99e78edfa08792464b41b253778c54101d1d6186cc2a3df1c5341",
+      kind: "audioinput",
+      label: "Built-in Audio Analog Stereo",
+      groupId:
+        "f045a07513dea8d0f9cab7d15d73c2ea85ae571dd1db8c83c45eedf6660bc7d1",
+    },
+    {
+      deviceId:
+        "e522c46bfc297e97a63abdd019ed73b7a48440d2e90f732ecea576d492b67693",
+      kind: "audioinput",
+      label: "Scarlett Solo USB Analog Stereo",
+      groupId:
+        "9253a523d57bf06af9ce171e7ddc6befc8e4c0216f1eb8ace9d16beef14612dc",
+    },
+  ];
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        deviceId: "old-device-id",
+        kind: "audioinput",
+        label: "Built-in Audio Analog Stereo",
+        groupId: "old-group-id",
+      },
+      mockDevices
+    ),
+    {
+      deviceId:
+        "d52f39bf56b99e78edfa08792464b41b253778c54101d1d6186cc2a3df1c5341",
+      kind: "audioinput",
+      label: "Built-in Audio Analog Stereo",
+      groupId:
+        "f045a07513dea8d0f9cab7d15d73c2ea85ae571dd1db8c83c45eedf6660bc7d1",
+    },
+    "matches on changed device and group id"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        deviceId:
+          "d52f39bf56b99e78edfa08792464b41b253778c54101d1d6186cc2a3df1c5341",
+      },
+      mockDevices
+    ),
+    {
+      deviceId:
+        "d52f39bf56b99e78edfa08792464b41b253778c54101d1d6186cc2a3df1c5341",
+      kind: "audioinput",
+      label: "Built-in Audio Analog Stereo",
+      groupId:
+        "f045a07513dea8d0f9cab7d15d73c2ea85ae571dd1db8c83c45eedf6660bc7d1",
+    },
+    "matches on device id"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        groupId:
+          "9253a523d57bf06af9ce171e7ddc6befc8e4c0216f1eb8ace9d16beef14612dc",
+      },
+      mockDevices
+    ),
+    {
+      deviceId:
+        "e522c46bfc297e97a63abdd019ed73b7a48440d2e90f732ecea576d492b67693",
+      kind: "audioinput",
+      label: "Scarlett Solo USB Analog Stereo",
+      groupId:
+        "9253a523d57bf06af9ce171e7ddc6befc8e4c0216f1eb8ace9d16beef14612dc",
+    },
+    "matches on group id"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        label: "Scarlett Solo USB Analog Stereo",
+      },
+      mockDevices
+    ),
+    {
+      deviceId:
+        "e522c46bfc297e97a63abdd019ed73b7a48440d2e90f732ecea576d492b67693",
+      kind: "audioinput",
+      label: "Scarlett Solo USB Analog Stereo",
+      groupId:
+        "9253a523d57bf06af9ce171e7ddc6befc8e4c0216f1eb8ace9d16beef14612dc",
+    },
+    "matches on label"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        label: undefined,
+      },
+      mockDevices
+    ),
+    null,
+    "no match on undefined label"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {
+        label: "some-unknown-label",
+      },
+      mockDevices
+    ),
+    null,
+    "no match on unknown label"
+  );
+
+  t.deepEquals(
+    await utils.fetchMediaDevices.fetchMatchAudioInputMediaDevice(
+      {},
+      mockDevices
+    ),
+    null,
+    "no match on no previous info"
+  );
+
+  t.end();
+});
+
 test("utils.constraints.createNormalizedConstraintsOfKind", t => {
   t.plan(6);
 
