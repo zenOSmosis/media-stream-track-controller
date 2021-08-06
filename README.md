@@ -24,7 +24,9 @@ TODO: Describe a bit better
 
 ## Testing
 
-Due to the complexity of setting up a fully-automated testing environment for capturing and managing media streams, a React-based frontend has been created to do manual testing on various devices.
+Partial automated testing is automated on mobile / desktop devices using SauceLabs.
+
+Other testing is performed manually using included development frontend.
 
 ## Development
 
