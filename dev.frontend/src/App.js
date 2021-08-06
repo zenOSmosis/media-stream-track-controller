@@ -269,7 +269,9 @@ function App() {
             <button
               onClick={() =>
                 utils
-                  .captureScreen(null, "captureScreen")
+                  .captureScreen(null, {
+                    title: "captureScreen",
+                  })
                   .then(registerControllerFactory)
               }
             >
