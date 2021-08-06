@@ -356,6 +356,9 @@ function MediaElement({ trackController }) {
       />
       {trackController.getTrackKind() === "audio" && (
         <div>
+          {
+            // TODO: Implement gain adjustment UI controller
+          }
           <AudioMediaStreamTrackLevelMeter
             mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
             style={{ height: 100 }}
