@@ -100,66 +100,56 @@ function App() {
         </div>
         <div style={{ border: "1px #ccc solid", margin: 5 }}>
           <h2>Media Devices</h2>
-          <div>
-            <button
-              onClick={() =>
+          {[
+            {
+              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [aggressive]",
+              cb: () =>
                 utils.fetchMediaDevices
                   .fetchInputMediaDevices()
-                  .then(devices => setInputMediaDevices(devices))
-              }
-            >
-              utils.fetchMediaDevices.fetchInputMediaDevices() [aggressive]
-            </button>
-            <button
-              onClick={() =>
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]",
+              cb: () =>
                 utils.fetchMediaDevices
                   .fetchInputMediaDevices(false)
-                  .then(devices => setInputMediaDevices(devices))
-              }
-            >
-              utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]
-            </button>
-
-            <button
-              onClick={() =>
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchOutputMediaDevices() [aggressive]",
+              cb: () =>
                 utils.fetchMediaDevices
                   .fetchOutputMediaDevices()
-                  .then(devices => setOutputMediaDevices(devices))
-              }
-            >
-              utils.fetchMediaDevices.fetchOutputMediaDevices() [aggressive]
-            </button>
-            <button
-              onClick={() =>
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]",
+              cb: () =>
                 utils.fetchMediaDevices
                   .fetchOutputMediaDevices(false)
-                  .then(devices => setOutputMediaDevices(devices))
-              }
-            >
-              utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]
-            </button>
-          </div>
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            {
+              name: "utils.captureDeviceMedia()",
+              cb: () =>
+                utils
+                  .captureDeviceMedia(null, "captureDeviceMedia")
+                  .then(registerControllerFactory),
+            },
+            {
+              name: "utils.captureDeviceMedia() (with video)",
+              cb: () =>
+                utils
+                  .captureDeviceMedia({ video: true }, "captureDeviceMedia")
+                  .then(registerControllerFactory),
+            },
+          ].map(({ name, cb }, idx) => (
+            <div key={idx}>
+              <button onClick={cb}>{name}</button>
+            </div>
+          ))}
         </div>
         <div>
-          <button
-            onClick={() =>
-              utils
-                .captureDeviceMedia(null, "captureDeviceMedia")
-                .then(registerControllerFactory)
-            }
-          >
-            utils.captureDeviceMedia()
-          </button>
-          <button
-            onClick={() =>
-              utils
-                .captureDeviceMedia({ video: true }, "captureDeviceMedia")
-                .then(registerControllerFactory)
-            }
-          >
-            utils.captureDeviceMedia() (with video)
-          </button>
-
           {inputMediaDevices.length > 0 && (
             <div>
               <h3>Input Media Devices</h3>
