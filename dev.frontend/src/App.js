@@ -109,12 +109,42 @@ function App() {
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
+              name: "utils.fetchMediaDevices.fetchAudioInputMediaDevices() [aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchAudioInputMediaDevices()
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchVideoInputMediaDevices() [aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchVideoInputMediaDevices()
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            //
+            {
               name: "utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchInputMediaDevices(false)
                   .then(devices => setInputMediaDevices(devices)),
             },
+            {
+              name: "utils.fetchMediaDevices.fetchAudioInputMediaDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchAudioInputMediaDevices(false)
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchVideoInputMediaDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchVideoInputMediaDevices(false)
+                  .then(devices => setInputMediaDevices(devices)),
+            },
+            //
             {
               name: "utils.fetchMediaDevices.fetchOutputMediaDevices() [aggressive]",
               cb: () =>
@@ -123,10 +153,39 @@ function App() {
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchAudioOutputMediaDevices() [aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchAudioOutputMediaDevices()
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchVideoOutputMediaDevices() [aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchVideoOutputMediaDevices()
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            //
+            {
+              name: "utils.fetchMediaDevices.fetchOutputMediaDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchOutputMediaDevices(false)
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchAudioOutputMediaDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchAudioOutputMediaDevices(false)
+                  .then(devices => setOutputMediaDevices(devices)),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchVideoOutputMediaDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchVideoOutputMediaDevices(false)
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
