@@ -2,6 +2,7 @@ const MediaStreamTrackControllerFactory = require("../MediaStreamTrackController
 const {
   mergeConstraints,
   getSpecificDeviceCaptureConstraints,
+  createAudioConstraints,
 } = require("./constraints");
 
 /**
@@ -13,7 +14,8 @@ const {
  */
 async function captureDeviceMedia(constraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
-    audio: true,
+    ...createAudioConstraints,
+
     video: false,
   };
 
