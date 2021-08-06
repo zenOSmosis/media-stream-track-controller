@@ -38,9 +38,21 @@ const fetchMediaDevices = async (isAggressive = true) => {
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchInputMediaDevices = async (isAggressive = true) => {
-  const devices = await fetchMediaDevices(isAggressive);
+  const inputMediaDevices = await fetchMediaDevices(isAggressive);
 
-  return devices.filter(device => device.kind.includes("input"));
+  return inputMediaDevices.filter(device => device.kind.includes("input"));
+};
+
+const fetchAudioInputMediaDevices = async (isAggressive = true) => {
+  const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
+
+  return inputMediaDevices.filter(device => device.kind.includes("audio"));
+};
+
+const fetchVideoInputMediaDevices = async (isAggressive = true) => {
+  const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
+
+  return inputMediaDevices.filter(device => device.kind.includes("video"));
 };
 
 /**
@@ -50,11 +62,29 @@ const fetchInputMediaDevices = async (isAggressive = true) => {
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchOutputMediaDevices = async (isAggressive = true) => {
-  const devices = await fetchMediaDevices(isAggressive);
+  const outputMediaDevices = await fetchMediaDevices(isAggressive);
 
-  return devices.filter(device => device.kind.includes("output"));
+  return outputMediaDevices.filter(device => device.kind.includes("output"));
+};
+
+const fetchAudioOutputMediaDevices = async (isAggressive = true) => {
+  const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
+
+  return outputMediaDevices.filter(device => device.kind.includes("audio"));
+};
+
+const fetchVideoOutputMediaDevices = async (isAggressive = true) => {
+  const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
+
+  return outputMediaDevices.filter(device => device.kind.includes("video"));
 };
 
 module.exports = fetchMediaDevices;
+
 module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
+module.exports.fetchAudioInputMediaDevices = fetchAudioInputMediaDevices;
+module.exports.fetchVideoInputMediaDevices = fetchVideoInputMediaDevices;
+
 module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;
+module.exports.fetchAudioOutputMediaDevices = fetchAudioOutputMediaDevices;
+module.exports.fetchVideoOutputMediaDevices = fetchVideoOutputMediaDevices;

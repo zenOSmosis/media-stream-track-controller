@@ -5,7 +5,7 @@ const PhantomCore = require("phantom-core");
 
 /**
  * Deep merges the given user constraints onto the default constraints, where
- * user constraints take precidence.
+ * user constraints take precedence.
  *
  * @param {Object} defaultConstraints
  * @param {Object} userConstraints
@@ -16,35 +16,83 @@ function mergeConstraints(defaultConstraints, userConstraints) {
 }
 
 /**
- * IMPORTANT: This DOES NOT EXPOSE the "audio" base object.
+ * Given the set of constraints of the given kind (audio or video), normalizes
+ * the constraints with the kind as a sub-object and the constraints defined
+ * within that sub-object, regardless if the sub-object was part of the
+ * supplied constraints.
  *
+ * @param {"audio" | "video"} kind
+ * @param {Object | boolean} userConstraints
+ * @return {Object}
+ */
+function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
+  if (kind !== "audio" && kind !== "video") {
+    throw new TypeError("kind must be either audio or video");
+  }
+
+  // Implement direct boolean passthru w/ base sub-object
+  if (typeof userConstraints === "boolean") {
+    return {
+      [kind]: userConstraints,
+    };
+  }
+
+  // Allow userConstraints to be null
+  if (userConstraints === null || userConstraints === undefined) {
+    userConstraints = {};
+  }
+
+  if (userConstraints[kind] === undefined) {
+    // Migrate existing user constraints to new object
+    const prevUserConstraints = { ...userConstraints };
+
+    userConstraints = {
+      [kind]: prevUserConstraints,
+    };
+  } else if (userConstraints[kind][kind] !== undefined) {
+    // Fix situations where doubled-up kind may be inadvertently passed via
+    // userConstraints
+    userConstraints[kind] = { ...userConstraints[kind][kind] };
+  }
+
+  return userConstraints;
+}
+
+/**
  * @param {Object} userConstraints? [default = {}]
  * @return {Object}
  */
 function createAudioConstraints(userConstraints = {}) {
   const DEFAULT_AUDIO_CONSTRAINTS = {
-    echoCancellation: false,
-    noiseSuppression: false,
-    autoGainControl: false,
-    sampleRate: 48000,
-    sampleSize: 16,
+    audio: {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      sampleRate: 48000,
+      sampleSize: 16,
+    },
   };
 
-  return mergeConstraints(DEFAULT_AUDIO_CONSTRAINTS, userConstraints);
+  return mergeConstraints(
+    DEFAULT_AUDIO_CONSTRAINTS,
+    createNormalizedConstraintsOfKind("audio", userConstraints)
+  );
 }
 
 /**
- * IMPORTANT: This DOES NOT EXPOSE the "video" base object.
- *
  * @param {Object} userConstraints? [default = {}]
  * @return {Object}
  */
 function createVideoConstraints(userConstraints = {}) {
   const DEFAULT_VIDEO_CONSTRAINTS = {
     // TODO: Finish adding
+    video: {},
   };
 
-  return mergeConstraints(DEFAULT_VIDEO_CONSTRAINTS, userConstraints);
+  return mergeConstraints(
+    DEFAULT_VIDEO_CONSTRAINTS,
+    createNormalizedConstraintsOfKind("video", userConstraints)
+  );
 }
 
 /**
@@ -63,12 +111,12 @@ function createScreenCaptureConstraints(userConstraints = {}) {
     // To enable audio capturing in Chromium-based browsers, the user typically
     // needs to enable it in the UI dialog presented when initiating the screen
     // capture, and is sometimes easy to miss.
-    audio: createAudioConstraints(userConstraints && userConstraints.audio),
+    ...createAudioConstraints(userConstraints && userConstraints.audio),
 
     // NOTE: Video constraints add cursor capturing capability on top of
     // existing default video constraints, hence why mergeConstraints is used
     // in the createVideoConstraints argument.
-    video: createVideoConstraints(
+    ...createVideoConstraints(
       mergeConstraints(
         {
           cursor: "always",
@@ -84,8 +132,6 @@ function createScreenCaptureConstraints(userConstraints = {}) {
 /**
  * Helper method for obtaining constaints to capture from a specific media
  * device with a given device id and type.
- *
- * IMPORTANT: This DOES EXPOSE the "audio" or "video" base object.
  *
  * @param {string} deviceId
  * @param {"audio" | "video"} deviceType
@@ -117,29 +163,15 @@ function getSpecificDeviceIdCaptureConstraints(
       : AUDIO_DEVICE_TYPE]: false,
   };
 
-  // Fix issue where passing null as userConstaints will throw error
-  if (!userConstraints) {
-    userConstraints = {};
-  }
-
   // Normalize userConstaints to have deviceType first child object
-  if (typeof userConstraints[deviceType] === "undefined") {
-    // Shallow copy user constaints into prevUserConstraints
-    const prevUserConstaints = { ...userConstraints };
+  userConstraints = createNormalizedConstraintsOfKind(
+    deviceType,
+    userConstraints
+  );
 
-    // Clear out old constaints off of root object
-    userConstraints = {};
-
-    // Add previous user constaints to the new first child
-    userConstraints[deviceType] = {
-      ...prevUserConstaints,
-    };
-  } else if (typeof userConstraints[deviceType] === "boolean") {
-    if (userConstraints[deviceType] === false) {
-      return {};
-    }
-
-    userConstraints = {};
+  // Prevent device from being captured if {audio/video: false} is set
+  if (userConstraints[deviceType] === false) {
+    return {};
   }
 
   return mergeConstraints(userConstraints, OVERRIDE_CONSTRAINTS);
@@ -148,8 +180,6 @@ function getSpecificDeviceIdCaptureConstraints(
 /**
  * Helper method for obtaining constaints to capture from a specific media
  * device.
- *
- * IMPORTANT: This DOES EXPOSE the "audio" or "video" base object.
  *
  * @param {MediaDeviceInfo} mediaDeviceInfo @see fetchMediaDevices
  * @param {Object} userConstraints? [default = {}]
@@ -174,6 +204,7 @@ function getSpecificDeviceCaptureConstraints(
 
 module.exports = {
   mergeConstraints,
+  createNormalizedConstraintsOfKind,
   createAudioConstraints,
   createVideoConstraints,
   createScreenCaptureConstraints,
