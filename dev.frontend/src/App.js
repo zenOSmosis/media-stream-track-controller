@@ -192,14 +192,21 @@ function App() {
               name: "utils.captureDeviceMedia()",
               cb: () =>
                 utils
-                  .captureDeviceMedia(null, "captureDeviceMedia")
+                  .captureDeviceMedia(null, {
+                    title: "captureDeviceMedia",
+                  })
                   .then(registerControllerFactory),
             },
             {
               name: "utils.captureDeviceMedia() (with video)",
               cb: () =>
                 utils
-                  .captureDeviceMedia({ video: true }, "captureDeviceMedia")
+                  .captureDeviceMedia(
+                    { video: true },
+                    {
+                      title: "captureDeviceMedia-with-video",
+                    }
+                  )
                   .then(registerControllerFactory),
             },
           ].map(({ name, cb }, idx) => (
