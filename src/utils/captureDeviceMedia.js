@@ -16,6 +16,8 @@ async function captureDeviceMedia(constraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
     ...createAudioConstraints(constraints && constraints.audio),
 
+    // FIXME: Implement video constraints if video will be captured by default
+    // ...createVideoConstraints(constraints && constraints.video),
     video: false,
   };
 
