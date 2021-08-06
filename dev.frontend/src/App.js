@@ -261,11 +261,6 @@ function App() {
 
           <div style={{ border: "1px #ccc solid", margin: 5 }}>
             <h2>Screen Capture</h2>
-            {/**
-              <button onClick={() => utils.captureScreen()}>
-                utils.captureScreen()
-              </button>   
-               */}
             <button
               onClick={() =>
                 utils
