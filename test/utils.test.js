@@ -62,11 +62,11 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
-test("utils.fetchMediaDevices.fetchTotalAudioInputDevices", async t => {
+test("utils.fetchMediaDevices.fetchTotalAudioCaptureDevices", async t => {
   t.plan(1);
 
   t.equals(
-    typeof (await utils.fetchMediaDevices.fetchTotalAudioInputDevices()),
+    typeof (await utils.fetchMediaDevices.fetchTotalAudioCaptureDevices()),
     "number",
     "fetch of total audio input devices is a number"
   );
@@ -74,7 +74,7 @@ test("utils.fetchMediaDevices.fetchTotalAudioInputDevices", async t => {
   t.end();
 });
 
-test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
+test("utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch", t => {
   t.plan(7);
 
   const mockDevices = [
@@ -104,7 +104,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   ];
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         deviceId: "old-device-id",
         kind: "audioinput",
@@ -125,7 +125,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         deviceId:
           "d52f39bf56b99e78edfa08792464b41b253778c54101d1d6186cc2a3df1c5341",
@@ -144,7 +144,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         groupId:
           "9253a523d57bf06af9ce171e7ddc6befc8e4c0216f1eb8ace9d16beef14612dc",
@@ -163,7 +163,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         label: "Scarlett Solo USB Analog Stereo",
       },
@@ -181,7 +181,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         label: undefined,
       },
@@ -192,7 +192,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch(
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch(
       {
         label: "some-unknown-label",
       },
@@ -203,7 +203,7 @@ test("utils.getMediaDeviceMatch.getAudioInputDeviceMatch", t => {
   );
 
   t.deepEquals(
-    utils.getMediaDeviceMatch.getAudioInputDeviceMatch({}, mockDevices),
+    utils.getMediaDeviceMatch.getAudioCaptureDeviceMatch({}, mockDevices),
     null,
     "no match on no previous info"
   );

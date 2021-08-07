@@ -39,7 +39,7 @@ const fetchMediaDevices = async (isAggressive = true) => {
  * @param {boolean} isAggressive? [optional; default=true]
  * @return {Promise<MediaDeviceInfo[]>}
  */
-const fetchInputMediaDevices = async (isAggressive = true) => {
+const fetchMediaCaptureDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchMediaDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("input"));
@@ -51,8 +51,8 @@ const fetchInputMediaDevices = async (isAggressive = true) => {
  * @param {boolean} isAggressive? [optional; default=true]
  * @return {Promise<MediaDeviceInfo[]>}
  */
-const fetchAudioInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
+const fetchAudioCaptureDevices = async (isAggressive = true) => {
+  const inputMediaDevices = await fetchMediaCaptureDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("audio"));
 };
@@ -65,17 +65,17 @@ const fetchAudioInputDevices = async (isAggressive = true) => {
  * doesn't require the full detail of audio input devices to be present.
  * @return {Promise<number>}
  */
-const fetchTotalAudioInputDevices = async (isAggressive = false) => {
-  let totalAudioInputDevices = 0;
+const fetchTotalAudioCaptureDevices = async (isAggressive = false) => {
+  let totalAudioCaptureDevices = 0;
 
   try {
-    const inputMediaDevices = await fetchAudioInputDevices(isAggressive);
+    const inputMediaDevices = await fetchAudioCaptureDevices(isAggressive);
 
-    totalAudioInputDevices = inputMediaDevices.length;
+    totalAudioCaptureDevices = inputMediaDevices.length;
   } catch (err) {
     logger.error(err);
   } finally {
-    return totalAudioInputDevices;
+    return totalAudioCaptureDevices;
   }
 };
 
@@ -85,8 +85,8 @@ const fetchTotalAudioInputDevices = async (isAggressive = false) => {
  * @param {boolean} isAggressive? [optional; default=true]
  * @return {Promise<MediaDeviceInfo[]>}
  */
-const fetchVideoInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
+const fetchVideoCaptureDevices = async (isAggressive = true) => {
+  const inputMediaDevices = await fetchMediaCaptureDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("video"));
 };
@@ -133,10 +133,10 @@ const fetchVideoOutputDevices = async (isAggressive = true) => {
 
 module.exports = fetchMediaDevices;
 
-module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
-module.exports.fetchAudioInputDevices = fetchAudioInputDevices;
-module.exports.fetchTotalAudioInputDevices = fetchTotalAudioInputDevices;
-module.exports.fetchVideoInputDevices = fetchVideoInputDevices;
+module.exports.fetchMediaCaptureDevices = fetchMediaCaptureDevices;
+module.exports.fetchAudioCaptureDevices = fetchAudioCaptureDevices;
+module.exports.fetchTotalAudioCaptureDevices = fetchTotalAudioCaptureDevices;
+module.exports.fetchVideoCaptureDevices = fetchVideoCaptureDevices;
 
 module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;
 module.exports.fetchAudioOutputDevices = fetchAudioOutputDevices;
