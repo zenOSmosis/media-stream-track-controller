@@ -109,17 +109,17 @@ function App() {
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchAudioInputMediaDevices() [aggressive]",
+              name: "utils.fetchMediaDevices.fetchAudioInputDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchAudioInputMediaDevices()
+                  .fetchAudioInputDevices()
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchVideoInputMediaDevices() [aggressive]",
+              name: "utils.fetchMediaDevices.fetchVideoInputDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchVideoInputMediaDevices()
+                  .fetchVideoInputDevices()
                   .then(devices => setInputMediaDevices(devices)),
             },
             //
@@ -131,17 +131,26 @@ function App() {
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchAudioInputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchAudioInputDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchAudioInputMediaDevices(false)
+                  .fetchAudioInputDevices(false)
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchVideoInputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchTotalAudioInputDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchVideoInputMediaDevices(false)
+                  .fetchTotalAudioInputDevices(false)
+                  .then(totalDevices =>
+                    alert(`Total audio input devices: ${totalDevices}`)
+                  ),
+            },
+            {
+              name: "utils.fetchMediaDevices.fetchVideoInputDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchVideoInputDevices(false)
                   .then(devices => setInputMediaDevices(devices)),
             },
             //
@@ -153,17 +162,17 @@ function App() {
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchAudioOutputMediaDevices() [aggressive]",
+              name: "utils.fetchMediaDevices.fetchAudioOutputDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchAudioOutputMediaDevices()
+                  .fetchAudioOutputDevices()
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchVideoOutputMediaDevices() [aggressive]",
+              name: "utils.fetchMediaDevices.fetchVideoOutputDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchVideoOutputMediaDevices()
+                  .fetchVideoOutputDevices()
                   .then(devices => setOutputMediaDevices(devices)),
             },
             //
@@ -175,17 +184,17 @@ function App() {
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchAudioOutputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchAudioOutputDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchAudioOutputMediaDevices(false)
+                  .fetchAudioOutputDevices(false)
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.fetchMediaDevices.fetchVideoOutputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchVideoOutputDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchVideoOutputMediaDevices(false)
+                  .fetchVideoOutputDevices(false)
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {

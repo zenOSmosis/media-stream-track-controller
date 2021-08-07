@@ -1,3 +1,5 @@
+const { logger } = require("phantom-core");
+
 /**
  * Lists all input and output media devices.
  *
@@ -43,13 +45,47 @@ const fetchInputMediaDevices = async (isAggressive = true) => {
   return inputMediaDevices.filter(device => device.kind.includes("input"));
 };
 
-const fetchAudioInputMediaDevices = async (isAggressive = true) => {
+/**
+ * Retrieves all audio input devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchAudioInputDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("audio"));
 };
 
-const fetchVideoInputMediaDevices = async (isAggressive = true) => {
+/**
+ * Retrieves the total number of audio input devices.
+ *
+ * @param {boolean} isAggressive? [default = false] IMPORTANT: Unlike the other
+ * functions in this file, this one defaults to non-aggressive mode because it
+ * doesn't require the full detail of audio input devices to be present.
+ * @return {Promise<number>}
+ */
+const fetchTotalAudioInputDevices = async (isAggressive = false) => {
+  let totalAudioInputDevices = 0;
+
+  try {
+    const inputMediaDevices = await fetchAudioInputDevices(isAggressive);
+
+    totalAudioInputDevices = inputMediaDevices.length;
+  } catch (err) {
+    logger.error(err);
+  } finally {
+    return totalAudioInputDevices;
+  }
+};
+
+/**
+ * Retrieves all video input devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchVideoInputDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("video"));
@@ -67,13 +103,29 @@ const fetchOutputMediaDevices = async (isAggressive = true) => {
   return outputMediaDevices.filter(device => device.kind.includes("output"));
 };
 
-const fetchAudioOutputMediaDevices = async (isAggressive = true) => {
+/**
+ * Retrieves all audio output devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchAudioOutputDevices = async (isAggressive = true) => {
   const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
 
   return outputMediaDevices.filter(device => device.kind.includes("audio"));
 };
 
-const fetchVideoOutputMediaDevices = async (isAggressive = true) => {
+/**
+ * Retrieves video output devices.
+ *
+ * NOTE: Depending on the configuration of the device and the attached
+ * peripherals the video output devices may return empty, or not be the full
+ * list of actual hardware devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchVideoOutputDevices = async (isAggressive = true) => {
   const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
 
   return outputMediaDevices.filter(device => device.kind.includes("video"));
@@ -82,9 +134,10 @@ const fetchVideoOutputMediaDevices = async (isAggressive = true) => {
 module.exports = fetchMediaDevices;
 
 module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
-module.exports.fetchAudioInputMediaDevices = fetchAudioInputMediaDevices;
-module.exports.fetchVideoInputMediaDevices = fetchVideoInputMediaDevices;
+module.exports.fetchAudioInputDevices = fetchAudioInputDevices;
+module.exports.fetchTotalAudioInputDevices = fetchTotalAudioInputDevices;
+module.exports.fetchVideoInputDevices = fetchVideoInputDevices;
 
 module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;
-module.exports.fetchAudioOutputMediaDevices = fetchAudioOutputMediaDevices;
-module.exports.fetchVideoOutputMediaDevices = fetchVideoOutputMediaDevices;
+module.exports.fetchAudioOutputDevices = fetchAudioOutputDevices;
+module.exports.fetchVideoOutputDevices = fetchVideoOutputDevices;
