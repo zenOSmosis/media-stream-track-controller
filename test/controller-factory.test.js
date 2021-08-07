@@ -140,7 +140,7 @@ test("stop calls destruct", async t => {
 });
 
 test("factory muting", async t => {
-  // TODO: Add t.plan()
+  t.plan(11);
 
   const ms1 = debug.createTestAudioMediaStream();
   const ms2 = debug.createTestAudioMediaStream();
