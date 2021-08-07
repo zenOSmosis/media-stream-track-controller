@@ -39,7 +39,7 @@ const fetchMediaDevices = async (isAggressive = true) => {
  * @param {boolean} isAggressive? [optional; default=true]
  * @return {Promise<MediaDeviceInfo[]>}
  */
-const fetchMediaCaptureDevices = async (isAggressive = true) => {
+const fetchMediaInputDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchMediaDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("input"));
@@ -52,7 +52,7 @@ const fetchMediaCaptureDevices = async (isAggressive = true) => {
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchAudioInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchMediaCaptureDevices(isAggressive);
+  const inputMediaDevices = await fetchMediaInputDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("audio"));
 };
@@ -86,7 +86,7 @@ const fetchTotalAudioInputDevices = async (isAggressive = false) => {
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchVideoInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchMediaCaptureDevices(isAggressive);
+  const inputMediaDevices = await fetchMediaInputDevices(isAggressive);
 
   return inputMediaDevices.filter(device => device.kind.includes("video"));
 };
@@ -133,7 +133,7 @@ const fetchVideoOutputDevices = async (isAggressive = true) => {
 
 module.exports = fetchMediaDevices;
 
-module.exports.fetchMediaCaptureDevices = fetchMediaCaptureDevices;
+module.exports.fetchMediaInputDevices = fetchMediaInputDevices;
 module.exports.fetchAudioInputDevices = fetchAudioInputDevices;
 module.exports.fetchTotalAudioInputDevices = fetchTotalAudioInputDevices;
 module.exports.fetchVideoInputDevices = fetchVideoInputDevices;
