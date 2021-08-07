@@ -45,7 +45,12 @@ const fetchInputMediaDevices = async (isAggressive = true) => {
   return inputMediaDevices.filter(device => device.kind.includes("input"));
 };
 
-// TODO: Document
+/**
+ * Retrieves all audio input devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
 const fetchAudioInputDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
 
@@ -74,7 +79,12 @@ const fetchTotalAudioInputDevices = async (isAggressive = false) => {
   }
 };
 
-// TODO: Document
+/**
+ * Retrieves all video input devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
 const fetchVideoInputDevices = async (isAggressive = true) => {
   const inputMediaDevices = await fetchInputMediaDevices(isAggressive);
 
@@ -93,14 +103,28 @@ const fetchOutputMediaDevices = async (isAggressive = true) => {
   return outputMediaDevices.filter(device => device.kind.includes("output"));
 };
 
-// TODO: Document
+/**
+ * Retrieves all audio output devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
 const fetchAudioOutputDevices = async (isAggressive = true) => {
   const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
 
   return outputMediaDevices.filter(device => device.kind.includes("audio"));
 };
 
-// TODO: Document
+/**
+ * Retrieves video output devices.
+ *
+ * NOTE: Depending on the configuration of the device and the attached
+ * peripherals the video output devices may return empty, or not be the full
+ * list of actual hardware devices.
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
 const fetchVideoOutputDevices = async (isAggressive = true) => {
   const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
 
