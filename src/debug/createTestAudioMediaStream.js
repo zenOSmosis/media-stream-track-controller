@@ -37,8 +37,6 @@ function createTestAudioMediaStream(duration = 5) {
 
   const mediaStream = streamOutput.stream;
 
-  // mediaStream.getTracks().forEach(track => track.stop());
-
   // Stop the stream once the pulse time ends
   setTimeout(() => {
     stopMediaStream(mediaStream);
