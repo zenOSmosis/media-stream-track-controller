@@ -12,7 +12,7 @@ const {
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
-async function captureDeviceMedia(constraints = {}, factoryOptions = {}) {
+async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
     ...createAudioConstraints(constraints && constraints.audio),
 
@@ -42,7 +42,7 @@ async function captureSpecificMediaDevice(
   constraints = {},
   factoryOptions = {}
 ) {
-  return captureDeviceMedia(
+  return captureMediaDevice(
     getSpecificDeviceCaptureConstraints(mediaDeviceInfo, "audio", constraints),
     factoryOptions
   );
@@ -51,7 +51,7 @@ async function captureSpecificMediaDevice(
 /**
  * @return {boolean}
  */
-function getIsDeviceMediaCaptureSupported() {
+function getIsMediaDeviceCaptureSupported() {
   return (
     navigator &&
     navigator.mediaDevices &&
@@ -59,7 +59,7 @@ function getIsDeviceMediaCaptureSupported() {
   );
 }
 
-module.exports = captureDeviceMedia;
+module.exports = captureMediaDevice;
 module.exports.captureSpecificMediaDevice = captureSpecificMediaDevice;
-module.exports.getIsDeviceMediaCaptureSupported =
-  getIsDeviceMediaCaptureSupported;
+module.exports.getIsMediaDeviceCaptureSupported =
+  getIsMediaDeviceCaptureSupported;
