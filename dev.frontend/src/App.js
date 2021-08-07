@@ -19,7 +19,7 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
-  const [inputMediaDevices, setInputMediaDevices] = useState([]);
+  const [inputMediaDevices, setMediaCaptureDevices] = useState([]);
   const [outputMediaDevices, setOutputMediaDevices] = useState([]);
 
   /**
@@ -102,40 +102,40 @@ function App() {
           <h2>Media Devices</h2>
           {[
             {
-              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [aggressive]",
+              name: "utils.fetchMediaDevices.fetchMediaCaptureDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchInputMediaDevices()
-                  .then(devices => setInputMediaDevices(devices)),
+                  .fetchMediaCaptureDevices()
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             {
               name: "utils.fetchMediaDevices.fetchAudioCaptureDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchAudioCaptureDevices()
-                  .then(devices => setInputMediaDevices(devices)),
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             {
               name: "utils.fetchMediaDevices.fetchVideoCaptureDevices() [aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchVideoCaptureDevices()
-                  .then(devices => setInputMediaDevices(devices)),
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             //
             {
-              name: "utils.fetchMediaDevices.fetchInputMediaDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices.fetchMediaCaptureDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
-                  .fetchInputMediaDevices(false)
-                  .then(devices => setInputMediaDevices(devices)),
+                  .fetchMediaCaptureDevices(false)
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             {
               name: "utils.fetchMediaDevices.fetchAudioCaptureDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchAudioCaptureDevices(false)
-                  .then(devices => setInputMediaDevices(devices)),
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             {
               name: "utils.fetchMediaDevices.fetchTotalAudioCaptureDevices() [non-aggressive]",
@@ -151,7 +151,7 @@ function App() {
               cb: () =>
                 utils.fetchMediaDevices
                   .fetchVideoCaptureDevices(false)
-                  .then(devices => setInputMediaDevices(devices)),
+                  .then(devices => setMediaCaptureDevices(devices)),
             },
             //
             {
