@@ -138,6 +138,15 @@ function App() {
                   .then(devices => setInputMediaDevices(devices)),
             },
             {
+              name: "utils.fetchMediaDevices.fetchTotalAudioInputMediaDevices() [non-aggressive]",
+              cb: () =>
+                utils.fetchMediaDevices
+                  .fetchTotalAudioInputMediaDevices(false)
+                  .then(totalDevices =>
+                    alert(`Total audio input devices: ${totalDevices}`)
+                  ),
+            },
+            {
               name: "utils.fetchMediaDevices.fetchVideoInputMediaDevices() [non-aggressive]",
               cb: () =>
                 utils.fetchMediaDevices

@@ -62,6 +62,18 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
+test("utils.fetchMediaDevices.fetchTotalAudioInputMediaDevices", async t => {
+  t.plan(1);
+
+  t.equals(
+    typeof (await utils.fetchMediaDevices.fetchTotalAudioInputMediaDevices()),
+    "number",
+    "fetch of total audio input devices is a number"
+  );
+
+  t.end();
+});
+
 test("utils.getMediaDeviceMatch.getAudioInputMediaDeviceMatch", t => {
   t.plan(7);
 
