@@ -8,7 +8,7 @@ const {
 test("pulsing audio media stream is a MediaStream", t => {
   t.plan(1);
 
-  t.ok(debug.getPulsingAudioMediaStream() instanceof MediaStream);
+  t.ok(debug.createTestAudioMediaStream() instanceof MediaStream);
 
   t.end();
 });
@@ -18,11 +18,11 @@ test("utils.stopMediaStream", t => {
 
   t.plan(3);
 
-  const mediaStream = debug.getPulsingAudioMediaStream();
+  const mediaStream = debug.createTestAudioMediaStream();
 
   t.equals(mediaStream.getTracks().length, 1);
 
-  const mediaStream2 = debug.getPulsingAudioMediaStream();
+  const mediaStream2 = debug.createTestAudioMediaStream();
   mediaStream2.getTracks().forEach(track => mediaStream.addTrack(track));
 
   t.equals(mediaStream.getTracks().length, 2);

@@ -16,7 +16,7 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
     "expects inputMediaStream paramter"
   );
 
-  const mediaStream1 = debug.getPulsingAudioMediaStream();
+  const mediaStream1 = debug.createTestAudioMediaStream();
 
   const factory = new MediaStreamTrackControllerFactory(mediaStream1);
 
@@ -99,7 +99,7 @@ test("empty MediaStream initialization", async t => {
 test("stop calls destruct", async t => {
   t.plan(3);
 
-  const mediaStream1 = debug.getPulsingAudioMediaStream();
+  const mediaStream1 = debug.createTestAudioMediaStream();
   const factory1 = new MediaStreamControllerFactory(mediaStream1);
   await Promise.all([
     new Promise(resolve => {
@@ -113,7 +113,7 @@ test("stop calls destruct", async t => {
     factory1.stop(),
   ]);
 
-  const mediaStream2 = debug.getPulsingAudioMediaStream();
+  const mediaStream2 = debug.createTestAudioMediaStream();
   const factory2 = new MediaStreamControllerFactory(mediaStream2);
   const factory2TrackController = factory2.getTrackControllers()[0];
   await Promise.all([
@@ -142,10 +142,10 @@ test("stop calls destruct", async t => {
 test("factory muting", async t => {
   // TODO: Add t.plan()
 
-  const ms1 = debug.getPulsingAudioMediaStream();
-  const ms2 = debug.getPulsingAudioMediaStream();
-  const ms3 = debug.getPulsingAudioMediaStream();
-  const ms4 = debug.getPulsingAudioMediaStream();
+  const ms1 = debug.createTestAudioMediaStream();
+  const ms2 = debug.createTestAudioMediaStream();
+  const ms3 = debug.createTestAudioMediaStream();
+  const ms4 = debug.createTestAudioMediaStream();
 
   const mediaStream = new MediaStream([
     ...ms1.getTracks(),

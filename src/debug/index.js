@@ -1,5 +1,5 @@
-const getPulsingAudioMediaStream = require("./getPulsingAudioMediaStream");
+const createTestAudioMediaStream = require("./createTestAudioMediaStream");
 
 module.exports = {
-  getPulsingAudioMediaStream,
+  createTestAudioMediaStream,
 };

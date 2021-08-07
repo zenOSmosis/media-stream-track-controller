@@ -81,7 +81,7 @@ function App() {
   }, [mediaStreamTrackControllerFactories]);
 
   const createPulsatingAudio = useCallback(() => {
-    const mediaStream = debug.getPulsingAudioMediaStream();
+    const mediaStream = debug.createTestAudioMediaStream();
 
     registerControllerFactory(
       new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
