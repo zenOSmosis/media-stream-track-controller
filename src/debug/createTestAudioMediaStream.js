@@ -2,11 +2,14 @@ const { getNewAudioContext, stopMediaStream } = require("../utils");
 const { logger } = require("phantom-core");
 
 /**
- * @param {number} pulseTime? [default = 5] Number of seconds the pulse should
+ * Returns a MediaStream with a single pulsing, test audio track which
+ * automatically ends at the specified duration.
+ *
+ * @param {number} duration? [default = 5] Number of seconds the pulse should
  * last.
  * @return {MediaStream}
  */
-function getPulsingAudioMediaStream(pulseTime = 5) {
+function createTestAudioMediaStream(duration = 5) {
   const pulseHz = 880;
   const lfoHz = 30;
 
@@ -30,11 +33,9 @@ function getPulsingAudioMediaStream(pulseTime = 5) {
   osc.connect(amp).connect(streamOutput);
   lfo.start();
   osc.start();
-  osc.stop(audioCtx.currentTime + pulseTime);
+  osc.stop(audioCtx.currentTime + duration);
 
   const mediaStream = streamOutput.stream;
-
-  // mediaStream.getTracks().forEach(track => track.stop());
 
   // Stop the stream once the pulse time ends
   setTimeout(() => {
@@ -43,9 +44,9 @@ function getPulsingAudioMediaStream(pulseTime = 5) {
     logger.log("stopped media stream");
 
     audioCtx.close().then(() => logger.log("audio context closed"));
-  }, pulseTime * 1000);
+  }, duration * 1000);
 
   return mediaStream;
 }
 
-module.exports = getPulsingAudioMediaStream;
+module.exports = createTestAudioMediaStream;

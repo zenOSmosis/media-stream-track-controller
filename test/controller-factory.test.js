@@ -9,15 +9,17 @@ const MediaStreamControllerFactory = require("../src/MediaStreamTrackControllerF
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
-  t.plan(4);
+  t.plan(7);
 
   t.throws(
     () => new MediaStreamTrackControllerFactory(),
     "expects inputMediaStream paramter"
   );
 
-  const mediaStream1 = debug.getPulsingAudioMediaStream();
+  const mediaStream1 = debug.createTestAudioMediaStream();
 
+  // NOTE: Due to issues w/ testing canvas-generated video streams on iOS
+  // simulator, we're only testing for audio here
   const factory = new MediaStreamTrackControllerFactory(mediaStream1);
 
   await factory.onceReady();
@@ -25,6 +27,22 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.ok(
     factory,
     "instantiates MediaStreamTrackControllerFactory with MediaStream"
+  );
+
+  t.equals(
+    factory.getTrackControllers().length,
+    1,
+    "instantiated factory has one track controller"
+  );
+  t.equals(
+    factory.getAudioTrackControllers().length,
+    1,
+    "instantiated factory has one audio track controller"
+  );
+  t.equals(
+    factory.getVideoTrackControllers().length,
+    0,
+    "instantiated factory has one audio track controller"
   );
 
   await Promise.all([
@@ -99,7 +117,7 @@ test("empty MediaStream initialization", async t => {
 test("stop calls destruct", async t => {
   t.plan(3);
 
-  const mediaStream1 = debug.getPulsingAudioMediaStream();
+  const mediaStream1 = debug.createTestAudioMediaStream();
   const factory1 = new MediaStreamControllerFactory(mediaStream1);
   await Promise.all([
     new Promise(resolve => {
@@ -113,7 +131,7 @@ test("stop calls destruct", async t => {
     factory1.stop(),
   ]);
 
-  const mediaStream2 = debug.getPulsingAudioMediaStream();
+  const mediaStream2 = debug.createTestAudioMediaStream();
   const factory2 = new MediaStreamControllerFactory(mediaStream2);
   const factory2TrackController = factory2.getTrackControllers()[0];
   await Promise.all([
@@ -140,12 +158,12 @@ test("stop calls destruct", async t => {
 });
 
 test("factory muting", async t => {
-  // TODO: Add t.plan()
+  t.plan(11);
 
-  const ms1 = debug.getPulsingAudioMediaStream();
-  const ms2 = debug.getPulsingAudioMediaStream();
-  const ms3 = debug.getPulsingAudioMediaStream();
-  const ms4 = debug.getPulsingAudioMediaStream();
+  const ms1 = debug.createTestAudioMediaStream();
+  const ms2 = debug.createTestAudioMediaStream();
+  const ms3 = debug.createTestAudioMediaStream();
+  const ms4 = debug.createTestAudioMediaStream();
 
   const mediaStream = new MediaStream([
     ...ms1.getTracks(),

@@ -193,6 +193,24 @@ class MediaStreamControllerFactory extends CommonBase {
   }
 
   /**
+    @return {AudioMediaStreamTrackController[]}
+   */
+  getAudioTrackControllers() {
+    return this.getTrackControllers().filter(
+      controller => controller instanceof AudioMediaStreamTrackController
+    );
+  }
+
+  /**
+    @return {VideoMediaStreamTrackController[]}
+   */
+  getVideoTrackControllers() {
+    return this.getTrackControllers().filter(
+      controller => controller instanceof VideoMediaStreamTrackController
+    );
+  }
+
+  /**
    * IMPORTANT: This MediaStream should be considered "read-only" and if it
    * should be stopped by a programmatic interaction, either this factory
    * instance should be destructed or the relevant track controller.
