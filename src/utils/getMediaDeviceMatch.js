@@ -12,7 +12,7 @@
  * audio input devices.
  * @return {MediaDeviceInfo | Object | null}
  */
-const getAudioInputDeviceMatch = (previousDeviceInfo, currentDevices) => {
+const getAudioCaptureDeviceMatch = (previousDeviceInfo, currentDevices) => {
   if (previousDeviceInfo.deviceId) {
     const matchedDevice = currentDevices.find(
       device => previousDeviceInfo.deviceId === device.deviceId
@@ -50,5 +50,5 @@ const getAudioInputDeviceMatch = (previousDeviceInfo, currentDevices) => {
 // NOTE: This is left as a non-default export because other methods may follow,
 // one of which may match the filename
 module.exports = {
-  getAudioInputDeviceMatch,
+  getAudioCaptureDeviceMatch,
 };
