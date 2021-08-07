@@ -198,22 +198,22 @@ function App() {
                   .then(devices => setOutputMediaDevices(devices)),
             },
             {
-              name: "utils.captureDeviceMedia()",
+              name: "utils.captureMediaDevice()",
               cb: () =>
                 utils
-                  .captureDeviceMedia(null, {
-                    title: "captureDeviceMedia",
+                  .captureMediaDevice(null, {
+                    title: "captureMediaDevice",
                   })
                   .then(registerControllerFactory),
             },
             {
-              name: "utils.captureDeviceMedia() (with video)",
+              name: "utils.captureMediaDevice() (with video)",
               cb: () =>
                 utils
-                  .captureDeviceMedia(
+                  .captureMediaDevice(
                     { video: true },
                     {
-                      title: "captureDeviceMedia-with-video",
+                      title: "captureMediaDevice-with-video",
                     }
                   )
                   .then(registerControllerFactory),
@@ -243,7 +243,7 @@ function App() {
                   <button
                     style={{ float: "right" }}
                     onClick={() => {
-                      utils.captureDeviceMedia
+                      utils.captureMediaDevice
                         .captureSpecificMediaDevice(device, null, {
                           title: device.label,
                         })

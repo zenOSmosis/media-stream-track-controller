@@ -1,5 +1,5 @@
 const constraints = require("./constraints");
-const captureDeviceMedia = require("./captureDeviceMedia");
+const captureMediaDevice = require("./captureMediaDevice");
 const captureScreen = require("./captureScreen");
 const { getIsScreenCaptureSupported } = captureScreen;
 const fetchMediaDevices = require("./fetchMediaDevices");
@@ -14,7 +14,7 @@ const getMediaStreamTrackControllerInstances = require("./getMediaStreamTrackCon
 
 module.exports = {
   constraints,
-  captureDeviceMedia,
+  captureMediaDevice,
   captureScreen,
   getIsScreenCaptureSupported,
   fetchMediaDevices,
