@@ -9,7 +9,7 @@ const MediaStreamControllerFactory = require("../src/MediaStreamTrackControllerF
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
-  t.plan(4);
+  t.plan(7);
 
   t.throws(
     () => new MediaStreamTrackControllerFactory(),
@@ -18,6 +18,8 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 
   const mediaStream1 = debug.createTestAudioMediaStream();
 
+  // NOTE: Due to issues w/ testing canvas-generated video streams on iOS
+  // simulator, we're only testing for audio here
   const factory = new MediaStreamTrackControllerFactory(mediaStream1);
 
   await factory.onceReady();
@@ -25,6 +27,22 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.ok(
     factory,
     "instantiates MediaStreamTrackControllerFactory with MediaStream"
+  );
+
+  t.equals(
+    factory.getTrackControllers().length,
+    1,
+    "instantiated factory has one track controller"
+  );
+  t.equals(
+    factory.getAudioTrackControllers().length,
+    1,
+    "instantiated factory has one audio track controller"
+  );
+  t.equals(
+    factory.getVideoTrackControllers().length,
+    0,
+    "instantiated factory has one audio track controller"
   );
 
   await Promise.all([
