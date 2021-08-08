@@ -24,21 +24,25 @@ class MediaStreamControllerFactory extends CommonBase {
    * controllers.
    *
    * @param {MediaStream} inputMediaStream
-   * @param {Object} options? [optional; default = {}] If set, options are
+   * @param {Object} factoryOptions? [optional; default = {}] If set, factoryOptions are
    * passed collectively to track controller constructors
    * @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}
    */
-  static createTrackControllers(inputMediaStream, options = {}) {
+  static createTrackControllers(inputMediaStream, factoryOptions = {}) {
     const controllers = [];
 
     for (const track of inputMediaStream.getTracks()) {
       switch (track.kind) {
         case "audio":
-          controllers.push(new AudioMediaStreamTrackController(track, options));
+          controllers.push(
+            new AudioMediaStreamTrackController(track, factoryOptions)
+          );
           break;
 
         case "video":
-          controllers.push(new VideoMediaStreamTrackController(track, options));
+          controllers.push(
+            new VideoMediaStreamTrackController(track, factoryOptions)
+          );
           break;
 
         default:
@@ -51,26 +55,26 @@ class MediaStreamControllerFactory extends CommonBase {
 
   /**
    * @param {MediaStream} inputMediaStream
-   * @param {Object} options?
+   * @param {Object} factoryOptions?
    */
-  constructor(inputMediaStream, options = {}) {
+  constructor(inputMediaStream, factoryOptions = {}) {
     if (!(inputMediaStream instanceof MediaStream)) {
       throw new TypeError("inputMediaStream is not of MediaStream type");
     }
 
-    const DEFAULT_OPTIONS = {
+    const DEFAULT_FACTORY_OPTIONS = {
       // Async init
       isReady: false,
     };
 
-    super(CommonBase.mergeOptions(DEFAULT_OPTIONS, options));
+    super(CommonBase.mergeOptions(DEFAULT_FACTORY_OPTIONS, factoryOptions));
 
     _factoryInstances[this._uuid] = this;
 
     this._trackControllers =
       MediaStreamControllerFactory.createTrackControllers(
         inputMediaStream,
-        options
+        factoryOptions
       );
 
     // Handle auto-destruct once track controllers have ended
