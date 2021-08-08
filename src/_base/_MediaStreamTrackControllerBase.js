@@ -33,6 +33,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
     _instances[this._uuid] = this;
 
     this._inputMediaStreamTrack = inputMediaStreamTrack;
+
     // TODO: Dynamically handle w/ passed option
     this._outputMediaStreamTrack = inputMediaStreamTrack;
 
@@ -97,6 +98,55 @@ class MediaStreamTrackControllerBase extends CommonBase {
    */
   getTrackKind() {
     return this._outputMediaStreamTrack.kind;
+  }
+
+  /**
+   * Retrieves the settings related to the input MediaStreamTrack.
+   *
+   * @return {MediaTrackSettings}
+   */
+  getInputSettings() {
+    return this._inputMediaStreamTrack.getSettings();
+  }
+
+  /**
+   * Retrieves the settings related to the output MediaStreamTrack (does not
+   * reflect the device the track is rendered on or listened to).
+   *
+   * @return {MediaTrackSettings}
+   */
+  getOutputSettings() {
+    return this._outputMediaStreamTrack.getSettings();
+  }
+
+  /**
+   * Retrieves the input device ID, which is an origin-unique string
+   * identifying the source of the track.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
+   *
+   * @return {DOMString}
+   */
+  getInputDeviceId() {
+    const inputSettings = this.getInputSettings();
+
+    if (inputSettings) {
+      return inputSettings.deviceId;
+    }
+  }
+
+  /**
+   * Retrieves an object with a structure based on a subset of MediaDeviceInfo
+   * used for potential device matching with utils.getMediaDeviceMatch().
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
+   *
+   * @return {Object}
+   */
+  getPartialMediaDeviceInfo() {
+    return {
+      deviceId: this.getDeviceId(),
+    };
   }
 
   /**

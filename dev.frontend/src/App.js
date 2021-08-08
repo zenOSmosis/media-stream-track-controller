@@ -355,6 +355,8 @@ function MediaElement({ trackController }) {
 
   return (
     <div style={{ display: "inline-block" }}>
+      <div>Input Device ID: {trackController.getInputDeviceId() || "N/A"}</div>
+
       <video
         muted={true}
         playsInline={true}

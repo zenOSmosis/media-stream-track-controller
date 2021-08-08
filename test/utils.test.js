@@ -1,9 +1,6 @@
 const test = require("tape-async");
 const { debug, utils } = require("../src");
-const {
-  createNormalizedConstraintsOfKind,
-  mergeConstraints,
-} = require("../src/utils/constraints");
+const { mergeConstraints } = require("../src/utils/constraints");
 
 test("pulsing audio media stream is a MediaStream", t => {
   t.plan(1);
