@@ -28,7 +28,10 @@ class MediaStreamControllerFactory extends CommonBase {
    * passed collectively to track controller constructors
    * @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}
    */
-  static createTrackControllers(inputMediaStream, factoryOptions = {}) {
+  static createTrackControllersFromMediaStream(
+    inputMediaStream,
+    factoryOptions = {}
+  ) {
     const controllers = [];
 
     for (const track of inputMediaStream.getTracks()) {
@@ -72,7 +75,7 @@ class MediaStreamControllerFactory extends CommonBase {
     _factoryInstances[this._uuid] = this;
 
     this._trackControllers =
-      MediaStreamControllerFactory.createTrackControllers(
+      MediaStreamControllerFactory.createTrackControllersFromMediaStream(
         inputMediaStream,
         factoryOptions
       );
