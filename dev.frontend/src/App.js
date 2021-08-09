@@ -1,5 +1,10 @@
 /**
- * Prototype React application for debugging media-stream-track-controller tools.
+ * Prototype React application for debugging media-stream-track-controller
+ * tools.
+ *
+ * This tool is intended to be utilized for manual testing and debugging of the
+ * media-stream-track-controller library across multiple devices where
+ * automated testing is not fully implemented.
  */
 
 import { useCallback, useEffect, useState } from "react";
