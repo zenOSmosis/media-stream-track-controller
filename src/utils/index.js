@@ -8,7 +8,7 @@ const {
   getSharedAudioContext,
   untilAudioContextResumed,
 } = require("./getAudioContext");
-const getMediaDeviceMatch = require("./getMediaDeviceMatch");
+const getMatchedMediaDevice = require("./getMatchedMediaDevice");
 const stopMediaStream = require("./stopMediaStream");
 const getMediaStreamTrackControllerInstances = require("./getMediaStreamTrackControllerInstances");
 
@@ -21,7 +21,7 @@ module.exports = {
   getNewAudioContext,
   getSharedAudioContext,
   untilAudioContextResumed,
-  getMediaDeviceMatch,
+  getMatchedMediaDevice,
   stopMediaStream,
   getMediaStreamTrackControllerInstances,
 };
