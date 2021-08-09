@@ -1,5 +1,6 @@
 const CommonBase = require("./_base/_CommonControllerAndFactoryBase");
 const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = CommonBase;
+const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 const debounce = require("debounce");
@@ -12,6 +13,22 @@ const _factoryInstances = {};
  * Audio/VideoMediaStreamTrackController constituents.
  */
 class MediaStreamControllerFactory extends CommonBase {
+  /**
+   * Retrieves currently active track controllers with the given input device
+   * ID.
+   *
+   * @param {DOMString} deviceId
+   * @return {MediaStreamTrackController[]}
+   */
+  static getTrackControllersWithInputDeviceId(deviceId) {
+    const controllers =
+      MediaStreamTrackController.getMediaStreamTrackControllerInstances();
+
+    return controllers.filter(
+      controller => controller.getInputDeviceId() === deviceId
+    );
+  }
+
   /**
    * @return {MediaStreamControllerFactory[]}
    */
