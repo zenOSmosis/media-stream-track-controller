@@ -150,6 +150,19 @@ class MediaStreamTrackControllerBase extends CommonBase {
   }
 
   /**
+   * Determines if the given MediaDeviceInfo matches the input device of this
+   * track controller.
+   *
+   * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+   * @return {boolean}
+   */
+  getIsMatchedInputMediaDeviceInfo(mediaDeviceInfo) {
+    const { deviceId } = mediaDeviceInfo;
+
+    return this.getInputDeviceId() === deviceId;
+  }
+
+  /**
    * @return {Promise<void>}
    */
   async destroy() {

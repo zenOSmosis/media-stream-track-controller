@@ -30,6 +30,22 @@ class MediaStreamControllerFactory extends CommonBase {
   }
 
   /**
+   * Retrieves currently active track controllers with the given input device
+   * MediaDeviceInfo description.
+   *
+   * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+   * @return {MediaStreamTrackController[]}
+   */
+  static getTrackControllersWithInputMediaDeviceInfo(mediaDeviceInfo) {
+    const controllers =
+      MediaStreamTrackController.getMediaStreamTrackControllerInstances();
+
+    return controllers.filter(controller =>
+      controller.getIsMatchedInputMediaDeviceInfo(mediaDeviceInfo)
+    );
+  }
+
+  /**
    * @return {MediaStreamControllerFactory[]}
    */
   static getFactoryInstances() {
