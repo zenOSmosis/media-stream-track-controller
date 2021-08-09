@@ -3,7 +3,7 @@ const MediaStreamTrackControllerFactory = require("../MediaStreamTrackController
 const { createScreenCaptureConstraints } = require("./constraints");
 
 /**
- * @param {Object} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
