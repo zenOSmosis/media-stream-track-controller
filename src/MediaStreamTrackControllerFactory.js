@@ -232,6 +232,10 @@ class MediaStreamControllerFactory extends CommonBase {
    * Retrieves an array of input device ids, not guaranteed to be unique, for
    * all of associated track controllers.
    *
+   * IMPORTANT: We don't want this to be unique in the possibility that the
+   * multiple controllers may be utilized for the same device in certain
+   * situations, though it's not recommended to do so.
+   *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
    *
    * @return {DOMString[]}
