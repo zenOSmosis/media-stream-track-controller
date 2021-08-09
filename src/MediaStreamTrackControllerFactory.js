@@ -14,35 +14,12 @@ const _factoryInstances = {};
  */
 class MediaStreamControllerFactory extends CommonBase {
   /**
-   * Retrieves currently active track controllers with the given input device
-   * ID.
+   * Retrieves currently active MediaStreamTrackController instances.
    *
-   * @param {DOMString} deviceId
    * @return {MediaStreamTrackController[]}
    */
-  static getTrackControllersWithInputDeviceId(deviceId) {
-    const controllers =
-      MediaStreamTrackController.getMediaStreamTrackControllerInstances();
-
-    return controllers.filter(
-      controller => controller.getInputDeviceId() === deviceId
-    );
-  }
-
-  /**
-   * Retrieves currently active track controllers with the given input device
-   * MediaDeviceInfo description.
-   *
-   * @param {MediaDeviceInfo | Object} mediaDeviceInfo
-   * @return {MediaStreamTrackController[]}
-   */
-  static getTrackControllersWithInputMediaDeviceInfo(mediaDeviceInfo) {
-    const controllers =
-      MediaStreamTrackController.getMediaStreamTrackControllerInstances();
-
-    return controllers.filter(controller =>
-      controller.getIsMatchedInputMediaDeviceInfo(mediaDeviceInfo)
-    );
+  static getMediaStreamTrackControllerInstances() {
+    return MediaStreamTrackController.getMediaStreamTrackControllerInstances();
   }
 
   /**

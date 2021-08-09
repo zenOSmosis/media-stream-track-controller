@@ -371,9 +371,8 @@ function MediaElement({ trackController, inputMediaDevices }) {
    * @return {Object | void}
    */
   const matchedInputMediaDevice = useMemo(() => {
-    const match = inputMediaDevices.find(mediaDeviceInfo =>
-      trackController.getIsMatchedInputMediaDeviceInfo(mediaDeviceInfo)
-    );
+    const match =
+      trackController.getInputMediaDeviceInfoFromList(inputMediaDevices);
 
     if (match) {
       // TODO: This is used to convert to a regular object so we can iterate

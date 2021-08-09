@@ -11,7 +11,9 @@ const _instances = {};
  */
 class MediaStreamTrackControllerBase extends CommonBase {
   /**
-   * @return {MediaStreamTrackControllerBase[]}
+   * Retrieves currently active MediaStreamTrackController instances.
+   *
+   * @return {MediaStreamTrackController[]}
    */
   static getMediaStreamTrackControllerInstances() {
     return Object.values(_instances);
@@ -145,21 +147,37 @@ class MediaStreamTrackControllerBase extends CommonBase {
    */
   getPartialMediaDeviceInfo() {
     return {
-      deviceId: this.getDeviceId(),
+      deviceId: this.getInputDeviceId(),
     };
   }
 
   /**
-   * Determines if the given MediaDeviceInfo matches the input device of this
-   * track controller.
+   * Retrieves MediaDeviceInfo of the track controller, compared against given
+   * array of MediaDeviceInfo descriptions.
    *
-   * @param {MediaDeviceInfo | Object} mediaDeviceInfo
-   * @return {boolean}
+   * This is written like this because this controller does may not have direct
+   * access to the known list of MediaDeviceInfo as obtained from the window
+   * navigator, and it shouldn't agressively try to obtain the list (i.e. start
+   * a media device on its own to get the full labels).
+   *
+   * Other considerations include being able to match against remote lists.
+   *
+   * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+   * @return {MediaDeviceInfo | Object}
    */
-  getIsMatchedInputMediaDeviceInfo(mediaDeviceInfo) {
-    const { deviceId } = mediaDeviceInfo;
+  getInputMediaDeviceInfoFromList(mediaDeviceInfoList) {
+    // FIXME: This require is included within the function body itself because
+    // of a conflict when trying to use it in the outer-scope and trying to
+    // instantiate the class.
+    //
+    // Fixes Uncaught TypeError: Class extends value #<Object> is not a
+    // constructor or null
+    const utils = require("../utils");
+    const { getMatchedMediaDevice } = utils;
 
-    return this.getInputDeviceId() === deviceId;
+    const partialMediaDeviceInfo = this.getPartialMediaDeviceInfo();
+
+    return getMatchedMediaDevice(partialMediaDeviceInfo, mediaDeviceInfoList);
   }
 
   /**
