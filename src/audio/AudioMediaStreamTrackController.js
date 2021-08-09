@@ -3,6 +3,11 @@ const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackContro
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 const { getSharedAudioContext } = require("../utils/getAudioContext");
 
+// TODO: Add stereo panner
+// https://stackoverflow.com/questions/5123844/change-left-right-balance-on-playing-audio-in-javascript?rq=1
+//    - default pan set to 0 - center
+//    - const stereoNode = new StereoPannerNode(audioContext, { pan: 0 });
+
 /**
  * Utilized for live-manipulation of audio MediaStreamTrack instances.
  */
@@ -48,11 +53,6 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       await super._init();
     })();
   }
-
-  // TODO: Add stereo panner
-  // https://stackoverflow.com/questions/5123844/change-left-right-balance-on-playing-audio-in-javascript?rq=1
-  //    - default pan set to 0 - center
-  //    - const stereoNode = new StereoPannerNode(audioContext, { pan: 0 });
 
   /**
    * @param {boolean} isMuted

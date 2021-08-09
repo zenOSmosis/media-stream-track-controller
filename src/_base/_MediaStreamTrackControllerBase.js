@@ -11,7 +11,9 @@ const _instances = {};
  */
 class MediaStreamTrackControllerBase extends CommonBase {
   /**
-   * @return {MediaStreamTrackControllerBase[]}
+   * Retrieves currently active MediaStreamTrackController instances.
+   *
+   * @return {MediaStreamTrackController[]}
    */
   static getMediaStreamTrackControllerInstances() {
     return Object.values(_instances);
@@ -33,6 +35,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
     _instances[this._uuid] = this;
 
     this._inputMediaStreamTrack = inputMediaStreamTrack;
+
     // TODO: Dynamically handle w/ passed option
     this._outputMediaStreamTrack = inputMediaStreamTrack;
 
@@ -97,6 +100,84 @@ class MediaStreamTrackControllerBase extends CommonBase {
    */
   getTrackKind() {
     return this._outputMediaStreamTrack.kind;
+  }
+
+  /**
+   * Retrieves the settings related to the input MediaStreamTrack.
+   *
+   * @return {MediaTrackSettings}
+   */
+  getInputSettings() {
+    return this._inputMediaStreamTrack.getSettings();
+  }
+
+  /**
+   * Retrieves the settings related to the output MediaStreamTrack (does not
+   * reflect the device the track is rendered on or listened to).
+   *
+   * @return {MediaTrackSettings}
+   */
+  getOutputSettings() {
+    return this._outputMediaStreamTrack.getSettings();
+  }
+
+  /**
+   * Retrieves the input device ID, which is an origin-unique string
+   * identifying the source of the track.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
+   *
+   * @return {DOMString}
+   */
+  getInputDeviceId() {
+    const inputSettings = this.getInputSettings();
+
+    if (inputSettings) {
+      return inputSettings.deviceId;
+    }
+  }
+
+  /**
+   * Retrieves an object with a structure based on a subset of MediaDeviceInfo
+   * used for potential device matching with utils.getMediaDeviceMatch().
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
+   *
+   * @return {Object}
+   */
+  getPartialMediaDeviceInfo() {
+    return {
+      deviceId: this.getInputDeviceId(),
+    };
+  }
+
+  /**
+   * Retrieves MediaDeviceInfo of the track controller, compared against given
+   * array of MediaDeviceInfo descriptions.
+   *
+   * This is written like this because this controller does may not have direct
+   * access to the known list of MediaDeviceInfo as obtained from the window
+   * navigator, and it shouldn't agressively try to obtain the list (i.e. start
+   * a media device on its own to get the full labels).
+   *
+   * Other considerations include being able to match against remote lists.
+   *
+   * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+   * @return {MediaDeviceInfo | Object}
+   */
+  getInputMediaDeviceInfoFromList(mediaDeviceInfoList) {
+    // FIXME: This require is included within the function body itself because
+    // of a conflict when trying to use it in the outer-scope and trying to
+    // instantiate the class.
+    //
+    // Fixes Uncaught TypeError: Class extends value #<Object> is not a
+    // constructor or null
+    const utils = require("../utils");
+    const { getMatchedMediaDevice } = utils;
+
+    const partialMediaDeviceInfo = this.getPartialMediaDeviceInfo();
+
+    return getMatchedMediaDevice(partialMediaDeviceInfo, mediaDeviceInfoList);
   }
 
   /**

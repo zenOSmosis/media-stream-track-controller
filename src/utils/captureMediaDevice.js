@@ -8,7 +8,7 @@ const {
 /**
  * IMPORTANT: At this time, video is not captured by default.
  *
- * @param {Object} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
@@ -33,7 +33,7 @@ async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
  * mediaDeviceId.
  *
  * @param {MediaDeviceInfo} mediaDeviceInfo The media device info of the device to capture. @see fetchMediaDevices
- * @param {Object} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */

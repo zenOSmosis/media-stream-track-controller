@@ -7,8 +7,8 @@ const PhantomCore = require("phantom-core");
  * Deep merges the given user constraints onto the default constraints, where
  * user constraints take precedence.
  *
- * @param {Object} defaultConstraints
- * @param {Object} userConstraints
+ * @param {MediaTrackConstraints} defaultConstraints
+ * @param {MediaTrackConstraints} userConstraints
  * @return {Object}
  */
 function mergeConstraints(defaultConstraints, userConstraints) {
@@ -59,7 +59,7 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
 }
 
 /**
- * @param {Object} userConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function createAudioConstraints(userConstraints = {}) {
@@ -80,7 +80,7 @@ function createAudioConstraints(userConstraints = {}) {
 }
 
 /**
- * @param {Object} userConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function createVideoConstraints(userConstraints = {}) {
@@ -96,7 +96,7 @@ function createVideoConstraints(userConstraints = {}) {
 }
 
 /**
- * @param {Object} userConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function createScreenCaptureConstraints(userConstraints = {}) {
@@ -135,7 +135,7 @@ function createScreenCaptureConstraints(userConstraints = {}) {
  *
  * @param {string} deviceId
  * @param {"audio" | "video"} deviceType
- * @param {Object} userConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function getSpecificDeviceIdCaptureConstraints(
@@ -182,7 +182,7 @@ function getSpecificDeviceIdCaptureConstraints(
  * device.
  *
  * @param {MediaDeviceInfo} mediaDeviceInfo @see fetchMediaDevices
- * @param {Object} userConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function getSpecificDeviceCaptureConstraints(

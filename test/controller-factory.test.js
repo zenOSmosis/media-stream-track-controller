@@ -234,3 +234,26 @@ test("factory muting", async t => {
 
   t.end();
 });
+
+test("factory and controller input device IDs", async t => {
+  t.plan(1);
+
+  const mediaStream = debug.createTestAudioMediaStream();
+
+  const factory = new MediaStreamControllerFactory(mediaStream);
+
+  const trackControllers = factory.getTrackControllers();
+
+  // NOTE: This test media stream may return undefined as the device id; more
+  // checking for this is available in the dev UI frontend
+  const factoryInputDeviceIds = factory.getInputDeviceIds();
+
+  trackControllers.forEach(controller => {
+    t.ok(
+      factoryInputDeviceIds.includes(controller.getInputDeviceId()),
+      "factory input device ids contains track controller input device id"
+    );
+  });
+
+  t.end();
+});

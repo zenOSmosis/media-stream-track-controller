@@ -1,8 +1,13 @@
 /**
- * Prototype React application for debugging media-stream-track-controller tools.
+ * Prototype React application for debugging media-stream-track-controller
+ * tools.
+ *
+ * This tool is intended to be utilized for manual testing and debugging of the
+ * media-stream-track-controller library across multiple devices where
+ * automated testing is not fully implemented.
  */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
   MediaStreamTrackControllerFactory,
@@ -313,7 +318,11 @@ function App() {
             <div key={idx} style={{ border: "1px #ccc solid" }}>
               <div>Factory: {factory.getTitle()}</div>
               {factory.getTrackControllers().map((controller, idx) => (
-                <MediaElement key={idx} trackController={controller} />
+                <MediaElement
+                  key={idx}
+                  trackController={controller}
+                  inputMediaDevices={inputMediaDevices}
+                />
               ))}
               <div>
                 <button onClick={() => factory.destroy()}>Destroy</button>
@@ -330,7 +339,7 @@ function App() {
  * Renders UI element for monitoring Audio/VideoMediaStreamTrackController
  * state.
  */
-function MediaElement({ trackController }) {
+function MediaElement({ trackController, inputMediaDevices }) {
   const [videoEl, setVideoEl] = useState(null);
 
   useEffect(() => {
@@ -353,8 +362,49 @@ function MediaElement({ trackController }) {
     })();
   }, [trackController, videoEl]);
 
+  const inputDeviceId = useMemo(
+    () => trackController.getInputDeviceId(),
+    [trackController]
+  );
+
+  /**
+   * @return {Object | void}
+   */
+  const matchedInputMediaDevice = useMemo(() => {
+    const match =
+      trackController.getInputMediaDeviceInfoFromList(inputMediaDevices);
+
+    if (match) {
+      // TODO: This is used to convert to a regular object so we can iterate
+      // through the keys using Object.entries.  Perhaps there is a better way
+      // of doing this
+      return JSON.parse(JSON.stringify(match));
+    }
+  }, [trackController, inputMediaDevices]);
+
   return (
-    <div style={{ display: "inline-block" }}>
+    <div style={{ display: "inline-block", border: "1px #000 solid" }}>
+      <div
+        style={{ backgroundColor: "#000", color: "#fff", textAlign: "left" }}
+      >
+        {!matchedInputMediaDevice ? (
+          <div>Input Device ID: {inputDeviceId || "N/A"}</div>
+        ) : (
+          <div>
+            <h3>Matched Input Media Device</h3>
+            {Object.entries(matchedInputMediaDevice).map(
+              ([key, value], idx) => {
+                return (
+                  <div key={idx}>
+                    {key}: {value}
+                  </div>
+                );
+              }
+            )}
+          </div>
+        )}
+      </div>
+
       <video
         muted={true}
         playsInline={true}

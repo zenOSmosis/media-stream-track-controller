@@ -1,5 +1,6 @@
 const CommonBase = require("./_base/_CommonControllerAndFactoryBase");
 const { EVT_READY, EVT_UPDATED, EVT_DESTROYED } = CommonBase;
+const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 const debounce = require("debounce");
@@ -13,6 +14,15 @@ const _factoryInstances = {};
  */
 class MediaStreamControllerFactory extends CommonBase {
   /**
+   * Retrieves currently active MediaStreamTrackController instances.
+   *
+   * @return {MediaStreamTrackController[]}
+   */
+  static getMediaStreamTrackControllerInstances() {
+    return MediaStreamTrackController.getMediaStreamTrackControllerInstances();
+  }
+
+  /**
    * @return {MediaStreamControllerFactory[]}
    */
   static getFactoryInstances() {
@@ -24,21 +34,28 @@ class MediaStreamControllerFactory extends CommonBase {
    * controllers.
    *
    * @param {MediaStream} inputMediaStream
-   * @param {Object} options? [optional; default = {}] If set, options are
+   * @param {Object} factoryOptions? [optional; default = {}] If set, factoryOptions are
    * passed collectively to track controller constructors
    * @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}
    */
-  static createTrackControllers(inputMediaStream, options = {}) {
+  static createTrackControllersFromMediaStream(
+    inputMediaStream,
+    factoryOptions = {}
+  ) {
     const controllers = [];
 
     for (const track of inputMediaStream.getTracks()) {
       switch (track.kind) {
         case "audio":
-          controllers.push(new AudioMediaStreamTrackController(track, options));
+          controllers.push(
+            new AudioMediaStreamTrackController(track, factoryOptions)
+          );
           break;
 
         case "video":
-          controllers.push(new VideoMediaStreamTrackController(track, options));
+          controllers.push(
+            new VideoMediaStreamTrackController(track, factoryOptions)
+          );
           break;
 
         default:
@@ -51,26 +68,26 @@ class MediaStreamControllerFactory extends CommonBase {
 
   /**
    * @param {MediaStream} inputMediaStream
-   * @param {Object} options?
+   * @param {Object} factoryOptions?
    */
-  constructor(inputMediaStream, options = {}) {
+  constructor(inputMediaStream, factoryOptions = {}) {
     if (!(inputMediaStream instanceof MediaStream)) {
       throw new TypeError("inputMediaStream is not of MediaStream type");
     }
 
-    const DEFAULT_OPTIONS = {
+    const DEFAULT_FACTORY_OPTIONS = {
       // Async init
       isReady: false,
     };
 
-    super(CommonBase.mergeOptions(DEFAULT_OPTIONS, options));
+    super(CommonBase.mergeOptions(DEFAULT_FACTORY_OPTIONS, factoryOptions));
 
     _factoryInstances[this._uuid] = this;
 
     this._trackControllers =
-      MediaStreamControllerFactory.createTrackControllers(
+      MediaStreamControllerFactory.createTrackControllersFromMediaStream(
         inputMediaStream,
-        options
+        factoryOptions
       );
 
     // Handle auto-destruct once track controllers have ended
@@ -222,6 +239,20 @@ class MediaStreamControllerFactory extends CommonBase {
    */
   getOutputMediaStream() {
     return this._outputMediaStream;
+  }
+
+  /**
+   * Retrieves an array of input device ids, not guaranteed to be unique, for
+   * all of associated track controllers.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
+   *
+   * @return {DOMString[]}
+   */
+  getInputDeviceIds() {
+    return this.getTrackControllers().map(controller =>
+      controller.getInputDeviceId()
+    );
   }
 
   /**
