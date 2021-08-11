@@ -75,6 +75,37 @@ async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
 }
 
 /**
+ * Retrieves the associated track controllers for the given media device.
+ *
+ * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+ * @return {MediaStreamTrackControllerBase[]}
+ */
+function getMediaDeviceTrackControllers(mediaDeviceInfo) {
+  const { deviceId } = mediaDeviceInfo;
+
+  if (!deviceId) {
+    throw new ReferenceError("Could not obtain deviceId from mediaDeviceInfo");
+  }
+
+  return MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances().filter(
+    controller => controller.getInputDeviceId() === deviceId
+  );
+}
+
+/**
+ * Determines if the given media device is being captured.
+ *
+ * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+ * @return {boolean}
+ */
+function getIsMediaDeviceBeingCaptured(mediaDeviceInfo) {
+  return getMediaDeviceTrackControllers(mediaDeviceInfo).length > 0;
+}
+
+/**
+ * Determines if the user device / browser is capable / configured to support
+ * media device capturing.
+ *
  * @return {boolean}
  */
 function getIsMediaDeviceCaptureSupported() {
@@ -87,6 +118,8 @@ function getIsMediaDeviceCaptureSupported() {
 
 module.exports = captureMediaDevice;
 module.exports.captureSpecificMediaDevice = captureSpecificMediaDevice;
+module.exports.uncaptureSpecificMediaDevice = uncaptureSpecificMediaDevice;
+module.exports.getMediaDeviceTrackControllers = getMediaDeviceTrackControllers;
+module.exports.getIsMediaDeviceBeingCaptured = getIsMediaDeviceBeingCaptured;
 module.exports.getIsMediaDeviceCaptureSupported =
   getIsMediaDeviceCaptureSupported;
-module.exports.uncaptureSpecificMediaDevice = uncaptureSpecificMediaDevice;

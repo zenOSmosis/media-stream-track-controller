@@ -190,7 +190,7 @@ test("utils.getMatchedMediaDevice", t => {
 });
 
 test("utils.captureMediaDevice.uncaptureSpecificMediaDevice", async t => {
-  t.plan(1);
+  t.plan(2);
 
   // NOTE: t.throws doesn't seem to be working correct when using async
   // methods, so this try / catch is used as a workaround
@@ -204,6 +204,67 @@ test("utils.captureMediaDevice.uncaptureSpecificMediaDevice", async t => {
       "throws ReferenceError when deviceId is not set"
     );
   }
+
+  // NOTE: t.throws doesn't seem to be working correct when using async
+  // methods, so this try / catch is used as a workaround
+  try {
+    await utils.captureMediaDevice.uncaptureSpecificMediaDevice({
+      deviceId: "test",
+    });
+    t.ok("does not throw when deviceId is set");
+  } catch (err) {
+    throw err;
+  }
+
+  // NOTE: At this time, it may be nearly impossible to automatically test this
+  // function completely works, so refer to dev UI for manual testing
+
+  t.end();
+});
+
+test("utils.captureMediaDevice.getMediaDeviceTrackControllers", t => {
+  t.plan(2);
+
+  t.throws(
+    () => {
+      utils.captureMediaDevice.getMediaDeviceTrackControllers({ label: test });
+    },
+    ReferenceError,
+    "throws ReferenceError when no deviceId is set"
+  );
+
+  t.deepEquals(
+    utils.captureMediaDevice.getMediaDeviceTrackControllers({
+      deviceId: "test",
+    }),
+    [],
+    "matches empty array for controllers with device id of test"
+  );
+
+  // NOTE: At this time, it may be nearly impossible to automatically test this
+  // function completely works, so refer to dev UI for manual testing
+
+  t.end();
+});
+
+test("utils.captureMediaDevice.getIsMediaDeviceBeingCaptured", t => {
+  t.plan(2);
+
+  t.throws(
+    () => {
+      utils.captureMediaDevice.getIsMediaDeviceBeingCaptured({ label: test });
+    },
+    ReferenceError,
+    "throws ReferenceError when no deviceId is set"
+  );
+
+  t.equals(
+    utils.captureMediaDevice.getIsMediaDeviceBeingCaptured({
+      deviceId: "test",
+    }),
+    false,
+    "test device id is not reported as being captured"
+  );
 
   // NOTE: At this time, it may be nearly impossible to automatically test this
   // function completely works, so refer to dev UI for manual testing

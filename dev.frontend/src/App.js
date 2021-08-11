@@ -382,6 +382,21 @@ function MediaElement({ trackController, inputMediaDevices }) {
     }
   }, [trackController, inputMediaDevices]);
 
+  useEffect(() => {
+    if (matchedInputMediaDevice) {
+      // TODO: Handle differently
+      console.log({
+        computedTrackControllers:
+          utils.captureMediaDevice.getMediaDeviceTrackControllers(
+            matchedInputMediaDevice
+          ),
+        isCaptured: utils.captureMediaDevice.getIsMediaDeviceBeingCaptured(
+          matchedInputMediaDevice
+        ),
+      });
+    }
+  }, [matchedInputMediaDevice]);
+
   return (
     <div style={{ display: "inline-block", border: "1px #000 solid" }}>
       <div
