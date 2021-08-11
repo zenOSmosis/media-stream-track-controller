@@ -426,6 +426,18 @@ function MediaElement({ trackController, inputMediaDevices }) {
           <button onClick={() => trackController.unmute()}>Unmute</button>
         </div>
       )}
+      <div>
+        <button
+          disabled={!Boolean(matchedInputMediaDevice)}
+          onClick={() =>
+            utils.captureMediaDevice.uncaptureSpecificMediaDevice(
+              matchedInputMediaDevice
+            )
+          }
+        >
+          Uncapture Device
+        </button>
+      </div>
     </div>
   );
 }

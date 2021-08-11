@@ -1,4 +1,6 @@
+const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const MediaStreamTrackControllerFactory = require("../MediaStreamTrackControllerFactory");
+
 const {
   mergeConstraints,
   getSpecificDeviceCaptureConstraints,
@@ -32,7 +34,7 @@ async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
  * Captures audio from the specific audio input device with the given
  * mediaDeviceId.
  *
- * @param {MediaDeviceInfo} mediaDeviceInfo The media device info of the device to capture. @see fetchMediaDevices
+ * @param {MediaDeviceInfo | Object} mediaDeviceInfo The media device info of the device to capture. @see fetchMediaDevices
  * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
@@ -45,6 +47,30 @@ async function captureSpecificMediaDevice(
   return captureMediaDevice(
     getSpecificDeviceCaptureConstraints(mediaDeviceInfo, "audio", constraints),
     factoryOptions
+  );
+}
+
+/**
+ * Searches for, and destructs, all track controllers with the given
+ * mediaDeviceInfo as the input device.
+ *
+ * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+ * @throws {ReferenceError} Throws if deviceId is not obtainable from
+ * mediaDeviceInfo.
+ * @return {Promise<void>}
+ */
+async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
+  const { deviceId } = mediaDeviceInfo;
+
+  if (!deviceId) {
+    throw new ReferenceError("Could not obtain deviceId from mediaDeviceInfo");
+  }
+
+  // Look up all track controllers with this mediaDeviceInfo and stop them
+  return Promise.all(
+    MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances()
+      .filter(controller => controller.getInputDeviceId() === deviceId)
+      .map(controller => controller.destroy())
   );
 }
 
@@ -63,3 +89,4 @@ module.exports = captureMediaDevice;
 module.exports.captureSpecificMediaDevice = captureSpecificMediaDevice;
 module.exports.getIsMediaDeviceCaptureSupported =
   getIsMediaDeviceCaptureSupported;
+module.exports.uncaptureSpecificMediaDevice = uncaptureSpecificMediaDevice;
