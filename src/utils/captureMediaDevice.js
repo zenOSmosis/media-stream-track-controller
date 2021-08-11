@@ -75,6 +75,9 @@ async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
 }
 
 /**
+ * Determines if the user device / browser is capable / configured to support
+ * media device capturing.
+ *
  * @return {boolean}
  */
 function getIsMediaDeviceCaptureSupported() {
