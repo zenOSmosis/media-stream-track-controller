@@ -37,6 +37,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
     this._inputMediaStreamTrack = inputMediaStreamTrack;
 
     // TODO: Dynamically handle w/ passed option
+    // TODO: Should this automatically be cloned, or is that resource wastage?
     this._outputMediaStreamTrack = inputMediaStreamTrack;
 
     this._isTrackEnded = false;
@@ -77,6 +78,11 @@ class MediaStreamTrackControllerBase extends CommonBase {
         });
       });
     })();
+  }
+
+  // TODO: Document
+  getKind() {
+    return this._inputMediaStreamTrack.kind;
   }
 
   /**
@@ -157,7 +163,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
    *
    * This is written like this because this controller does may not have direct
    * access to the known list of MediaDeviceInfo as obtained from the window
-   * navigator, and it shouldn't agressively try to obtain the list (i.e. start
+   * navigator, and it shouldn't aggressively try to obtain the list (i.e. start
    * a media device on its own to get the full labels).
    *
    * Other considerations include being able to match against remote lists.
@@ -177,7 +183,11 @@ class MediaStreamTrackControllerBase extends CommonBase {
 
     const partialMediaDeviceInfo = this.getPartialMediaDeviceInfo();
 
-    return getMatchedMediaDevice(partialMediaDeviceInfo, mediaDeviceInfoList);
+    return getMatchedMediaDevice(
+      this.getKind(),
+      partialMediaDeviceInfo,
+      mediaDeviceInfoList
+    );
   }
 
   /**
