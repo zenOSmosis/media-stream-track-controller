@@ -24,8 +24,20 @@ function App() {
     setMediaStreamTrackControllerFactories,
   ] = useState([]);
 
-  const [inputMediaDevices, setMediaInputDevices] = useState([]);
+  const [mediaDevices, setMediaDevices] = useState([]);
+  const [inputMediaDevices, setInputMediaDevices] = useState([]);
   const [outputMediaDevices, setOutputMediaDevices] = useState([]);
+
+  useEffect(() => {
+    setInputMediaDevices(
+      utils.fetchMediaDevices.filterInputMediaDevices(mediaDevices)
+    );
+
+    setOutputMediaDevices(
+      utils.fetchMediaDevices.filterOutputMediaDevices(mediaDevices)
+    );
+  }, [mediaDevices]);
+
   /**
    * Registers controller factory w/ UI component state.
    *
@@ -92,8 +104,6 @@ function App() {
     );
   }, [registerControllerFactory]);
 
-  // TODO: Implement fetchMediaDevices filters
-
   return (
     <div className="App">
       <div>
@@ -108,19 +118,19 @@ function App() {
           <h2>Media Devices</h2>
           {[
             {
-              name: "utils.fetchMediaDevices.fetchMediaInputDevices() [aggressive]",
+              name: "utils.fetchMediaDevices [aggressive]",
               cb: () =>
-                utils.fetchMediaDevices
-                  .fetchMediaInputDevices()
-                  .then(devices => setMediaInputDevices(devices)),
+                utils
+                  .fetchMediaDevices()
+                  .then(devices => setMediaDevices(devices)),
             },
             //
             {
-              name: "utils.fetchMediaDevices.fetchMediaInputDevices() [non-aggressive]",
+              name: "utils.fetchMediaDevices [non-aggressive]",
               cb: () =>
-                utils.fetchMediaDevices
-                  .fetchMediaInputDevices(false)
-                  .then(devices => setMediaInputDevices(devices)),
+                utils
+                  .fetchMediaDevices(false)
+                  .then(devices => setMediaDevices(devices)),
             },
             //
             {
