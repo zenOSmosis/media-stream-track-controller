@@ -1,5 +1,3 @@
-const { logger } = require("phantom-core");
-
 /**
  * Lists all input and output media devices.
  *
@@ -34,110 +32,85 @@ const fetchMediaDevices = async (isAggressive = true) => {
 };
 
 /**
- * Retrieves media devices filtered to inputs.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * input devices only.
  *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchMediaInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchMediaDevices(isAggressive);
-
-  return inputMediaDevices.filter(device => device.kind.includes("input"));
+const filterInputMediaDevices = mediaDeviceInfoList => {
+  return mediaDeviceInfoList.filter(device => device.kind.includes("input"));
 };
 
 /**
- * Retrieves all audio input devices.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * audio input devices only.
  *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchAudioInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchMediaInputDevices(isAggressive);
-
-  return inputMediaDevices.filter(device => device.kind.includes("audio"));
+const filterAudioInputDevices = mediaDeviceInfoList => {
+  return filterInputMediaDevices(mediaDeviceInfoList).filter(device =>
+    device.kind.includes("audio")
+  );
 };
 
 /**
- * Retrieves the total number of audio input devices.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * video input devices only.
  *
- * @param {boolean} isAggressive? [default = false] IMPORTANT: Unlike the other
- * functions in this file, this one defaults to non-aggressive mode because it
- * doesn't require the full detail of audio input devices to be present.
- * @return {Promise<number>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchTotalAudioInputDevices = async (isAggressive = false) => {
-  let totalAudioInputDevices = 0;
-
-  try {
-    const inputMediaDevices = await fetchAudioInputDevices(isAggressive);
-
-    totalAudioInputDevices = inputMediaDevices.length;
-  } catch (err) {
-    logger.error(err);
-  } finally {
-    return totalAudioInputDevices;
-  }
+const filterVideoInputDevices = mediaDeviceInfoList => {
+  return filterInputMediaDevices(mediaDeviceInfoList).filter(device =>
+    device.kind.includes("video")
+  );
 };
 
 /**
- * Retrieves all video input devices.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * output devices only.
  *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchVideoInputDevices = async (isAggressive = true) => {
-  const inputMediaDevices = await fetchMediaInputDevices(isAggressive);
-
-  return inputMediaDevices.filter(device => device.kind.includes("video"));
+const filterOutputMediaDevices = mediaDeviceInfoList => {
+  return mediaDeviceInfoList.filter(device => device.kind.includes("output"));
 };
 
 /**
- * Retrieves media devices filtered to outputs.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * audio output devices only.
  *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchOutputMediaDevices = async (isAggressive = true) => {
-  const outputMediaDevices = await fetchMediaDevices(isAggressive);
-
-  return outputMediaDevices.filter(device => device.kind.includes("output"));
+const filterAudioOutputDevices = mediaDeviceInfoList => {
+  return filterOutputMediaDevices(mediaDeviceInfoList).filter(device =>
+    device.kind.includes("audio")
+  );
 };
 
 /**
- * Retrieves all audio output devices.
+ * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
+ * video output devices only.
  *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
+ * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
+ * @return {MediaDeviceInfo | Object}
  */
-const fetchAudioOutputDevices = async (isAggressive = true) => {
-  const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
-
-  return outputMediaDevices.filter(device => device.kind.includes("audio"));
-};
-
-/**
- * Retrieves video output devices.
- *
- * NOTE: Depending on the configuration of the device and the attached
- * peripherals the video output devices may return empty, or not be the full
- * list of actual hardware devices.
- *
- * @param {boolean} isAggressive? [optional; default=true]
- * @return {Promise<MediaDeviceInfo[]>}
- */
-const fetchVideoOutputDevices = async (isAggressive = true) => {
-  const outputMediaDevices = await fetchOutputMediaDevices(isAggressive);
-
-  return outputMediaDevices.filter(device => device.kind.includes("video"));
+const filterVideoOutputDevices = mediaDeviceInfoList => {
+  return filterOutputMediaDevices(mediaDeviceInfoList).filter(device =>
+    device.kind.includes("video")
+  );
 };
 
 module.exports = fetchMediaDevices;
 
-module.exports.fetchMediaInputDevices = fetchMediaInputDevices;
-module.exports.fetchAudioInputDevices = fetchAudioInputDevices;
-module.exports.fetchTotalAudioInputDevices = fetchTotalAudioInputDevices;
-module.exports.fetchVideoInputDevices = fetchVideoInputDevices;
+module.exports.filterInputMediaDevices = filterInputMediaDevices;
+module.exports.filterAudioInputDevices = filterAudioInputDevices;
+module.exports.filterVideoInputDevices = filterVideoInputDevices;
 
-module.exports.fetchOutputMediaDevices = fetchOutputMediaDevices;
-module.exports.fetchAudioOutputDevices = fetchAudioOutputDevices;
-module.exports.fetchVideoOutputDevices = fetchVideoOutputDevices;
+module.exports.filterOutputMediaDevices = filterOutputMediaDevices;
+module.exports.filterAudioOutputDevices = filterAudioOutputDevices;
+module.exports.filterVideoOutputDevices = filterVideoOutputDevices;
