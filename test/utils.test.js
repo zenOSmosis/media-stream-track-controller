@@ -117,12 +117,47 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
-// TODO: Implement utils.fetchMediaDevices.filter... tests
-/*
 test("utils.fetchMediaDevices filters", t => {
-  // TODO: Use mock devices of all types
+  t.plan(6);
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterInputMediaDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("input")),
+    "deep equals input media devices"
+  );
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterAudioInputDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("audioinput")),
+    "deep equals audio input devices"
+  );
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterVideoInputDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("videoinput")),
+    "deep equals video input devices"
+  );
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterOutputMediaDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("output")),
+    "deep equals output media devices"
+  );
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterAudioOutputDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("audiooutput")),
+    "deep equals audio output devices"
+  );
+
+  t.deepEquals(
+    utils.fetchMediaDevices.filterVideoOutputDevices(MOCK_MEDIA_DEVICES),
+    MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("videooutput")),
+    "deep equals video output devices"
+  );
+
+  t.end();
 });
-*/
 
 test("utils.getMatchedMediaDevice", t => {
   t.plan(8);
