@@ -184,7 +184,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
     const partialMediaDeviceInfo = this.getPartialMediaDeviceInfo();
 
     return getMatchedMediaDevice(
-      this.getKind(),
+      `${this.getKind()}input`,
       partialMediaDeviceInfo,
       mediaDeviceInfoList
     );
