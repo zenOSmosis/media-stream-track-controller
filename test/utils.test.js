@@ -125,7 +125,40 @@ test("utils.fetchMediaDevices filters", t => {
 */
 
 test("utils.getMatchedMediaDevice", t => {
-  t.plan(6);
+  t.plan(8);
+
+  t.throws(
+    () => {
+      utils.getMatchedMediaDevice(
+        {
+          deviceId: "old-device-id",
+          kind: "audioinput",
+          label: "Built-in Audio Analog Stereo",
+          groupId: "old-group-id",
+        },
+        MOCK_MEDIA_DEVICES
+      );
+    },
+    ReferenceError,
+    "throws ReferenceError when no kind is specified"
+  );
+
+  t.throws(
+    () => {
+      utils.getMatchedMediaDevice(
+        "fake-kind",
+        {
+          deviceId: "old-device-id",
+          kind: "audioinput",
+          label: "Built-in Audio Analog Stereo",
+          groupId: "old-group-id",
+        },
+        MOCK_MEDIA_DEVICES
+      );
+    },
+    ReferenceError,
+    "throws ReferenceError when invalid kind is specified"
+  );
 
   t.deepEquals(
     utils.getMatchedMediaDevice(
