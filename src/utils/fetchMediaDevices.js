@@ -40,7 +40,7 @@ const fetchMediaDevices = (() => {
     }
 
     // If last run isAggressive is the same as the current, use the cacheDiff,
-    //otherwise bust the cache and start over
+    // otherwise bust the cache and start over
     if (cache.lastIsAggressive === isAggressive) {
       devices = cacheDiffMediaDevices(cache.lastMediaDevices, devices);
     } else {
