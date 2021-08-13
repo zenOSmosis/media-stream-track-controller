@@ -141,6 +141,10 @@ test("utils.fetchMediaDevices", async t => {
 });
 
 test("utils.fetchMediaDevices.cacheDiffMediaDevices", t => {
+  // FIXME: For this test, the t.plan() is not currently used because of the
+  // complexity in calculating it due to the way the test is constructed.
+  // Perhaps a better idea is to split this test up into smaller tests.
+
   const PARALLEL_MOCK_MEDIA_DEVICES = [...MOCK_MEDIA_DEVICES].map(object => {
     const ret = {};
 
@@ -150,9 +154,6 @@ test("utils.fetchMediaDevices.cacheDiffMediaDevices", t => {
 
     return ret;
   });
-
-  // TODO: Re-add
-  // t.plan(PARALLEL_MOCK_MEDIA_DEVICES.length);
 
   // Prelude test (doesn't directly test cacheDiffMediaDevices itself but
   // ensures the passed in data is different, just as subsequent calls to the
