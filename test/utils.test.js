@@ -117,6 +117,112 @@ test("utils.getSharedAudioContext", t => {
   t.end();
 });
 
+test("utils.fetchMediaDevices", async t => {
+  const runOne = await utils.fetchMediaDevices(false);
+  const runTwo = await utils.fetchMediaDevices(false);
+
+  // Dynamically plan the test based on number of retrieved devices, which can
+  // vary across test runners, as they are browser-based
+  t.plan(runOne.length + 1);
+
+  t.ok(
+    typeof utils.fetchMediaDevices(false).then === "function",
+    "fetchMediaDevices is a promise"
+  );
+
+  for (const idx in runOne) {
+    t.ok(
+      Object.is(runOne[idx], runTwo[idx]),
+      `mediaDeviceInfo element ${idx} is the same across two calls`
+    );
+  }
+
+  t.end();
+});
+
+test("utils.fetchMediaDevices.cacheDiffMediaDevices", t => {
+  // FIXME: For this test, the t.plan() is not currently used because of the
+  // complexity in calculating it due to the way the test is constructed.
+  // Perhaps a better idea is to split this test up into smaller tests.
+
+  const PARALLEL_MOCK_MEDIA_DEVICES = [...MOCK_MEDIA_DEVICES].map(object => {
+    const ret = {};
+
+    Object.entries(object).forEach(([key, value]) => {
+      ret[key] = value;
+    });
+
+    return ret;
+  });
+
+  // Prelude test (doesn't directly test cacheDiffMediaDevices itself but
+  // ensures the passed in data is different, just as subsequent calls to the
+  // browser's fetchMediaDevices returns different instances)
+  for (const idx in MOCK_MEDIA_DEVICES) {
+    t.ok(
+      !Object.is(MOCK_MEDIA_DEVICES[idx], PARALLEL_MOCK_MEDIA_DEVICES[idx]),
+      `PARALLEL_MOCK_MEDIA_DEVICE idx ${idx} is not the same object instance as the original`
+    );
+  }
+
+  // Test w/ equal number of elements
+  (() => {
+    const cacheDiff = utils.fetchMediaDevices.cacheDiffMediaDevices(
+      PARALLEL_MOCK_MEDIA_DEVICES,
+      MOCK_MEDIA_DEVICES
+    );
+
+    for (const idx in cacheDiff) {
+      t.ok(
+        Object.is(cacheDiff[idx], PARALLEL_MOCK_MEDIA_DEVICES[idx]),
+        `cacheDiff1 idx ${idx} is same object as parallel media devices with same idx`
+      );
+      t.ok(
+        !Object.is(cacheDiff[idx], MOCK_MEDIA_DEVICES[idx]),
+        `cacheDiff1 idx ${idx} is different object as mock media devices with same idx`
+      );
+    }
+  })();
+
+  // Test w/ removed elements
+  const cachedDiffRemoved = (() => {
+    const cachedDiffRemoved = utils.fetchMediaDevices.cacheDiffMediaDevices(
+      PARALLEL_MOCK_MEDIA_DEVICES,
+      MOCK_MEDIA_DEVICES.slice(0, 4)
+    );
+
+    t.equals(cachedDiffRemoved.length, 4);
+
+    return cachedDiffRemoved;
+  })();
+
+  // Test w/ added elements
+  (() => {
+    t.ok(
+      cachedDiffRemoved.length < MOCK_MEDIA_DEVICES.length,
+      "removed cache diff has less elements than before cache re-add"
+    );
+
+    const updatedCacheDiff = utils.fetchMediaDevices.cacheDiffMediaDevices(
+      cachedDiffRemoved,
+      MOCK_MEDIA_DEVICES
+    );
+
+    t.ok(
+      updatedCacheDiff.length > cachedDiffRemoved.length,
+      "updated add cache has more elements than removed cache"
+    );
+
+    t.equals(
+      updatedCacheDiff.length,
+      MOCK_MEDIA_DEVICES.length,
+      "updated add cache has same amount of elements as expected"
+    );
+  })();
+
+  t.end();
+});
+
 test("utils.fetchMediaDevices filters", t => {
   t.plan(6);
 
