@@ -13,13 +13,7 @@
 
 Work-in-progress / Not recommended for usage at this time
 
-TODO: Add screenshot capability
-
-TODO: Add ability to select default device (probably need to use labels as deviceId is not consistent across refresh; maybe take a score of everything and the highest match is the same device)
-
-TODO: Describe a bit better
-
-- Captures device audio / video / screenshare
+- Captures device audio / video / screen
 - Wraps audio streams with methods to control gain (volume) and mute, directly on the stream itself
 
 ## Testing
