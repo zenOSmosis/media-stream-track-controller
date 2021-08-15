@@ -80,7 +80,14 @@ class MediaStreamTrackControllerBase extends CommonBase {
     })();
   }
 
-  // TODO: Document
+  /**
+   * Retrieves whether the associated input MediaStreamTrack is an audio or
+   * video track.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/kind
+   *
+   * @return {"audio" | "video"}
+   */
   getKind() {
     return this._inputMediaStreamTrack.kind;
   }
