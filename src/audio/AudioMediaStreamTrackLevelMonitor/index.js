@@ -1,3 +1,6 @@
+// IMPORTANT: The proxy is exposed rather than the original monitor in order to
+// reduce CPU load when multiple instances of the monitor are present at any
+// given time
 const AudioMediaStreamTrackLevelMonitorProxy = require("./AudioMediaStreamTrackLevelMonitorProxy");
 const {
   EVT_DESTROYED,

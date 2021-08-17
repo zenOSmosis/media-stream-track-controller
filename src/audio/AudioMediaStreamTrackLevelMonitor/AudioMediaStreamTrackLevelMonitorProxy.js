@@ -30,7 +30,9 @@ const _proxyCounts = {};
  * This class acts a one-to-many proxy between the monitor and any consumers on
  * top of it.  The goal of this class is to improve efficiency of duplicate
  * monitored MediaStreamTracks so their events can be utilized in more than one
- * place without reading the track multiple times.
+ * place without reading the track multiple times (i.e. multiple proxy monitor
+ * instances on the same track will reuse the same underlying audio-level
+ * listening instance event broadcast).
  */
 class AudioMediaStreamTrackLevelMonitorProxy extends PhantomCore {
   /**
