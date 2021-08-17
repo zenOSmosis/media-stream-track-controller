@@ -251,7 +251,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       let newAudioLevel = Math.ceil(log2Rms); // Our version; shows quieter, emits more often
       // let newAudioLevel = Math.ceil((10 * log2Rms) / 8); // Twilio version; shows louder
 
-      // TODO: Is this necessary w/ log2Rms?
       if (newAudioLevel < 0) {
         newAudioLevel = 0;
       } else if (newAudioLevel > 10) {
