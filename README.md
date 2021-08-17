@@ -11,17 +11,20 @@
 
 # Phantom MediaStreamTrack Controller
 
-Core audio handling utilities for [Speaker App](https://speaker.app) / [https://github.com/zenOSmosis/speaker.app](https://github.com/zenOSmosis/speaker.app).
+Browser-based, core audio handling utilities for [Speaker App](https://speaker.app) / [https://github.com/zenOSmosis/speaker.app](https://github.com/zenOSmosis/speaker.app).
+
+
 
 ## Characteristics
 
-- Extends [PhantomCore](https://github.com/zenOSmosis/phantom-core) with abstracted MediaStreamTrack management
-- Included Factory class which accepts a MediaStream and derives child TrackController classes from it, all managed by the factory
+- Extends [PhantomCore](https://github.com/zenOSmosis/phantom-core) with abstracted [MediaStreamTrack](https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack) management
+- Included Factory class which accepts a [MediaStream](https://developer.mozilla.org/en-US/docs/Web/API/MediaStream) and derives child TrackController classes from it, all managed by the factory
 - Included utilities for capturing device audio / video / screen, resolving abstracted track controller factory once captured
 - Determines list of currently captured media devices
 - Track / device association: Track controller class instances can identify device used for capturing
 - Wraps audio streams with methods to control gain (volume) and mute, directly on the stream itself
 - Includes audio level monitoring: Multiple listeners to same audio tracks are proxied to the original track listener to help free up the CPU
+- Might could work on Node.js with extensive polyfills, i.e. [node-webrtc](node-webrtc)
 
 ## Testing
 
