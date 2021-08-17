@@ -11,10 +11,17 @@
 
 # Phantom MediaStreamTrack Controller
 
-Work-in-progress / Not recommended for usage at this time
+Core audio handling utilities for [Speaker App](https://speaker.app) / [https://github.com/zenOSmosis/speaker.app](https://github.com/zenOSmosis/speaker.app).
 
-- Captures device audio / video / screen
+## Characteristics
+
+- Extends [PhantomCore](https://github.com/zenOSmosis/phantom-core) with abstracted MediaStreamTrack management
+- Included Factory class which accepts a MediaStream and derives child TrackController classes from it, all managed by the factory
+- Included utilities for capturing device audio / video / screen, resolving abstracted track controller factory once captured
+- Determines list of currently captured media devices
+- Track / device association: Track controller class instances can identify device used for capturing
 - Wraps audio streams with methods to control gain (volume) and mute, directly on the stream itself
+- Includes audio level monitoring: Multiple listeners to same audio tracks are proxied to the original track listener to help free up the CPU
 
 ## Testing
 
