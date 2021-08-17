@@ -29,6 +29,10 @@ Partial automated testing is automated on mobile / desktop devices using SauceLa
 
 Other testing is performed manually using included development frontend.
 
+NOTE: Automated testing code coverage is not very good for this package due to a large portion of it not being able to be automated with the current testing setup.
+
+One thing which could help alleviate this would be to be able to capture input devices in the automated test browsers (either by simulating or bypassing required user interaction), and that type of functionality just has not been worked in at this point.
+
 ## Development
 
 There is a React-based frontend for prototyping this utility in a browser, which is not to be utilized in a production setting.  It utilizes a Unix symlink to link the dev.frontend/src to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).
