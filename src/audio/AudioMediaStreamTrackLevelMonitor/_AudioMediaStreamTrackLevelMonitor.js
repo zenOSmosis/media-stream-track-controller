@@ -60,6 +60,8 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     super();
 
+    this._inputMediaStreamTrack = mediaStreamTrack;
+
     // IMPORTANT: Using a clone of the MediaStreamTrack is necessary because
     // iOS may not work correctly here if multiple readings are of the same
     // track
@@ -130,6 +132,16 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     });
 
     await super.destroy();
+  }
+
+  /**
+   * Retrieves the original MediaStreamTrack which this instance was
+   * instantiated with.
+   *
+   * @return {MediaStreamTrack}
+   */
+  getMediaStreamTrack() {
+    return this._inputMediaStreamTrack;
   }
 
   /**
