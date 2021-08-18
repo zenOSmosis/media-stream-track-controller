@@ -5,8 +5,8 @@ const {
   MultiAudioMediaStreamTrackLevelMonitor,
 } = require("../src");
 
-test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations", async t => {
-  t.plan(29);
+test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations / shutdown handling", async t => {
+  t.plan(30);
 
   const testTrack1 = debug.createTestAudioMediaStream().getTracks()[0];
   const testTrack2 = debug.createTestAudioMediaStream().getTracks()[0];
@@ -46,7 +46,7 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
   try {
     await multiAudioMonitor.removeChild("abc");
 
-    throw new Error("should throw error");
+    throw new Error("should not throw error");
   } catch (err) {
     t.ok(
       err instanceof TypeError,
@@ -127,35 +127,15 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
     "multi audio monitor stays running after all tracks are removed"
   );
 
-  t.end();
-});
+  // FIXME: Using t.throws is not working correct w/ tape-async; this is a
+  // workaround
+  try {
+    await multiAudioMonitor.destroy();
 
-// TODO: For some reason when calling multiAudioMonitor destroy, it locks up the
-// test runner (which is one reason the destruct test was isolated), though
-// none of the internal destruct handlers seem to lock it up on their own
-/*
-test("MultiAudioMediaStreamTrackLevelMonitor shutdown handling", async t => {
-  t.plan(1);
-
-  const testTrack1 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack2 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack3 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack4 = debug.createTestAudioMediaStream().getTracks()[0];
-
-  const multiAudioMonitor = new MultiAudioMediaStreamTrackLevelMonitor([
-    testTrack1,
-    testTrack2,
-    testTrack3,
-    testTrack4,
-  ]);
-
-  await multiAudioMonitor.destroy();
-
-  t.notOk(
-    t.getChildren().length,
-    "no children should be present after destruct"
-  );
+    t.ok(true, "should not throw error when destroying");
+  } catch (err) {
+    t.notOk(err, "should not throw error when destroying");
+  }
 
   t.end();
 });
-*/
