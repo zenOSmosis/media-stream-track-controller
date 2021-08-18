@@ -18,8 +18,6 @@ import {
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 import { logger } from "phantom-core";
 
-// TODO: Add footer w/ multi-track audio level meter showing all output tracks, mixed down into one reading
-
 function App() {
   const [
     mediaStreamTrackControllerFactories,

@@ -7,8 +7,7 @@
     "test": "npm run test-remote",
     "test-remote": "dotenv airtap test/*.test.js",
     "test-local": "airtap --coverage --preset local test/*.test.js",
-    "coverage": "nyc npm run test-local",
-    "TODO-REMOVE-PROTO-TEST": "airtap --coverage --preset local test/multi-audio-media*.test.js"
+    "coverage": "nyc npm run test-local"
   },
   "repository": {
     "type": "git",
