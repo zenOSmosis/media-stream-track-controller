@@ -10,7 +10,14 @@ const _factoryInstances = {};
 
 /**
  * Factory class which breaks down a given MediaStream into
- * Audio/VideoMediaStreamTrackController constituents.
+ * Audio/VideoMediaStreamTrackController constituents, and works as a
+ * containing controller.
+ *
+ * It is similar to a MediaStreamTrackControllerCollection, but with differences:
+ *
+ * The major difference between the Factory and the Collection is the factory
+ * has a predetermined number of tracks which can't be changed, and when all
+ * instances of those tracks are done with, the factory is destructed.
  */
 class MediaStreamControllerFactory extends CommonBase {
   /**
@@ -167,6 +174,10 @@ class MediaStreamControllerFactory extends CommonBase {
    * this._isMuted flag accordingly without calling EVT_UPDATED.
    *
    * This is internally called once each track controller is updated.
+   *
+   * FIXME: This code is also included in MediaStreamTrackControllerCollection, and
+   * perhaps a future refactor should use that collection within this factory
+   * itself, with some rule differences.
    *
    * @return {void}
    */
