@@ -27,7 +27,22 @@ function App() {
   const [mediaDevices, setMediaDevices] = useState([]);
   const [inputMediaDevices, setInputMediaDevices] = useState([]);
   const [outputMediaDevices, setOutputMediaDevices] = useState([]);
+  const [audioMediaStreamTracks, setAudioMediaStreamTracks] = useState([]);
 
+  // Determine all audio media stream track and add them to the state
+  useEffect(() => {
+    const audioTrackControllers = mediaStreamTrackControllerFactories
+      .map(factory => factory.getAudioTrackControllers())
+      .flat();
+
+    const audioMediaStreamTracks = audioTrackControllers.map(controller =>
+      controller.getOutputMediaStreamTrack()
+    );
+
+    setAudioMediaStreamTracks(audioMediaStreamTracks);
+  }, [mediaStreamTrackControllerFactories]);
+
+  // Determine input / output media devices and add them to the state
   useEffect(() => {
     setInputMediaDevices(
       utils.fetchMediaDevices.filterInputMediaDevices(mediaDevices)
@@ -261,6 +276,14 @@ function App() {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Average Audio</h2>
+        <AudioMediaStreamTrackLevelMeter
+          mediaStreamTracks={audioMediaStreamTracks}
+          style={{ height: 100 }}
+        />
       </div>
     </div>
   );

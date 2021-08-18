@@ -13,6 +13,8 @@ export default function AudioLevelMeter({
   percents = [],
   ...rest
 }) {
+  // TODO: Remove duplicate level support here?
+
   const renderedLevels = useMemo(() => {
     let renderedLevels = [...percents];
 
@@ -20,7 +22,7 @@ export default function AudioLevelMeter({
       renderedLevels.push(percent);
     }
 
-    renderedLevels = renderedLevels.map((level) => 100 - level);
+    renderedLevels = renderedLevels.map(level => 100 - level);
 
     return renderedLevels;
   }, [percent, percents]);

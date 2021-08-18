@@ -15,6 +15,9 @@ const {
   EVT_AUDIO_ERROR,
   EVT_AUDIO_ERROR_RECOVERED,
 } = AudioMediaStreamTrackLevelMonitor;
+const MultiAudioMediaStreamTrackLevelMonitor = require("./audio/MultiAudioMediaStreamTrackLevelMonitor");
+const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
+  MultiAudioMediaStreamTrackLevelMonitor;
 
 module.exports = {
   AudioMediaStreamTrackController,
@@ -34,5 +37,14 @@ module.exports = {
     EVT_AUDIO_LEVEL_TICK,
     EVT_AUDIO_ERROR,
     EVT_AUDIO_ERROR_RECOVERED,
+  },
+  MultiAudioMediaStreamTrackLevelMonitor,
+  MultiAudioMediaStreamTrackLevelMonitorEvents: {
+    EVT_DESTROYED,
+    EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
+    EVT_AUDIO_LEVEL_TICK,
+    EVT_AUDIO_ERROR,
+    EVT_AUDIO_ERROR_RECOVERED,
+    EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK,
   },
 };
