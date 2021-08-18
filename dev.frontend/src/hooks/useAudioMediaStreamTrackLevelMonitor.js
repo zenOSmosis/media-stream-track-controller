@@ -12,8 +12,8 @@ const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
  * Utilizes a MultiAudioMediaStreamTrackLevelMonitor as a React hook.
  *
  * @param {MediaStreamTrack | MediaStreamTrack[]} mediaStreamTrackOrTracks A
- * single track, or an array of tracks
- * @return {number} The average RMS of all of the input tracks
+ * single track, or an array of tracks.
+ * @return {number} The average percent of all of the input tracks.
  */
 export default function useAudioMediaStreamTrackLevelMonitor(
   mediaStreamTrackOrTracks
@@ -31,7 +31,7 @@ export default function useAudioMediaStreamTrackLevelMonitor(
 
   const [mediaStreamMonitor, _setMediaStreamMonitor] = useState(null);
 
-  const [rms, _setRMS] = useState(null);
+  const [percent, _setPercent] = useState(null);
 
   useEffect(() => {
     const mediaStreamMonitor = new MultiAudioMediaStreamTrackLevelMonitor();
@@ -41,7 +41,7 @@ export default function useAudioMediaStreamTrackLevelMonitor(
     mediaStreamMonitor.on(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, ({ rms }) => {
       // FIXME: This is probably not supposed to be RMS, but it's close
       // enough for prototyping
-      _setRMS(rms);
+      _setPercent(rms);
     });
 
     _setMediaStreamMonitor(mediaStreamMonitor);
@@ -60,15 +60,17 @@ export default function useAudioMediaStreamTrackLevelMonitor(
         predicate => !mediaStreamTracks.includes(predicate)
       );
 
+      // Handle added / existing tracks
       for (const track of mediaStreamTracks) {
         mediaStreamMonitor.addMediaStreamTrack(track);
       }
 
+      // Handle removed tracks
       for (const track of removedMediaStreamTracks) {
         mediaStreamMonitor.removeMediaStreamTrack(track);
       }
     }
   }, [mediaStreamMonitor, mediaStreamTracks, getPreviousMediaStreamTracks]);
 
-  return rms;
+  return percent;
 }
