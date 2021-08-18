@@ -1,11 +1,3 @@
-/**
- * NOTE: This file is intentionally prefixed with an underline because it's not
- * to be exposed directly.
- *
- * Implementations should use the AudioMediaStreamTrackLevelMonitorProxy
- * instead.
- */
-
 const PhantomCore = require("phantom-core");
 const { EVT_DESTROYED } = PhantomCore;
 const { getSharedAudioContext } = require("../../utils/getAudioContext");
@@ -30,7 +22,16 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // whether there is audio in the stream or not
 const MUTED_AUDIO_LEVEL = -1;
 
-class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
+/**
+ * Directly listens to the given MediaStreamTrack.
+ *
+ * IMPORTANT: For most purposes, this class should not be used directly,
+ * because it is not CPU efficient when multiple listeners are attached to the
+ * same MediaStreamTrack.  The AudioMediaStreamTrackLevelMonitor remediates
+ * that by proxying events from multiple programmatic listeners to this native
+ * monitor.
+ */
+class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
    * Validates the given MediaStreamTrack, throwing an exception if it is not
    * of valid type for use here.
@@ -56,7 +57,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * the audio levels. Must be of audio type.
    */
   constructor(mediaStreamTrack) {
-    AudioMediaStreamTrackLevelMonitor.validateAudioTrack(mediaStreamTrack);
+    NativeAudioMediaStreamTrackLevelMonitor.validateAudioTrack(
+      mediaStreamTrack
+    );
 
     super();
 
@@ -379,7 +382,8 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 }
 
-module.exports = AudioMediaStreamTrackLevelMonitor;
+module.exports = NativeAudioMediaStreamTrackLevelMonitor;
+
 module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;

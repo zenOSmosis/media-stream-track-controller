@@ -1,5 +1,5 @@
 import AudioLevelMeter from "./AudioLevelMeter";
-import AudioMediaStreamTrackLevelMeter from "./AudioMediaStreamTrackLevelMeter";
+import MultiAudioMediaStreamTrackLevelMeter from "./MultiAudioMediaStreamTrackLevelMeter";
 
 export default AudioLevelMeter;
-export { AudioMediaStreamTrackLevelMeter };
+export { MultiAudioMediaStreamTrackLevelMeter };
