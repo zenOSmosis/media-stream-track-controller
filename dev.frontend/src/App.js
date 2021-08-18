@@ -44,13 +44,6 @@ function App() {
     setAudioMediaStreamTracks(audioMediaStreamTracks);
   }, [mediaStreamTrackControllerFactories]);
 
-  // TODO: Add UI meter with mixed values of audio media stream tracks
-  //
-  // TODO: Remove
-  console.log({
-    audioMediaStreamTracks,
-  });
-
   // Determine input / output media devices and add them to the state
   useEffect(() => {
     setInputMediaDevices(
@@ -285,6 +278,14 @@ function App() {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Average Audio</h2>
+        <AudioMediaStreamTrackLevelMeter
+          mediaStreamTracks={audioMediaStreamTracks}
+          style={{ height: 100 }}
+        />
       </div>
     </div>
   );
