@@ -1,8 +1,9 @@
 import React from "react";
 import AudioLevelMeter from "./AudioLevelMeter";
-import useAudioMediaStreamTrackLevelMonitor from "../../hooks/useAudioMediaStreamTrackLevelMonitor";
 
 import PropTypes from "prop-types";
+
+import useAudioMediaStreamTrackLevelMonitor from "../../hooks/useAudioMediaStreamTrackLevelMonitor";
 
 AudioMediaStreamTrackLevelMeter.propTypes = {
   /** When multiple audio tracks may be used together */
