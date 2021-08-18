@@ -129,6 +129,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._mediaStreamTrack.stop();
 
     // Reset the levels
+    //
+    // TODO: Typedef this object
     this.emit(EVT_AUDIO_LEVEL_TICK, {
       rms: 0,
       log2Rms: 0,

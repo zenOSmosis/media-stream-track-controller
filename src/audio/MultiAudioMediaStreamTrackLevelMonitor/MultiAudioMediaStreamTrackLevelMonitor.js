@@ -32,20 +32,26 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   constructor(initialMediaStreamTracks = []) {
     super(initialMediaStreamTracks);
 
-    // Determine which events the children may emit that we want to re-emit out
-    // the collection itself
+    // The proxy events this class should proxy from the children
     this.bindChildEventName(EVT_AVERAGE_AUDIO_LEVEL_CHANGED);
     this.bindChildEventName(EVT_AUDIO_ERROR);
     this.bindChildEventName(EVT_AUDIO_ERROR_RECOVERED);
     this.bindChildEventName(EVT_AUDIO_LEVEL_TICK);
 
+    // Call every time a child emits a new audio level tick
     this._handleAudioLevelTick = this._handleAudioLevelTick.bind(this);
-
     this.on(EVT_AUDIO_LEVEL_TICK, this._handleAudioLevelTick);
 
     // Used so we don't have to figure this out on every audio tick
+    // TODO: Would be better to determine this directly in PhantomCollection itself
     this._lenChildren = this.getChildren().length;
+    // TODO: Document; both are used for debounced peak audio level
+    // determination
+    this._childTickIdx = -1;
+    // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
+    this._currentPeakLevel = { rms: 0, log2Rms: 0 };
 
+    // Handle keeping this._lenChildren accurate
     (() => {
       // Keep this._lenChildren in sync w/ number of actual children
       const _handleChildrenUpdate = () =>
@@ -54,35 +60,27 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
       this.on(EVT_CHILD_INSTANCE_ADDED, _handleChildrenUpdate);
       this.on(EVT_CHILD_INSTANCE_REMOVED, _handleChildrenUpdate);
     })();
-
-    // TODO: Document; both are used for debounced peak audio level
-    // determination
-    this._childTickIdx = -1;
-    this._currentPeakLevel = 0;
   }
 
-  // TODO: Implement
+  // TODO: Document
   // Called when any child module emits an audio level
+  // @emits EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK when all children audio levels have been iterated through
   _handleAudioLevelTick(audioLevel) {
     ++this._childTickIdx;
 
-    // TODO: Remove
-    console.warn({
-      TODO: "Finish building out debounce peak audio level tick handling",
-      audioLevel,
-    });
+    // Determine peak audio level and set it
+    if (audioLevel.rms > this._currentPeakLevel.rms) {
+      this._currentPeakLevel = audioLevel;
+    }
 
+    // Once iterated through all children ...
     if (!((this._childTickIdx + 1) % this._lenChildren)) {
+      // ... emit the current audio peak for the loop
       this.emit(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, this._currentPeakLevel);
 
-      // Reset
+      // ... then reset the loop tick state back to its initial value
       this._childTickIdx = -1;
-      this._currentPeakLevel = 0;
-    } else {
-      // TODO: Determine peak level from audio level and set it
-      // if (audioLevel > this._currentPeakLevel) {
-      // this._currentPeakLevel = audioLevel
-      // }
+      this._currentPeakLevel = { rms: 0, log2Rms: 0 };
     }
   }
 
@@ -133,16 +131,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
    */
   addMediaStreamTrack(mediaStreamTrack) {
     return this.addChild(mediaStreamTrack);
-  }
-
-  /**
-   * Removes all associated MediaStreamTracks and destructs their associated
-   * track level monitors.
-   *
-   * @return {Promise<void>}
-   */
-  removeAllMediaStreamTracks() {
-    return this.destroyAllChildren();
   }
 
   /**
@@ -200,6 +188,16 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     return this.getChildren().map(trackLevelMonitor =>
       trackLevelMonitor.getMediaStreamTrack()
     );
+  }
+
+  /**
+   * Removes all associated MediaStreamTracks and destructs their associated
+   * track level monitors.
+   *
+   * @return {Promise<void>}
+   */
+  removeAllMediaStreamTracks() {
+    return this.destroyAllChildren();
   }
 }
 

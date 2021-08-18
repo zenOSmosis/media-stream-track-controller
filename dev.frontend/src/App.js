@@ -14,8 +14,6 @@ import {
   MediaStreamTrackControllerEvents,
   utils,
   debug,
-  MultiAudioMediaStreamTrackLevelMonitor,
-  MultiAudioMediaStreamTrackLevelMonitorEvents,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 import { logger } from "phantom-core";
@@ -31,7 +29,29 @@ function App() {
   const [mediaDevices, setMediaDevices] = useState([]);
   const [inputMediaDevices, setInputMediaDevices] = useState([]);
   const [outputMediaDevices, setOutputMediaDevices] = useState([]);
+  const [audioMediaStreamTracks, setAudioMediaStreamTracks] = useState([]);
 
+  // Determine all audio media stream track and add them to the state
+  useEffect(() => {
+    const audioTrackControllers = mediaStreamTrackControllerFactories
+      .map(factory => factory.getAudioTrackControllers())
+      .flat();
+
+    const audioMediaStreamTracks = audioTrackControllers.map(controller =>
+      controller.getOutputMediaStreamTrack()
+    );
+
+    setAudioMediaStreamTracks(audioMediaStreamTracks);
+  }, [mediaStreamTrackControllerFactories]);
+
+  // TODO: Add UI meter with mixed values of audio media stream tracks
+  //
+  // TODO: Remove
+  console.log({
+    audioMediaStreamTracks,
+  });
+
+  // Determine input / output media devices and add them to the state
   useEffect(() => {
     setInputMediaDevices(
       utils.fetchMediaDevices.filterInputMediaDevices(mediaDevices)

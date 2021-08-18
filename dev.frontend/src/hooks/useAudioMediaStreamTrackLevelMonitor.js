@@ -1,20 +1,23 @@
-import { useMemo } from "react";
-import { useEffect } from "react/cjs/react.production.min";
+import { useEffect, useMemo, useState } from "react";
 import {
-  MediaStreamTrackControllerFactory,
-  MediaStreamTrackControllerEvents,
-  utils,
-  debug,
   MultiAudioMediaStreamTrackLevelMonitor,
   MultiAudioMediaStreamTrackLevelMonitorEvents,
-} from "./media-stream-track-controller";
+} from "../media-stream-track-controller";
+import usePrevious from "./usePrevious";
 
-// TODO: Implement collection support
-export default function useMultiAudioMediaStreamTrackLevelMonitor(
+const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
+  MultiAudioMediaStreamTrackLevelMonitorEvents;
+
+/**
+ * Utilizes a MultiAudioMediaStreamTrackLevelMonitor as a React hook.
+ *
+ * @param {MediaStreamTrack | MediaStreamTrack[]} mediaStreamTrackOrTracks A
+ * single track, or an array of tracks
+ * @return {number} The average RMS of all of the input tracks
+ */
+export default function useAudioMediaStreamTrackLevelMonitor(
   mediaStreamTrackOrTracks
 ) {
-  // TODO: Implement
-
   const mediaStreamTracks = useMemo(
     () =>
       Array.isArray(mediaStreamTrackOrTracks)
@@ -23,12 +26,49 @@ export default function useMultiAudioMediaStreamTrackLevelMonitor(
     [mediaStreamTrackOrTracks]
   );
 
-  const mediaStreamMonitor = useMemo(
-    () => new MultiAudioMediaStreamTrackLevelMonitor(),
-    []
-  );
+  const { getPreviousValue: getPreviousMediaStreamTracks } =
+    usePrevious(mediaStreamTracks);
 
-  useEffect(() => {}, [mediaStreamTracks]);
+  const [mediaStreamMonitor, _setMediaStreamMonitor] = useState(null);
 
-  // TODO: Return audio level
+  const [rms, _setRMS] = useState(null);
+
+  useEffect(() => {
+    const mediaStreamMonitor = new MultiAudioMediaStreamTrackLevelMonitor();
+
+    // NOTE: This event handler will automatically be unbound once the class
+    // destructs
+    mediaStreamMonitor.on(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, ({ rms }) => {
+      // FIXME: This is probably not supposed to be RMS, but it's close
+      // enough for prototyping
+      _setRMS(rms);
+    });
+
+    _setMediaStreamMonitor(mediaStreamMonitor);
+
+    return function unmount() {
+      mediaStreamMonitor.destroy();
+    };
+  }, []);
+
+  // Sync hook's media stream tracks with the audio monitor instance
+  useEffect(() => {
+    if (mediaStreamMonitor) {
+      const prevMediaStreamTracks = getPreviousMediaStreamTracks() || [];
+
+      const removedMediaStreamTracks = prevMediaStreamTracks.filter(
+        predicate => !mediaStreamTracks.includes(predicate)
+      );
+
+      for (const track of mediaStreamTracks) {
+        mediaStreamMonitor.addMediaStreamTrack(track);
+      }
+
+      for (const track of removedMediaStreamTracks) {
+        mediaStreamMonitor.removeMediaStreamTrack(track);
+      }
+    }
+  }, [mediaStreamMonitor, mediaStreamTracks, getPreviousMediaStreamTracks]);
+
+  return rms;
 }
