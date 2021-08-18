@@ -6,7 +6,7 @@ const {
 } = require("../src");
 
 test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations", async t => {
-  t.plan(27);
+  t.plan(29);
 
   const testTrack1 = debug.createTestAudioMediaStream().getTracks()[0];
   const testTrack2 = debug.createTestAudioMediaStream().getTracks()[0];
@@ -60,10 +60,18 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
     "multi audio monitor contains same amount of tracks as children"
   );
 
+  t.doesNotThrow(() => {
+    multiAudioMonitor.addChild(testTrack1);
+  }, "does not throw when trying to add media stream track as direct child");
+
+  t.doesNotThrow(() => {
+    multiAudioMonitor.addMediaStreamTrack(testTrack1);
+  }, "does not throw when trying to add duplicate media stream track");
+
   t.equals(
     multiAudioMonitor.getChildren().length,
     4,
-    "multi audio monitor contains 4 tracks"
+    "multi audio monitor contains 4 tracks and does not add duplicate media stream track"
   );
 
   await multiAudioMonitor.removeMediaStreamTrack(testTrack3);
