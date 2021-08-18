@@ -50,26 +50,21 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     this._handleAudioLevelTick = this._handleAudioLevelTick.bind(this);
     this.on(EVT_AUDIO_LEVEL_TICK, this._handleAudioLevelTick);
 
-    // TODO: Document; both are used for debounced peak audio level
-    // determination
+    // The current tick index of children, used determination of when to emit EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK
     this._childTickIdx = -1;
+
+    // The current peak audio level in the EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK loop
     // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
     this._currentPeakLevel = { rms: 0, log2Rms: 0 };
-
-    // Handle keeping this._lenChildren accurate
-    (() => {
-      // Keep this._lenChildren in sync w/ number of actual children
-      const _handleChildrenUpdate = () =>
-        (this._lenChildren = this.getChildren().length);
-
-      this.on(EVT_CHILD_INSTANCE_ADDED, _handleChildrenUpdate);
-      this.on(EVT_CHILD_INSTANCE_REMOVED, _handleChildrenUpdate);
-    })();
   }
 
-  // TODO: Document
-  // Called when any child module emits an audio level
-  // @emits EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK when all children audio levels have been iterated through
+  /**
+   * Internally called when any child module emits an audio level.
+   *
+   * @param {Object} audioLevel TODO: Typedef this; also used in
+   * NativeAudioMediaStreamTrackLevelMonitor
+   * @emits EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK
+   */
   _handleAudioLevelTick(audioLevel) {
     ++this._childTickIdx;
 
@@ -83,7 +78,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
       // ... emit the current audio peak for the loop
       this.emit(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, this._currentPeakLevel);
 
-      // ... then reset the loop tick state back to its initial value
+      // ... then reset the loop tick state back to its initial values
       this._childTickIdx = -1;
       this._currentPeakLevel = { rms: 0, log2Rms: 0 };
     }
