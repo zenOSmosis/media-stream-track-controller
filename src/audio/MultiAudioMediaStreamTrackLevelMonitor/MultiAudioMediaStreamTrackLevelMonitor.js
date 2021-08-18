@@ -38,13 +38,18 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     this.bindChildEventName(EVT_AUDIO_ERROR_RECOVERED);
     this.bindChildEventName(EVT_AUDIO_LEVEL_TICK);
 
+    // Additional safeguard before trying to perform audio detection; This
+    // shouldn't be required to be here but is good for safeguarding
+    if (typeof this._lenChildren !== "number") {
+      throw new ReferenceError(
+        "Could not locate this._lenChildren in super class"
+      );
+    }
+
     // Call every time a child emits a new audio level tick
     this._handleAudioLevelTick = this._handleAudioLevelTick.bind(this);
     this.on(EVT_AUDIO_LEVEL_TICK, this._handleAudioLevelTick);
 
-    // Used so we don't have to figure this out on every audio tick
-    // TODO: Would be better to determine this directly in PhantomCollection itself
-    this._lenChildren = this.getChildren().length;
     // TODO: Document; both are used for debounced peak audio level
     // determination
     this._childTickIdx = -1;
