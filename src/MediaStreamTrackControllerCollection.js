@@ -2,6 +2,10 @@ const { PhantomCollection } = require("phantom-core");
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 
 class MediaStreamTrackControllerCollection extends PhantomCollection {
+  constructor(initialMediaStreamTrackControllers = []) {
+    super(initialMediaStreamTrackControllers);
+  }
+
   // TODO: Document
   addChild(mediaStreamTrackController) {
     if (!(mediaStreamTrackController instanceof MediaStreamTrackController)) {
