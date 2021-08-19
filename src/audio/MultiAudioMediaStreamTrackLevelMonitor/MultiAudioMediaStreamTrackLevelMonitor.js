@@ -10,6 +10,8 @@ const {
   EVT_AUDIO_ERROR,
   /** @exports */
   EVT_AUDIO_ERROR_RECOVERED,
+  /** @exports */
+  EVT_DESTROYED,
 } = AudioMediaStreamTrackLevelMonitor;
 
 /** @exports */
@@ -129,7 +131,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
-   * Adds a MediaStreamTrack to the given collection.
+   * Adds a MediaStreamTrack to the collection.
    *
    * If a duplicate track is added, it will silently ignore the duplicate.
    *
@@ -177,6 +179,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
+   * Removes a MediaStreamTrack from the collection.
    *
    * @param {MediaStreamTrack} mediaStreamTrack
    * @return {Promise<void>} NOTE: A promise is used because it needs to shut
@@ -217,3 +220,4 @@ module.exports.EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK =
   EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_DESTROYED = EVT_DESTROYED;

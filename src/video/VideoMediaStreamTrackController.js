@@ -17,11 +17,15 @@ class VideoMediaStreamTrackController extends MediaStreamTrackControllerBase {
     super(inputMediaStreamTrack, options);
   }
 
+  /**
+   * @param {boolean} isMuted
+   * @return {Promise<void>}
+   */
   setIsMuted(isMuted) {
     console.warn("video setIsMuted is not currently implemented");
 
     // TODO: Implement ability to mute video
-    super.setIsMuted(isMuted);
+    return super.setIsMuted(isMuted);
   }
 }
 

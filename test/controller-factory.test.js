@@ -4,7 +4,6 @@ const {
   MediaStreamTrackControllerEvents,
   debug,
 } = require("../src");
-const MediaStreamControllerFactory = require("../src/MediaStreamTrackControllerFactory");
 
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
 
@@ -88,7 +87,7 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 });
 
 test("empty MediaStream initialization", async t => {
-  t.plan(2);
+  t.plan(1);
 
   const selfDestructFactory = new MediaStreamTrackControllerFactory(
     new MediaStream()
@@ -96,15 +95,9 @@ test("empty MediaStream initialization", async t => {
 
   await new Promise(resolve => {
     selfDestructFactory.once(EVT_DESTROYED, () => {
-      t.equals(
-        selfDestructFactory.getTrackControllers().length,
-        0,
-        "factory instantiated with empty MediaStream does not have track controllers"
-      );
-
       t.ok(
-        true,
-        "factory automatically destructs when there are no associated track controllers"
+        selfDestructFactory.getIsDestroyed(),
+        "factory auto destructs when initialized with empty MediaStream"
       );
 
       resolve();
@@ -115,122 +108,34 @@ test("empty MediaStream initialization", async t => {
 });
 
 test("stop calls destruct", async t => {
-  t.plan(3);
+  t.plan(5);
 
   const mediaStream1 = debug.createTestAudioMediaStream();
-  const factory1 = new MediaStreamControllerFactory(mediaStream1);
-  await Promise.all([
-    new Promise(resolve => {
-      factory1.once(EVT_DESTROYED, () => {
-        t.ok(true, "calling stop() destructs factory");
+  const factory1 = new MediaStreamTrackControllerFactory(mediaStream1);
 
-        resolve();
-      });
-    }),
+  await factory1.stop();
 
-    factory1.stop(),
-  ]);
+  t.ok(factory1.getIsDestroyed(), "calling stop() destructs factory1");
 
   const mediaStream2 = debug.createTestAudioMediaStream();
-  const factory2 = new MediaStreamControllerFactory(mediaStream2);
+  const factory2 = new MediaStreamTrackControllerFactory(mediaStream2);
   const factory2TrackController = factory2.getTrackControllers()[0];
-  await Promise.all([
-    new Promise(resolve => {
-      factory2.once(EVT_DESTROYED, () => {
-        t.ok(true, "track controller destruct destructs factory");
 
-        resolve();
-      });
-    }),
+  t.equals(factory2._lenChildren, 1, "factory2 has one child before stop");
 
-    new Promise(resolve => {
-      factory2TrackController.once(EVT_DESTROYED, () => {
-        t.ok(true, "calling stop() destructs track controller");
+  await factory2.stop();
 
-        resolve();
-      });
-    }),
+  t.equals(factory2._lenChildren, 0, "factory2 has no children after stop");
 
-    factory2TrackController.stop(),
-  ]);
-
-  t.end();
-});
-
-test("factory muting", async t => {
-  t.plan(11);
-
-  const ms1 = debug.createTestAudioMediaStream();
-  const ms2 = debug.createTestAudioMediaStream();
-  const ms3 = debug.createTestAudioMediaStream();
-  const ms4 = debug.createTestAudioMediaStream();
-
-  const mediaStream = new MediaStream([
-    ...ms1.getTracks(),
-    ...ms2.getTracks(),
-    ...ms3.getTracks(),
-    ...ms4.getTracks(),
-  ]);
-
-  t.equals(
-    mediaStream.getTracks().length,
-    4,
-    "converged media stream has 4 tracks"
+  t.ok(
+    factory2TrackController.getIsDestroyed(),
+    "factory2TrackController reports it is destructed after calling factory2 stop"
   );
 
-  const factory = new MediaStreamTrackControllerFactory(mediaStream);
-
-  await factory.onceReady();
-
-  factory.getTrackControllers().forEach((controller, idx) => {
-    t.equals(
-      controller.getIsMuted(),
-      false,
-      `controller ${idx} is not muted by default`
-    );
-  });
-
-  factory.mute();
-
-  factory.getTrackControllers().forEach((controller, idx) => {
-    t.equals(
-      controller.getIsMuted(),
-      true,
-      `controller ${idx} is muted after factory is muted`
-    );
-  });
-
-  await Promise.all([
-    new Promise(resolve => {
-      factory.once(EVT_UPDATED, () => {
-        t.equals(
-          factory.getIsMuted(),
-          false,
-          "factory changes to unmuted state once a track controller unmutes"
-        );
-
-        resolve();
-      });
-    }),
-
-    factory.getTrackControllers()[2].unmute(),
-  ]);
-
-  await Promise.all([
-    new Promise(resolve => {
-      factory.once(EVT_UPDATED, () => {
-        t.equals(
-          factory.getIsMuted(),
-          true,
-          "factory changes back to muted state once all track controllers are muted"
-        );
-
-        resolve();
-      });
-    }),
-
-    factory.getTrackControllers()[2].mute(),
-  ]);
+  t.ok(
+    factory2.getIsDestroyed(),
+    "factory2TrackController destruct destructs factory2"
+  );
 
   t.end();
 });
@@ -240,7 +145,7 @@ test("factory and controller input device IDs", async t => {
 
   const mediaStream = debug.createTestAudioMediaStream();
 
-  const factory = new MediaStreamControllerFactory(mediaStream);
+  const factory = new MediaStreamTrackControllerFactory(mediaStream);
 
   const trackControllers = factory.getTrackControllers();
 

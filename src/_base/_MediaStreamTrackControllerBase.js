@@ -1,5 +1,5 @@
-const CommonBase = require("./_CommonControllerAndFactoryBase");
-const { EVT_UPDATED, EVT_DESTROYED } = CommonBase;
+const PhantomCore = require("phantom-core");
+const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 
 // TODO: Use PhantomCollection instead?
 const _instances = {};
@@ -8,8 +8,11 @@ const _instances = {};
  * IMPORTANT: This class should not be utilized directly, and instead should be
  * utilized by the AudioMediaStreamTrackController and
  * VideoMediaStreamTrackController extension classes.
+ *
+ * IMPORTANT: Once a MediaStreamTrack is associated with a track controller, it
+ * will be stopped when the controller is destructed.
  */
-class MediaStreamTrackControllerBase extends CommonBase {
+class MediaStreamTrackControllerBase extends PhantomCore {
   /**
    * Retrieves currently active MediaStreamTrackController instances.
    *
@@ -17,6 +20,21 @@ class MediaStreamTrackControllerBase extends CommonBase {
    */
   static getMediaStreamTrackControllerInstances() {
     return Object.values(_instances);
+  }
+
+  /**
+   * Retrieves all track controllers with the given MediaStreamTrack.
+   *
+   * @param {MediaStreamTrack} mediaStreamTrack
+   * @return {MediaStreamTrackControllerBase[]}
+   */
+  static getTrackControllersWithTrack(mediaStreamTrack) {
+    const controllers =
+      MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
+
+    return controllers.filter(controller =>
+      Object.is(controller.UNSAFE_getInputMediaStreamTrack(), mediaStreamTrack)
+    );
   }
 
   /**
@@ -34,13 +52,15 @@ class MediaStreamTrackControllerBase extends CommonBase {
 
     _instances[this._uuid] = this;
 
-    this._inputMediaStreamTrack = inputMediaStreamTrack;
+    this._inputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     // TODO: Dynamically handle w/ passed option
     // TODO: Should this automatically be cloned, or is that resource wastage?
-    this._outputMediaStreamTrack = inputMediaStreamTrack;
+    this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     this._isTrackEnded = false;
+
+    this._isMuted = false;
 
     // Destroy instance once track ends
     (() => {
@@ -93,6 +113,21 @@ class MediaStreamTrackControllerBase extends CommonBase {
   }
 
   /**
+   * Retrieves the input MediaStreamTrack.
+   *
+   * IMPORTANT: For most class implementors this should not be at all.  It was
+   * added here so we could do a static lookup of class instances with the
+   * associated input MediaStreamTrack.
+   *
+   * @return {MediaStreamTrack}
+   */
+  UNSAFE_getInputMediaStreamTrack() {
+    return this._inputMediaStreamTrack;
+  }
+
+  /**
+   * Retrieves the output MediaStreamTrack.
+   *
    * @return {MediaStreamTrack}
    */
   getOutputMediaStreamTrack() {
@@ -198,6 +233,55 @@ class MediaStreamTrackControllerBase extends CommonBase {
   }
 
   /**
+   * @param {boolean} isMuted
+   * @return {Promise<void>}
+   */
+  async setIsMuted(isMuted) {
+    this._isMuted = isMuted;
+
+    this.emit(EVT_UPDATED);
+  }
+
+  /**
+   * @return {boolean}
+   */
+  getIsMuted() {
+    return this._isMuted;
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async mute() {
+    return this.setIsMuted(true);
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async unmute() {
+    return this.setIsMuted(false);
+  }
+
+  /**
+   * Sets muting state to alternate state.
+   *
+   * @return {Promise<void>}
+   */
+  async toggleMute() {
+    this.setIsMuted(!this._isMuted);
+  }
+
+  /**
+   * Alias for this.destroy().
+   *
+   * @return {Promise<void>}
+   */
+  async stop() {
+    return this.destroy();
+  }
+
+  /**
    * @return {Promise<void>}
    */
   async destroy() {
@@ -207,6 +291,8 @@ class MediaStreamTrackControllerBase extends CommonBase {
 
     // This is needed for any "ended" listeners, since we may be stopping the
     // track programmatically (instead of it ending on its own)
+    //
+    // NOTE: This MAY not be working with Firefox
     this._outputMediaStreamTrack.dispatchEvent(new Event("ended"));
 
     delete _instances[this._uuid];
