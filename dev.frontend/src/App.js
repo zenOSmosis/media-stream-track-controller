@@ -11,12 +11,16 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
   MediaStreamTrackControllerFactory,
+  MediaStreamTrackControllerCollection,
   MediaStreamTrackControllerEvents,
   utils,
   debug,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 import { logger } from "phantom-core";
+
+import usePrevious from "./hooks/usePrevious";
+import useForceUpdate from "./hooks/useForceUpdate";
 
 function App() {
   const [
@@ -27,9 +31,14 @@ function App() {
   const [mediaDevices, setMediaDevices] = useState([]);
   const [inputMediaDevices, setInputMediaDevices] = useState([]);
   const [outputMediaDevices, setOutputMediaDevices] = useState([]);
-  const [audioMediaStreamTracks, setAudioMediaStreamTracks] = useState([]);
 
-  // Determine all audio media stream track and add them to the state
+  const [audioMediaStreamTracks, setAudioMediaStreamTracks] = useState([]);
+  const [audioTrackControllers, setAudioTrackControllers] = useState([]);
+
+  const [videoMediaStreamTracks, setVideoMediaStreamTracks] = useState([]);
+  const [videoTrackControllers, setVideoTrackControllers] = useState([]);
+
+  // Determine all  media stream tracks / controllers and add them to the state
   useEffect(() => {
     const audioTrackControllers = mediaStreamTrackControllerFactories
       .map(factory => factory.getAudioTrackControllers())
@@ -39,8 +48,23 @@ function App() {
       controller.getOutputMediaStreamTrack()
     );
 
+    const videoTrackControllers = mediaStreamTrackControllerFactories
+      .map(factory => factory.getVideoTrackControllers())
+      .flat();
+
+    const videoMediaStreamTracks = videoTrackControllers.map(controller =>
+      controller.getOutputMediaStreamTrack()
+    );
+
     setAudioMediaStreamTracks(audioMediaStreamTracks);
+    setAudioTrackControllers(audioTrackControllers);
+
+    setVideoMediaStreamTracks(videoMediaStreamTracks);
+    setVideoTrackControllers(videoTrackControllers);
   }, [mediaStreamTrackControllerFactories]);
+
+  // TODO: Dynamically bind current audio / video track controllers to relevant collections
+  useEffect(() => {});
 
   // Determine input / output media devices and add them to the state
   useEffect(() => {
@@ -279,12 +303,93 @@ function App() {
       </div>
 
       <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
-        <h2>Average Audio</h2>
+        <h2>Mixed Audio Level</h2>
         <AudioMediaStreamTrackLevelMeter
           mediaStreamTracks={audioMediaStreamTracks}
           style={{ height: 100 }}
         />
       </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Combined Audio Collection</h2>
+        <TrackControllerCollectionView
+          name="audio"
+          trackControllers={audioTrackControllers}
+          inputMediaDevices={inputMediaDevices}
+        />
+      </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Combined Video Collection</h2>
+        <TrackControllerCollectionView
+          name="video"
+          trackControllers={videoTrackControllers}
+          inputMediaDevices={inputMediaDevices}
+        />
+      </div>
+    </div>
+  );
+}
+
+function TrackControllerCollectionView({
+  name,
+  trackControllers,
+  inputMediaDevices,
+}) {
+  const forceUpdate = useForceUpdate();
+
+  const collection = useMemo(() => {
+    const collection = new MediaStreamTrackControllerCollection();
+
+    collection.on(
+      MediaStreamTrackControllerCollection.EVT_UPDATED,
+      forceUpdate
+    );
+
+    return collection;
+  }, [forceUpdate]);
+
+  // Automatically destruct collection on unmount
+  useEffect(() => {
+    return function unmount() {
+      collection.destroy();
+    };
+  }, [collection]);
+
+  const { getPreviousValue: getPreviousTrackControllers } =
+    usePrevious(trackControllers);
+
+  useEffect(() => {
+    const { added, removed } =
+      MediaStreamTrackControllerCollection.getChildrenDiff(
+        getPreviousTrackControllers() || [],
+        trackControllers
+      );
+
+    // TODO: Remove
+    console.log({ added, removed });
+
+    added.forEach(controller =>
+      collection.addMediaStreamTrackController(controller)
+    );
+
+    removed.forEach(controller =>
+      collection.removeMediaStreamTrackController(controller)
+    );
+  }, [collection, trackControllers, getPreviousTrackControllers]);
+
+  // TODO: Render / set muting state across collection
+
+  return (
+    <div>
+      {name}
+      {collection.getMediaStreamTrackControllers().map((controller, idx) => (
+        <MediaElement
+          key={idx}
+          trackController={controller}
+          inputMediaDevices={inputMediaDevices}
+        />
+      ))}
     </div>
   );
 }
@@ -336,6 +441,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
     }
   }, [trackController, inputMediaDevices]);
 
+  // TODO: Remove?
   useEffect(() => {
     if (matchedInputMediaDevice) {
       // TODO: Handle differently

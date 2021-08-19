@@ -1,9 +1,30 @@
-const { PhantomCollection } = require("phantom-core");
+const {
+  PhantomCollection,
+  /** @exports */
+  EVT_UPDATED,
+  /** @exports */
+  EVT_DESTROYED,
+} = require("phantom-core");
+const {
+  /** @exports */ EVT_CHILD_INSTANCE_ADDED,
+  /** @exports */ EVT_CHILD_INSTANCE_REMOVED,
+} = PhantomCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 
 class MediaStreamTrackControllerCollection extends PhantomCollection {
   constructor(initialMediaStreamTrackControllers = []) {
     super(initialMediaStreamTrackControllers);
+
+    this.bindChildEventName(EVT_UPDATED);
+
+    // Mask mute handling w/ all children
+    (() => {
+      const _handleUpdate = () => this._syncTrackControllersMuteState();
+
+      this.on(EVT_UPDATED, _handleUpdate);
+      this.on(EVT_CHILD_INSTANCE_ADDED, _handleUpdate);
+      this.on(EVT_CHILD_INSTANCE_REMOVED, _handleUpdate);
+    })();
   }
 
   // TODO: Document
@@ -17,9 +38,6 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
     super.addChild(mediaStreamTrackController);
 
     this._isMuted = false;
-
-    // TODO: Mask mute handling w/ all children
-    // TODO: If a child unmutes, or if all childs mute, update muting detection accordingly
   }
 
   // TODO: Document
@@ -30,6 +48,11 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
   // TODO: Document
   removeMediaStreamTrackController(mediaStreamTrackController) {
     this.removeChild(mediaStreamTrackController);
+  }
+
+  // TODO: Document
+  getMediaStreamTrackControllers() {
+    return this.getChildren();
   }
 
   /**
@@ -45,14 +68,16 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @return {void}
    */
   _syncTrackControllersMuteState() {
-    const areAllControllersMuted = this._trackControllers.every(controller =>
+    const trackControllers = this.getChildren();
+
+    const areAllControllersMuted = trackControllers.every(controller =>
       controller.getIsMuted()
     );
 
     if (areAllControllersMuted) {
       this._isMuted = true;
     } else {
-      const areSomeControllersUnmuted = this._trackControllers.some(
+      const areSomeControllersUnmuted = trackControllers.some(
         controller => !controller.getIsMuted()
       );
 
@@ -116,3 +141,9 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 }
 
 module.exports = MediaStreamTrackControllerCollection;
+
+module.exports.EVT_UPDATED = EVT_UPDATED;
+module.exports.EVT_DESTROYED = EVT_DESTROYED;
+
+module.exports.EVT_CHILD_INSTANCE_ADDED = EVT_CHILD_INSTANCE_ADDED;
+module.exports.EVT_CHILD_INSTANCE_REMOVED = EVT_CHILD_INSTANCE_REMOVED;
