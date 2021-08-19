@@ -35,7 +35,7 @@ function App() {
   const [audioMediaStreamTracks, setAudioMediaStreamTracks] = useState([]);
   const [audioTrackControllers, setAudioTrackControllers] = useState([]);
 
-  const [videoMediaStreamTracks, setVideoMediaStreamTracks] = useState([]);
+  // const [videoMediaStreamTracks, setVideoMediaStreamTracks] = useState([]);
   const [videoTrackControllers, setVideoTrackControllers] = useState([]);
 
   // Determine all  media stream tracks / controllers and add them to the state
@@ -52,19 +52,18 @@ function App() {
       .map(factory => factory.getVideoTrackControllers())
       .flat();
 
+    /*
     const videoMediaStreamTracks = videoTrackControllers.map(controller =>
       controller.getOutputMediaStreamTrack()
     );
+    */
 
     setAudioMediaStreamTracks(audioMediaStreamTracks);
     setAudioTrackControllers(audioTrackControllers);
 
-    setVideoMediaStreamTracks(videoMediaStreamTracks);
+    // setVideoMediaStreamTracks(videoMediaStreamTracks);
     setVideoTrackControllers(videoTrackControllers);
   }, [mediaStreamTrackControllerFactories]);
-
-  // TODO: Dynamically bind current audio / video track controllers to relevant collections
-  useEffect(() => {});
 
   // Determine input / output media devices and add them to the state
   useEffect(() => {
