@@ -8,6 +8,9 @@ const _instances = {};
  * IMPORTANT: This class should not be utilized directly, and instead should be
  * utilized by the AudioMediaStreamTrackController and
  * VideoMediaStreamTrackController extension classes.
+ *
+ * IMPORTANT: Once a MediaStreamTrack is associated with a track controller, it
+ * will be stopped when the controller is destructed.
  */
 class MediaStreamTrackControllerBase extends CommonBase {
   /**
@@ -17,6 +20,21 @@ class MediaStreamTrackControllerBase extends CommonBase {
    */
   static getMediaStreamTrackControllerInstances() {
     return Object.values(_instances);
+  }
+
+  /**
+   * Retrieves all track controllers with the given MediaStreamTrack.
+   *
+   * @param {MediaStreamTrack} mediaStreamTrack
+   * @return {MediaStreamTrackControllerBase[]}
+   */
+  static getMediaStreamTrackControllersWithTrack(mediaStreamTrack) {
+    const controllers =
+      MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
+
+    return controllers.filter(controller =>
+      Object.is(controller.UNSAFE_getInputMediaStreamTrack(), mediaStreamTrack)
+    );
   }
 
   /**
@@ -34,11 +52,11 @@ class MediaStreamTrackControllerBase extends CommonBase {
 
     _instances[this._uuid] = this;
 
-    this._inputMediaStreamTrack = inputMediaStreamTrack;
+    this._inputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     // TODO: Dynamically handle w/ passed option
     // TODO: Should this automatically be cloned, or is that resource wastage?
-    this._outputMediaStreamTrack = inputMediaStreamTrack;
+    this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     this._isTrackEnded = false;
 
@@ -93,6 +111,21 @@ class MediaStreamTrackControllerBase extends CommonBase {
   }
 
   /**
+   * Retrieves the input MediaStreamTrack.
+   *
+   * IMPORTANT: For most class implementors this should not be at all.  It was
+   * added here so we could do a static lookup of class instances with the
+   * associated input MediaStreamTrack.
+   *
+   * @return {MediaStreamTrack}
+   */
+  UNSAFE_getInputMediaStreamTrack() {
+    return this._inputMediaStreamTrack;
+  }
+
+  /**
+   * Retrieves the output MediaStreamTrack.
+   *
    * @return {MediaStreamTrack}
    */
   getOutputMediaStreamTrack() {
@@ -207,6 +240,8 @@ class MediaStreamTrackControllerBase extends CommonBase {
 
     // This is needed for any "ended" listeners, since we may be stopping the
     // track programmatically (instead of it ending on its own)
+    //
+    // NOTE: This MAY not be working with Firefox
     this._outputMediaStreamTrack.dispatchEvent(new Event("ended"));
 
     delete _instances[this._uuid];

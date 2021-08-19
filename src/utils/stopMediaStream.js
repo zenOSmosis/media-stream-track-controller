@@ -1,3 +1,5 @@
+const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
+
 /**
  * Stops all of the tracks of the given MediaStream, then removes them from the
  * stream.
@@ -23,7 +25,15 @@ function stopMediaStream(mediaStream) {
      *
      * @see https://stackoverflow.com/questions/55953038/why-is-the-ended-event-not-firing-for-this-mediastreamtrack
      */
-    // track.dispatchEvent(new Event("ended"));
+    track.dispatchEvent(new Event("ended"));
+
+    /**
+     * Workaround (08/19/2021) for Firefox not calling dispatchEvent on
+     * MediaStreamTrack. Stop all track controllers with this input track.
+     */
+    MediaStreamTrackControllerBase.getMediaStreamTrackControllersWithTrack(
+      track
+    ).forEach(controller => controller.destroy());
 
     mediaStream.removeTrack(track);
   });
