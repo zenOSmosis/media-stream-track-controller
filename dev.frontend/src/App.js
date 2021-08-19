@@ -519,6 +519,9 @@ function MediaElement({ trackController, inputMediaDevices }) {
         >
           Uncapture Device
         </button>
+        <button onClick={() => trackController.destroy()}>
+          Destruct Controller
+        </button>
       </div>
     </div>
   );
