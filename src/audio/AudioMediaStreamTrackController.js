@@ -56,25 +56,33 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
 
   /**
    * @param {boolean} isMuted
+   * @return {void}
    */
   setIsMuted(isMuted) {
     this.setGain(isMuted ? 0 : this._unmutedGain, false);
 
-    super.setIsMuted(isMuted);
+    return super.setIsMuted(isMuted);
   }
 
   /**
+   * NOTE: If the track controller is not ready, this request will defer until
+   * it is ready.
+   *
    * @param {number} gain A floating point number from 0 - 1.
    * @param {boolean} isSetUnmutedGain? [default = true] If true, sets the
    * value for the gain level to be resumed after unmuting.
+   * @return {Promise<void>}
    */
-  setGain(gain, isSetUnmutedGain = true) {
+  async setGain(gain, isSetUnmutedGain = true) {
     if (isSetUnmutedGain) {
       this._unmutedGain = gain;
     }
 
+    // Defer request until track is ready
     if (!this._isReady) {
-      throw new Error("AudioMediaStreamTrackController is not ready");
+      await this.onceReady();
+
+      return this.setGain(gain, isSetUnmutedGain);
     }
 
     if (this._gainNode) {
