@@ -190,7 +190,7 @@ test("factory muting", async t => {
     );
   });
 
-  factory.mute();
+  await factory.mute();
 
   factory.getTrackControllers().forEach((controller, idx) => {
     t.equals(

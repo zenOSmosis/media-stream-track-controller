@@ -56,10 +56,10 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
 
   /**
    * @param {boolean} isMuted
-   * @return {void}
+   * @return {Promise<void>}
    */
-  setIsMuted(isMuted) {
-    this.setGain(isMuted ? 0 : this._unmutedGain, false);
+  async setIsMuted(isMuted) {
+    await this.setGain(isMuted ? 0 : this._unmutedGain, false);
 
     return super.setIsMuted(isMuted);
   }

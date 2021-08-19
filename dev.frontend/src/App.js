@@ -382,7 +382,7 @@ function TrackControllerCollectionView({
 
   return (
     <div>
-      {name}
+      <div>muted? {collection.getIsMuted() ? "yes" : "no"}</div>
       {collection.getMediaStreamTrackControllers().map((controller, idx) => (
         <MediaElement
           key={idx}
