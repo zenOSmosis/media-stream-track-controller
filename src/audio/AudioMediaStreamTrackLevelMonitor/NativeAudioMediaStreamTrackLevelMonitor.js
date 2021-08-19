@@ -1,5 +1,5 @@
 const PhantomCore = require("phantom-core");
-const { EVT_DESTROYED } = PhantomCore;
+const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const { getSharedAudioContext } = require("../../utils/getAudioContext");
 
 // Emits after audio level has changed, with a value from 0 - 10
@@ -391,3 +391,4 @@ module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_DESTROYED = EVT_DESTROYED;

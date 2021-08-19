@@ -10,6 +10,8 @@ const {
   EVT_AUDIO_ERROR,
   /** @exports */
   EVT_AUDIO_ERROR_RECOVERED,
+  /** @exports */
+  EVT_DESTROYED,
 } = AudioMediaStreamTrackLevelMonitor;
 
 /** @exports */
@@ -217,3 +219,4 @@ module.exports.EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK =
   EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_DESTROYED = EVT_DESTROYED;

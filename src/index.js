@@ -32,19 +32,19 @@ module.exports = {
   debug,
   AudioMediaStreamTrackLevelMonitor,
   AudioMediaStreamTrackLevelMonitorEvents: {
-    EVT_DESTROYED,
     EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
     EVT_AUDIO_LEVEL_TICK,
     EVT_AUDIO_ERROR,
     EVT_AUDIO_ERROR_RECOVERED,
+    EVT_DESTROYED,
   },
   MultiAudioMediaStreamTrackLevelMonitor,
   MultiAudioMediaStreamTrackLevelMonitorEvents: {
-    EVT_DESTROYED,
     EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
     EVT_AUDIO_LEVEL_TICK,
     EVT_AUDIO_ERROR,
     EVT_AUDIO_ERROR_RECOVERED,
     EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK,
+    EVT_DESTROYED,
   },
 };
