@@ -1,6 +1,5 @@
 const { PhantomCollection } = require("phantom-core");
-const { EVT_CHILD_INSTANCE_ADDED, EVT_CHILD_INSTANCE_REMOVED } =
-  PhantomCollection;
+const { EVT_CHILD_INSTANCE_REMOVED } = PhantomCollection;
 const AudioMediaStreamTrackLevelMonitor = require("../AudioMediaStreamTrackLevelMonitor");
 const {
   /** @exports */
@@ -56,6 +55,14 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     // The current peak audio level in the EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK loop
     // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
     this._currentPeakLevel = { rms: 0, log2Rms: 0 };
+
+    // Reset current peak level to 0 after all children have been removed
+    this.on(EVT_CHILD_INSTANCE_REMOVED, () => {
+      if (!this._lenChildren) {
+        // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
+        this.emit(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, { rms: 0, log2Rms: 0 });
+      }
+    });
   }
 
   /**
