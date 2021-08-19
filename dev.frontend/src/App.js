@@ -288,16 +288,19 @@ function App() {
         {mediaStreamTrackControllerFactories.map((factory, idx) => {
           return (
             <div key={idx} style={{ border: "1px #ccc solid" }}>
-              <div>Factory: {factory.getTitle()}</div>
-              {factory.getTrackControllers().map((controller, idx) => (
-                <MediaElement
-                  key={idx}
-                  trackController={controller}
-                  inputMediaDevices={inputMediaDevices}
-                />
-              ))}
-              <div>
+              <div style={{ margin: 8, fontWeight: "bold" }}>
+                Factory: {factory.getTitle() || "[Untitled]"}{" "}
                 <button onClick={() => factory.destroy()}>Destroy</button>
+              </div>
+
+              <div>
+                {factory.getTrackControllers().map((controller, idx) => (
+                  <MediaElement
+                    key={idx}
+                    trackController={controller}
+                    inputMediaDevices={inputMediaDevices}
+                  />
+                ))}
               </div>
             </div>
           );
@@ -334,7 +337,7 @@ function App() {
 }
 
 function TrackControllerCollectionView({
-  name,
+  // name,
   trackControllers,
   inputMediaDevices,
 }) {
@@ -373,11 +376,22 @@ function TrackControllerCollectionView({
     removed.forEach(controller => collection.removeTrackController(controller));
   }, [collection, trackControllers, getPreviousTrackControllers]);
 
-  // TODO: Render / set muting state across collection
-
   return (
     <div>
-      <div>muted? {collection.getIsMuted() ? "yes" : "no"}</div>
+      <div>
+        <button
+          onClick={() => collection.mute()}
+          disabled={collection.getIsMuted()}
+        >
+          Mute Collection
+        </button>
+        <button
+          onClick={() => collection.unmute()}
+          disabled={!collection.getIsMuted()}
+        >
+          Unmute Collection
+        </button>
+      </div>
       {collection.getTrackControllers().map((controller, idx) => (
         <MediaElement
           key={idx}
@@ -436,24 +450,13 @@ function MediaElement({ trackController, inputMediaDevices }) {
     }
   }, [trackController, inputMediaDevices]);
 
-  // TODO: Remove?
-  useEffect(() => {
-    if (matchedInputMediaDevice) {
-      // TODO: Handle differently
-      console.log({
-        computedTrackControllers:
-          utils.captureMediaDevice.getMediaDeviceTrackControllers(
-            matchedInputMediaDevice
-          ),
-        isCaptured: utils.captureMediaDevice.getIsMediaDeviceBeingCaptured(
-          matchedInputMediaDevice
-        ),
-      });
-    }
-  }, [matchedInputMediaDevice]);
-
   return (
-    <div style={{ display: "inline-block", border: "1px #000 solid" }}>
+    <div
+      style={{
+        display: "inline-block",
+        border: "1px #000 solid",
+      }}
+    >
       <div
         style={{ backgroundColor: "#000", color: "#fff", textAlign: "left" }}
       >
@@ -492,8 +495,18 @@ function MediaElement({ trackController, inputMediaDevices }) {
             mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
             style={{ height: 100 }}
           />
-          <button onClick={() => trackController.mute()}>Mute</button>
-          <button onClick={() => trackController.unmute()}>Unmute</button>
+          <button
+            onClick={() => trackController.mute()}
+            disabled={trackController.getIsMuted()}
+          >
+            Mute
+          </button>
+          <button
+            onClick={() => trackController.unmute()}
+            disabled={!trackController.getIsMuted()}
+          >
+            Unmute
+          </button>
         </div>
       )}
       <div>

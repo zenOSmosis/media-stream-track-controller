@@ -6,9 +6,12 @@ const {
   EVT_UPDATED,
   /** @exports */
   EVT_DESTROYED,
+  /** @exports */
+  EVT_CHILD_INSTANCE_ADDED,
+  /** @exports */
+  EVT_CHILD_INSTANCE_REMOVED,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
-const { EVT_CHILD_INSTANCE_REMOVED } = MediaStreamTrackController;
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 
@@ -19,8 +22,8 @@ const _factoryInstances = {};
  * Audio/VideoMediaStreamTrackController constituents and uses them as a
  * collection.
  *
- * NOTE: When all associated track controllers are removed, the factory will
- * self-destruct.
+ * IMPORTANT: When all associated track controllers are removed, the factory
+ * will self-destruct.
  */
 class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollection {
   /**
@@ -137,3 +140,6 @@ module.exports = MediaStreamTrackControllerFactory;
 module.exports.EVT_READY = EVT_READY;
 module.exports.EVT_UPDATED = EVT_UPDATED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;
+
+module.exports.EVT_CHILD_INSTANCE_ADDED = EVT_CHILD_INSTANCE_ADDED;
+module.exports.EVT_CHILD_INSTANCE_REMOVED = EVT_CHILD_INSTANCE_REMOVED;

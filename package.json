@@ -20,7 +20,6 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "debounce": "^1.2.1",
     "phantom-core": "github:zenosmosis/phantom-core"
   },
   "devDependencies": {

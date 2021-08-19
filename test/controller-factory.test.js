@@ -107,6 +107,58 @@ test("empty MediaStream initialization", async t => {
   t.end();
 });
 
+test("factory auto-destruct when all track controllers are removed", async t => {
+  t.plan(10);
+
+  const selfDestructFactory = new MediaStreamTrackControllerFactory(
+    new MediaStream(
+      [...new Array(8)].map(
+        () => debug.createTestAudioMediaStream().getTracks()[0]
+      )
+    )
+  );
+
+  t.equals(
+    selfDestructFactory.getChildren().length,
+    8,
+    "self-destruct factory initializes with 8 children"
+  );
+
+  await Promise.all([
+    new Promise(async resolve => {
+      selfDestructFactory.once(EVT_DESTROYED, () => {
+        t.equals(
+          selfDestructFactory.getChildren().length,
+          0,
+          "self-destruct factory automatically destructed when all children were destructed"
+        );
+
+        resolve();
+      });
+    }),
+
+    new Promise(async resolve => {
+      // NOTE: Intentionally not calling destructAllChildren just to test this
+      // in a more natural way
+      let idx = -1;
+      for (const child of selfDestructFactory.getChildren()) {
+        ++idx;
+
+        await child.destroy();
+
+        t.ok(true, `child ${idx + 1} destructed`);
+
+        // Not needed, but prolonging time between calls just as a test
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+
+      resolve();
+    }),
+  ]);
+
+  t.end();
+});
+
 test("stop calls destruct", async t => {
   t.plan(5);
 
