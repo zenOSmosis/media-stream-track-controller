@@ -158,6 +158,3 @@ test("MediaStreamTrackControllerCollection", async t => {
 
   t.end();
 });
-
-// TODO: Ensure muting works properly across all tracks; ensure muted controller stays muted when new tracks are added (should it be?)
-// TODO: Ensure added track controllers aren't destructed when collection is destructed
