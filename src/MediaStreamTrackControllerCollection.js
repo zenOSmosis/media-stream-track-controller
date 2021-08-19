@@ -11,6 +11,7 @@ const {
 } = PhantomCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 
+// TODO: Document
 class MediaStreamTrackControllerCollection extends PhantomCollection {
   constructor(initialMediaStreamTrackControllers = []) {
     super(initialMediaStreamTrackControllers);
@@ -34,6 +35,19 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
         "mediaStreamTrackController is not a MediaStreamTrackController"
       );
     }
+
+    // FIXME: This needs some consideration before enabling; perhaps a separate
+    // property should be added (i.e. "isExplicitlyMuted") which is set if the
+    // user muted the collection themselves, and if so, apply that muting state
+    // to subsequent newly added track controllers. NOTE: This was considered
+    // after inclusion of _syncTrackControllersMuteState and is not a conflict
+    // of interest.
+    /*
+    // If collection is already muted, apply muting to added track controllers
+    if (this.getIsMuted()) {
+      mediaStreamTrackController.setIsMuted(true);
+    }
+    */
 
     super.addChild(mediaStreamTrackController);
 
