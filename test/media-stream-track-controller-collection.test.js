@@ -40,7 +40,7 @@ test("MediaStreamTrackControllerCollection", async t => {
     )
   );
   t.throws(() =>
-    collection.addMediaStreamTrackController(
+    collection.addTrackController(
       new MediaStreamTrackControllerCollection(),
       TypeError,
       "throws TypeError when trying to add media stream track controller which is not a MediaStreamTrackController"
@@ -126,11 +126,11 @@ test("MediaStreamTrackControllerCollection", async t => {
     }),
 
     new Promise(async resolve => {
-      collection.addMediaStreamTrackController(controller4);
+      collection.addTrackController(controller4);
 
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      collection.removeMediaStreamTrackController(controller4);
+      collection.removeTrackController(controller4);
 
       resolve();
     }),

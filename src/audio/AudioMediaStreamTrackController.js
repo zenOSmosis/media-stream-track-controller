@@ -1,4 +1,3 @@
-const PhantomCore = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 const { getSharedAudioContext } = require("../utils/getAudioContext");
@@ -27,7 +26,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
 
     super(
       inputMediaStreamTrack,
-      PhantomCore.mergeOptions(DEFAULT_OPTIONS, options)
+      AudioMediaStreamTrackController.mergeOptions(DEFAULT_OPTIONS, options)
     );
 
     // TODO: Make dynamic w/ passed config

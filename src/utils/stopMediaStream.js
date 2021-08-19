@@ -31,9 +31,9 @@ function stopMediaStream(mediaStream) {
      * Workaround (08/19/2021) for Firefox not calling dispatchEvent on
      * MediaStreamTrack. Stop all track controllers with this input track.
      */
-    MediaStreamTrackControllerBase.getMediaStreamTrackControllersWithTrack(
-      track
-    ).forEach(controller => controller.destroy());
+    MediaStreamTrackControllerBase.getTrackControllersWithTrack(track).forEach(
+      controller => controller.destroy()
+    );
 
     mediaStream.removeTrack(track);
   });

@@ -1,5 +1,5 @@
-const CommonBase = require("./_CommonControllerAndFactoryBase");
-const { EVT_UPDATED, EVT_DESTROYED } = CommonBase;
+const PhantomCore = require("phantom-core");
+const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 
 // TODO: Use PhantomCollection instead?
 const _instances = {};
@@ -12,7 +12,7 @@ const _instances = {};
  * IMPORTANT: Once a MediaStreamTrack is associated with a track controller, it
  * will be stopped when the controller is destructed.
  */
-class MediaStreamTrackControllerBase extends CommonBase {
+class MediaStreamTrackControllerBase extends PhantomCore {
   /**
    * Retrieves currently active MediaStreamTrackController instances.
    *
@@ -28,7 +28,7 @@ class MediaStreamTrackControllerBase extends CommonBase {
    * @param {MediaStreamTrack} mediaStreamTrack
    * @return {MediaStreamTrackControllerBase[]}
    */
-  static getMediaStreamTrackControllersWithTrack(mediaStreamTrack) {
+  static getTrackControllersWithTrack(mediaStreamTrack) {
     const controllers =
       MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
 
@@ -59,6 +59,8 @@ class MediaStreamTrackControllerBase extends CommonBase {
     this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     this._isTrackEnded = false;
+
+    this._isMuted = false;
 
     // Destroy instance once track ends
     (() => {
@@ -228,6 +230,55 @@ class MediaStreamTrackControllerBase extends CommonBase {
       partialMediaDeviceInfo,
       mediaDeviceInfoList
     );
+  }
+
+  /**
+   * @param {boolean} isMuted
+   * @return {Promise<void>}
+   */
+  async setIsMuted(isMuted) {
+    this._isMuted = isMuted;
+
+    this.emit(EVT_UPDATED);
+  }
+
+  /**
+   * @return {boolean}
+   */
+  getIsMuted() {
+    return this._isMuted;
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async mute() {
+    return this.setIsMuted(true);
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async unmute() {
+    return this.setIsMuted(false);
+  }
+
+  /**
+   * Sets muting state to alternate state.
+   *
+   * @return {Promise<void>}
+   */
+  async toggleMute() {
+    this.setIsMuted(!this._isMuted);
+  }
+
+  /**
+   * Alias for this.destroy().
+   *
+   * @return {Promise<void>}
+   */
+  async stop() {
+    return this.destroy();
   }
 
   /**

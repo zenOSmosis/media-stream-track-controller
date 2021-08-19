@@ -10,9 +10,13 @@ const {
   /** @exports */ EVT_CHILD_INSTANCE_REMOVED,
 } = PhantomCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
+const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
+const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
+
+// TODO: Add ability to acquire output MediaStream / MediaStreamTracks?
 
 /**
- * Manages an arbitrary amount of MediaStreamTrackController, where mute states
+ * Manages an arbitrary amount of MediaStreamTrackControllers, where mute states
  * are linked together.
  */
 class MediaStreamTrackControllerCollection extends PhantomCollection {
@@ -68,7 +72,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @param {MediaStreamTrackController} mediaStreamTrackController
    * @return {void}
    */
-  addMediaStreamTrackController(mediaStreamTrackController) {
+  addTrackController(mediaStreamTrackController) {
     this.addChild(mediaStreamTrackController);
   }
 
@@ -78,13 +82,47 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @param {MediaStreamTrackController} mediaStreamTrackController
    * @return {void}
    */
-  removeMediaStreamTrackController(mediaStreamTrackController) {
+  removeTrackController(mediaStreamTrackController) {
     this.removeChild(mediaStreamTrackController);
   }
 
-  // TODO: Document
-  getMediaStreamTrackControllers() {
+  /**
+   * @return {MediaStreamTrackController[]}
+   */
+  getTrackControllers() {
     return this.getChildren();
+  }
+
+  /**
+    @return {AudioMediaStreamTrackController[]}
+  */
+  getAudioTrackControllers() {
+    return this.getTrackControllers().filter(
+      controller => controller instanceof AudioMediaStreamTrackController
+    );
+  }
+
+  /**
+    @return {VideoMediaStreamTrackController[]}
+  */
+  getVideoTrackControllers() {
+    return this.getTrackControllers().filter(
+      controller => controller instanceof VideoMediaStreamTrackController
+    );
+  }
+
+  /**
+   * Retrieves an array of input device ids, not guaranteed to be unique, for
+   * all of associated track controllers.
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
+   *
+   * @return {DOMString[]}
+   */
+  getInputDeviceIds() {
+    return this.getTrackControllers().map(controller =>
+      controller.getInputDeviceId()
+    );
   }
 
   /**
@@ -92,10 +130,6 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * this._isMuted flag accordingly without calling EVT_UPDATED.
    *
    * This is internally called once each track controller is updated.
-   *
-   * FIXME: This code was borrowed from MediaStreamTrackControllerFactory, and
-   * perhaps a future refactor should use this collection within the factory
-   * itself, with some rule differences.
    *
    * @return {void}
    */
@@ -119,7 +153,8 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
     }
   }
 
-  // FIXME: Use the following functions via mixin with _CommonControllerAndFactoryBase, once support is added in PhantomCore
+  // FIXME: Use the following functions via mixin with
+  // MediaStreamTrackController base, once support is added in PhantomCore
   // @see https://github.com/zenOSmosis/phantom-core/issues/44
 
   /**
@@ -129,7 +164,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
   async setIsMuted(isMuted) {
     // Mute the track controllers directly
     await Promise.all(
-      this.getMediaStreamTrackControllers().map(controller =>
+      this.getTrackControllers().map(controller =>
         controller.setIsMuted(isMuted)
       )
     );

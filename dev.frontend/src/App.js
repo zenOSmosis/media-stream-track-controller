@@ -86,10 +86,12 @@ function App() {
   const registerControllerFactory = useCallback(controllerFactory => {
     logger.log("registering controller factory", {
       controllerFactory,
+      /*
       outputMediaStream: controllerFactory.getOutputMediaStream(),
       outputMediaStreamTracks: controllerFactory
         .getOutputMediaStream()
         .getTracks(),
+      */
     });
 
     setMediaStreamTrackControllerFactories(prev => [
@@ -366,16 +368,9 @@ function TrackControllerCollectionView({
         trackControllers
       );
 
-    // TODO: Remove
-    console.log({ added, removed });
+    added.forEach(controller => collection.addTrackController(controller));
 
-    added.forEach(controller =>
-      collection.addMediaStreamTrackController(controller)
-    );
-
-    removed.forEach(controller =>
-      collection.removeMediaStreamTrackController(controller)
-    );
+    removed.forEach(controller => collection.removeTrackController(controller));
   }, [collection, trackControllers, getPreviousTrackControllers]);
 
   // TODO: Render / set muting state across collection
@@ -383,7 +378,7 @@ function TrackControllerCollectionView({
   return (
     <div>
       <div>muted? {collection.getIsMuted() ? "yes" : "no"}</div>
-      {collection.getMediaStreamTrackControllers().map((controller, idx) => (
+      {collection.getTrackControllers().map((controller, idx) => (
         <MediaElement
           key={idx}
           trackController={controller}
