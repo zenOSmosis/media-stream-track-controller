@@ -131,7 +131,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
-   * Adds a MediaStreamTrack to the given collection.
+   * Adds a MediaStreamTrack to the collection.
    *
    * If a duplicate track is added, it will silently ignore the duplicate.
    *
@@ -179,6 +179,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
+   * Removes a MediaStreamTrack from the collection.
    *
    * @param {MediaStreamTrack} mediaStreamTrack
    * @return {Promise<void>} NOTE: A promise is used because it needs to shut
