@@ -337,7 +337,7 @@ function App() {
 }
 
 function TrackControllerCollectionView({
-  name,
+  // name,
   trackControllers,
   inputMediaDevices,
 }) {
@@ -376,11 +376,22 @@ function TrackControllerCollectionView({
     removed.forEach(controller => collection.removeTrackController(controller));
   }, [collection, trackControllers, getPreviousTrackControllers]);
 
-  // TODO: Render / set muting state across collection
-
   return (
     <div>
-      <div>muted? {collection.getIsMuted() ? "yes" : "no"}</div>
+      <div>
+        <button
+          onClick={() => collection.mute()}
+          disabled={collection.getIsMuted()}
+        >
+          Mute Collection
+        </button>
+        <button
+          onClick={() => collection.unmute()}
+          disabled={!collection.getIsMuted()}
+        >
+          Unmute Collection
+        </button>
+      </div>
       {collection.getTrackControllers().map((controller, idx) => (
         <MediaElement
           key={idx}
@@ -438,22 +449,6 @@ function MediaElement({ trackController, inputMediaDevices }) {
       return JSON.parse(JSON.stringify(match));
     }
   }, [trackController, inputMediaDevices]);
-
-  // TODO: Remove?
-  useEffect(() => {
-    if (matchedInputMediaDevice) {
-      // TODO: Handle differently
-      console.log({
-        computedTrackControllers:
-          utils.captureMediaDevice.getMediaDeviceTrackControllers(
-            matchedInputMediaDevice
-          ),
-        isCaptured: utils.captureMediaDevice.getIsMediaDeviceBeingCaptured(
-          matchedInputMediaDevice
-        ),
-      });
-    }
-  }, [matchedInputMediaDevice]);
 
   return (
     <div
