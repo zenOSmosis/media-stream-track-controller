@@ -108,17 +108,12 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
 
   /**
    * @param {MediaStream} inputMediaStream
-   * @param {Object} factoryOptions?
+   * @param {Object} factoryOptions? // TODO: Document
    */
   constructor(inputMediaStream, factoryOptions = {}) {
     if (!(inputMediaStream instanceof MediaStream)) {
       throw new TypeError("inputMediaStream is not of MediaStream type");
     }
-
-    const DEFAULT_FACTORY_OPTIONS = {
-      // Async init
-      isReady: false,
-    };
 
     const initialTrackControllers =
       MediaStreamTrackControllerFactory.createTrackControllersFromMediaStream(
@@ -128,10 +123,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
 
     super(
       initialTrackControllers,
-      MediaStreamTrackControllerFactory.mergeOptions(
-        DEFAULT_FACTORY_OPTIONS,
-        factoryOptions
-      )
+      MediaStreamTrackControllerFactory.mergeOptions(factoryOptions)
     );
 
     _factoryInstances[this._uuid] = this;
