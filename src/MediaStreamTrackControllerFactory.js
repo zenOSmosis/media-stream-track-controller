@@ -1,3 +1,4 @@
+const { logger } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
   /** @exports */
@@ -14,6 +15,7 @@ const {
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
+const PhantomCore = require("phantom-core");
 
 const _factoryInstances = {};
 
@@ -40,6 +42,31 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
    */
   static getFactoryInstances() {
     return Object.values(_factoryInstances);
+  }
+
+  /**
+   * Retrieves the factory instances which include one or more track
+   * controllers originating from the given input media device.
+   *
+   * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+   * @return {MediaStreamTrackControllerFactory[]}
+   */
+  static getFactoriesWithMediaDevice(mediaDeviceInfo) {
+    // Gracefully ignore mediaDeviceInfo not being present; just warn about it
+    // and return an empty array
+    if (!mediaDeviceInfo || !mediaDeviceInfo.deviceId) {
+      logger.warn(
+        "Unable to acquire associated factories for this media device because no mediaDeviceInfo is present"
+      );
+
+      return [];
+    }
+
+    const { deviceId } = mediaDeviceInfo;
+
+    return MediaStreamTrackControllerFactory.getFactoryInstances().filter(
+      factory => factory.getInputDeviceIds().includes(deviceId)
+    );
   }
 
   /**
