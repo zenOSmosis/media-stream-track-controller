@@ -522,6 +522,17 @@ function MediaElement({ trackController, inputMediaDevices }) {
         <button onClick={() => trackController.destroy()}>
           Destruct Controller
         </button>
+        <button
+          onClick={() =>
+            console.log(
+              MediaStreamTrackControllerFactory.getFactoriesWithMediaDevice(
+                matchedInputMediaDevice
+              )
+            )
+          }
+        >
+          Log Device Factories
+        </button>
       </div>
     </div>
   );
