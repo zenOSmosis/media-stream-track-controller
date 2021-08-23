@@ -15,7 +15,6 @@ const {
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
-const PhantomCore = require("phantom-core");
 
 const _factoryInstances = {};
 
