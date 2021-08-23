@@ -15,7 +15,6 @@ const {
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
-const PhantomCore = require("phantom-core");
 
 const _factoryInstances = {};
 
@@ -49,9 +48,10 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
    * controllers originating from the given input media device.
    *
    * @param {MediaDeviceInfo | Object} mediaDeviceInfo
+   * @param {string | null} kind? [default = null]
    * @return {MediaStreamTrackControllerFactory[]}
    */
-  static getFactoriesWithMediaDevice(mediaDeviceInfo) {
+  static getFactoriesWithInputMediaDevice(mediaDeviceInfo, kind = null) {
     // Gracefully ignore mediaDeviceInfo not being present; just warn about it
     // and return an empty array
     if (!mediaDeviceInfo || !mediaDeviceInfo.deviceId) {
@@ -65,7 +65,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     const { deviceId } = mediaDeviceInfo;
 
     return MediaStreamTrackControllerFactory.getFactoryInstances().filter(
-      factory => factory.getInputDeviceIds().includes(deviceId)
+      factory => factory.getInputDeviceIds(kind).includes(deviceId)
     );
   }
 

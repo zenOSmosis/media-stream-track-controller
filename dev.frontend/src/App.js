@@ -525,7 +525,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
         <button
           onClick={() =>
             console.log(
-              MediaStreamTrackControllerFactory.getFactoriesWithMediaDevice(
+              MediaStreamTrackControllerFactory.getFactoriesWithInputMediaDevice(
                 matchedInputMediaDevice
               )
             )
