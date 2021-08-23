@@ -117,10 +117,33 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    *
    * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
    *
+   * @param {string | null} kind? [default = null] IMPORTANT: This helps with
+   * controller lookups with device ids that may be set to "default," in which
+   * case an unexpected kind could occur if running audio / video controllers
+   * simultaneously within the same collection.
    * @return {DOMString[]}
    */
-  getInputDeviceIds() {
-    return this.getTrackControllers().map(controller =>
+  getInputDeviceIds(kind = null) {
+    let _lookupTracksFunc = null;
+
+    switch (kind) {
+      case null:
+        _lookupTracksFunc = "getTrackControllers";
+        break;
+
+      case "audio":
+        _lookupTracksFunc = "getAudioTrackControllers";
+        break;
+
+      case "video":
+        _lookupTracksFunc = "getVideoTrackControllers";
+        break;
+
+      default:
+        throw new ReferenceError(`Unreferenced kind "${kind}"`);
+    }
+
+    return this[_lookupTracksFunc]().map(controller =>
       controller.getInputDeviceId()
     );
   }
