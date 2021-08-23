@@ -173,9 +173,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    * Retrieves the input device ID, which is an origin-unique string
    * identifying the source of the track.
    *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/DOMString
-   *
-   * @return {DOMString}
+   * @return {string}
    */
   getInputDeviceId() {
     const inputSettings = this.getInputSettings();
