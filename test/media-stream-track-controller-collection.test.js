@@ -8,14 +8,14 @@ const {
 const { EVT_CHILD_INSTANCE_ADDED, EVT_CHILD_INSTANCE_REMOVED } =
   MediaStreamTrackControllerCollection;
 
+const _createTestAudioMediaStreamController = () => {
+  const mediaStreamTrack = debug.createTestAudioMediaStream().getTracks()[0];
+
+  return new AudioMediaStreamTrackController(mediaStreamTrack);
+};
+
 test("MediaStreamTrackControllerCollection", async t => {
   t.plan(23);
-
-  const _createTestAudioMediaStreamController = () => {
-    const mediaStreamTrack = debug.createTestAudioMediaStream().getTracks()[0];
-
-    return new AudioMediaStreamTrackController(mediaStreamTrack);
-  };
 
   const [controller1, controller2, controller3, controller4] = [
     ...new Array(4),
@@ -154,6 +154,95 @@ test("MediaStreamTrackControllerCollection", async t => {
   t.ok(
     !controller4.getIsDestroyed(),
     "controller4 reports that it is not destructed"
+  );
+
+  t.end();
+});
+
+test("MediaStreamTrackControllerCollection MediaStream", async t => {
+  t.plan(7);
+
+  const [controller1, controller2, controller3, controller4] = [
+    ...new Array(4),
+  ].map(() => _createTestAudioMediaStreamController());
+
+  const collection = new MediaStreamTrackControllerCollection([
+    controller1,
+    controller2,
+  ]);
+
+  t.ok(
+    collection.getOutputMediaStream() instanceof MediaStream,
+    "getOutputMediaStream() returns a MediaStream"
+  );
+
+  t.equals(
+    collection.getOutputMediaStream().getTracks().length,
+    2,
+    "mediaStream.getTracks() contains 2 tracks"
+  );
+
+  collection.addTrackController(controller3);
+
+  t.equals(
+    collection.getOutputMediaStream().getTracks().length,
+    3,
+    "mediaStream.getTracks() contains 3 tracks"
+  );
+
+  await Promise.all([
+    // FIXME: This event is not emit on the output MediaStream when the a track is removed
+    /*
+    new Promise(resolve => {
+      collection
+        .getOutputMediaStream()
+        .addEventListener("removetrack", track => {
+          t.ok(
+            Object.is(track, controller3.getOutputMediaStreamTrack()),
+            "MediaStream emits removetrack with controller3 track"
+          );
+
+          resolve();
+        });
+    }),
+    */
+
+    new Promise(async resolve => {
+      // FIXME: Uncomment if the above FIXME is ever resolved
+      // await new Promise(resolve => setTimeout(resolve, 500));
+
+      t.doesNotThrow(
+        () => collection.removeTrackController(controller3),
+        "removed track controller3"
+      );
+
+      resolve();
+    }),
+  ]);
+
+  // NOTE: This test case is strictly for consistency even if it might be
+  // testing a potential bug (refer to workaround-082320212130 in
+  // MediaStreamTrackControllerCollection)
+  t.equals(
+    collection.getOutputMediaStream().getTracks().length,
+    3,
+    "mediaStream.getTracks() contains 3 tracks"
+  );
+
+  await new Promise(resolve => setTimeout(resolve, 500));
+
+  t.equals(
+    collection.getOutputMediaStream().getTracks()[2].readyState,
+    "live",
+    "last mediaStream track is still live after calling mediaStream.removeTrack"
+  );
+
+  collection.addTrackController(controller4);
+
+  t.equals(
+    collection.getOutputMediaStream().getTracks().length,
+    4,
+    "mediaStream.getTracks() contains 4 tracks"
   );
 
   t.end();

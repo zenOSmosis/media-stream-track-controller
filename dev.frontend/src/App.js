@@ -85,12 +85,6 @@ function App() {
   const registerControllerFactory = useCallback(controllerFactory => {
     logger.log("registering controller factory", {
       controllerFactory,
-      /*
-      outputMediaStream: controllerFactory.getOutputMediaStream(),
-      outputMediaStreamTracks: controllerFactory
-        .getOutputMediaStream()
-        .getTracks(),
-      */
     });
 
     setMediaStreamTrackControllerFactories(prev => [
@@ -219,11 +213,17 @@ function App() {
                   <button
                     style={{ float: "right" }}
                     onClick={() => {
-                      utils.captureMediaDevice
-                        .captureSpecificMediaDevice(device, null, {
-                          title: device.label,
-                        })
-                        .then(registerControllerFactory);
+                      if (
+                        window.confirm(
+                          "CAUTION: The capture will immediately begin playing audio or video and can introduce enormous feedback with audio."
+                        )
+                      ) {
+                        utils.captureMediaDevice
+                          .captureSpecificMediaDevice(device, null, {
+                            title: device.label,
+                          })
+                          .then(registerControllerFactory);
+                      }
                     }}
                   >
                     Capture

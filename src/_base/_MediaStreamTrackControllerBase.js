@@ -55,8 +55,8 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     this._inputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     // TODO: Dynamically handle w/ passed option
-    // TODO: Should this automatically be cloned, or is that resource wastage?
-    this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
+    // FIXME: Should this automatically be cloned, or is that resource wastage?
+    this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack.clone());
 
     this._isTrackEnded = false;
 
