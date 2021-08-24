@@ -325,16 +325,11 @@ function App() {
 
       <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
         <h2>Combined Video Collection</h2>
-        {
-          // TODO: Re-enable
-          /*
-          <TrackControllerCollectionView
+        <TrackControllerCollectionView
           name="video"
           trackControllers={videoTrackControllers}
           inputMediaDevices={inputMediaDevices}
         />
-          */
-        }
       </div>
     </div>
   );
@@ -374,11 +369,6 @@ function TrackControllerCollectionView({
         getPreviousTrackControllers() || [],
         trackControllers
       );
-
-    // TODO: Remove
-    console.log({
-      mediaStreamTracks: collection.getOutputMediaStream().getTracks(),
-    });
 
     added.forEach(controller => collection.addTrackController(controller));
 
