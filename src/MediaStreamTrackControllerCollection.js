@@ -25,14 +25,78 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 
     this.bindChildEventName(EVT_UPDATED);
 
-    // Mask mute handling w/ all children
+    // Experimental, direct MediaStream support
+
+    // FIXME: This probably should not be used for most use cases at this time,
+    // individual track controllers should likely be used instead, if possible
+    //
+    // FIXME: Since this exposes addEventListener property, it could create a
+    // potential memory-leak should bind to it with a listener; further
+    // consideration should be implemented for this
+    this._outputMediaStream = new MediaStream(
+      this.getChildren().map(trackController =>
+        trackController.getOutputMediaStreamTrack()
+      )
+    );
+
     (() => {
-      const _handleUpdate = () => this._syncTrackControllersMuteState();
+      let prevChildren = this.getChildren();
+
+      const _handleUpdate = () => {
+        // Handle output media stream dynamic track add / removal
+        (() => {
+          const nextChildren = this.getChildren();
+          const {
+            added: addedTrackControllers,
+            removed: removedTrackControllers,
+          } = MediaStreamTrackControllerCollection.getChildrenDiff(
+            prevChildren,
+            nextChildren
+          );
+
+          addedTrackControllers.forEach(trackController => {
+            const mediaStreamTrack =
+              trackController.getOutputMediaStreamTrack();
+
+            if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
+              throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
+            }
+
+            this._outputMediaStream.addTrack(
+              trackController.getOutputMediaStreamTrack()
+            );
+          });
+
+          removedTrackControllers.forEach(trackController => {
+            const mediaStreamTrack =
+              trackController.getOutputMediaStreamTrack();
+
+            if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
+              throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
+            }
+
+            // FIXME: (jh) This does not appear to actually remove the track
+            // from the MediaStream (tested in Chrome, Firefox and iOS 14)
+            // workaround-082320212130
+            this._outputMediaStream.removeTrack(mediaStreamTrack);
+          });
+        })();
+
+        // Mask mute handling w/ all children
+        this._syncTrackControllersMuteState();
+      };
 
       this.on(EVT_UPDATED, _handleUpdate);
       this.on(EVT_CHILD_INSTANCE_ADDED, _handleUpdate);
       this.on(EVT_CHILD_INSTANCE_REMOVED, _handleUpdate);
     })();
+  }
+
+  /**
+   * @return {MediaStream}
+   */
+  getOutputMediaStream() {
+    return this._outputMediaStream;
   }
 
   /**
