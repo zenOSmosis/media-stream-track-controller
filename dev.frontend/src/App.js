@@ -85,12 +85,6 @@ function App() {
   const registerControllerFactory = useCallback(controllerFactory => {
     logger.log("registering controller factory", {
       controllerFactory,
-      /*
-      outputMediaStream: controllerFactory.getOutputMediaStream(),
-      outputMediaStreamTracks: controllerFactory
-        .getOutputMediaStream()
-        .getTracks(),
-      */
     });
 
     setMediaStreamTrackControllerFactories(prev => [
@@ -219,11 +213,17 @@ function App() {
                   <button
                     style={{ float: "right" }}
                     onClick={() => {
-                      utils.captureMediaDevice
-                        .captureSpecificMediaDevice(device, null, {
-                          title: device.label,
-                        })
-                        .then(registerControllerFactory);
+                      if (
+                        window.confirm(
+                          "CAUTION: The capture will immediately begin playing audio or video and can introduce enormous feedback with audio."
+                        )
+                      ) {
+                        utils.captureMediaDevice
+                          .captureSpecificMediaDevice(device, null, {
+                            title: device.label,
+                          })
+                          .then(registerControllerFactory);
+                      }
                     }}
                   >
                     Capture
@@ -325,11 +325,16 @@ function App() {
 
       <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
         <h2>Combined Video Collection</h2>
-        <TrackControllerCollectionView
+        {
+          // TODO: Re-enable
+          /*
+          <TrackControllerCollectionView
           name="video"
           trackControllers={videoTrackControllers}
           inputMediaDevices={inputMediaDevices}
         />
+          */
+        }
       </div>
     </div>
   );
@@ -369,6 +374,11 @@ function TrackControllerCollectionView({
         getPreviousTrackControllers() || [],
         trackControllers
       );
+
+    // TODO: Remove
+    console.log({
+      mediaStreamTracks: collection.getOutputMediaStream().getTracks(),
+    });
 
     added.forEach(controller => collection.addTrackController(controller));
 
