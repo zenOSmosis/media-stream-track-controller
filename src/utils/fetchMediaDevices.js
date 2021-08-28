@@ -41,7 +41,11 @@ const fetchMediaDevices = (() => {
 
     // If last run isAggressive is the same as the current, use the cacheDiff,
     // otherwise bust the cache and start over
-    if (cache.lastIsAggressive === isAggressive) {
+    //
+    // IMPORTANT: This Boolean coerce fixes an issue in Safari when wrapping
+    // fetchMediaDevice where cached media devices were not being used
+    // @see https://github.com/zenOSmosis/speaker.app/pull/80
+    if (Boolean(cache.lastIsAggressive) === Boolean(isAggressive)) {
       devices = cacheDiffMediaDevices(cache.lastMediaDevices, devices);
     } else {
       // Bust the cache and start over
