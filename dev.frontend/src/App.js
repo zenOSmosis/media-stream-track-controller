@@ -19,7 +19,7 @@ import {
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 import { logger } from "phantom-core";
 
-import usePrevious from "./hooks/usePrevious";
+import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
 
 function App() {
@@ -360,20 +360,18 @@ function TrackControllerCollectionView({
     };
   }, [collection]);
 
-  const { getPreviousValue: getPreviousTrackControllers } =
-    usePrevious(trackControllers);
+  const { added: addedTrackControllers, removed: removedTrackControllers } =
+    useArrayDiff(trackControllers);
 
   useEffect(() => {
-    const { added, removed } =
-      MediaStreamTrackControllerCollection.getChildrenDiff(
-        getPreviousTrackControllers() || [],
-        trackControllers
-      );
+    addedTrackControllers.forEach(controller =>
+      collection.addTrackController(controller)
+    );
 
-    added.forEach(controller => collection.addTrackController(controller));
-
-    removed.forEach(controller => collection.removeTrackController(controller));
-  }, [collection, trackControllers, getPreviousTrackControllers]);
+    removedTrackControllers.forEach(controller =>
+      collection.removeTrackController(controller)
+    );
+  }, [collection, addedTrackControllers, removedTrackControllers]);
 
   return (
     <div>
@@ -476,6 +474,8 @@ function MediaElement({ trackController, inputMediaDevices }) {
           </div>
         )}
       </div>
+
+      <div>{trackController.getOutputMediaStreamTrack().readyState}</div>
 
       <video
         muted={true}
