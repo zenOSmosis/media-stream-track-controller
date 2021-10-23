@@ -12,7 +12,7 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
 
   t.throws(
     () => new MediaStreamTrackControllerFactory(),
-    "expects inputMediaStream paramter"
+    "expects inputMediaStream parameter"
   );
 
   const mediaStream1 = debug.createTestAudioMediaStream();
