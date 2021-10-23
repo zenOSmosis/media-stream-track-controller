@@ -1,4 +1,4 @@
-const { logger } = require("phantom-core");
+const { logger, deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
   /** @exports */
@@ -121,10 +121,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
         factoryOptions
       );
 
-    super(
-      initialTrackControllers,
-      MediaStreamTrackControllerFactory.mergeOptions(factoryOptions)
-    );
+    super(initialTrackControllers, deepMerge(factoryOptions));
 
     _factoryInstances[this._uuid] = this;
 
