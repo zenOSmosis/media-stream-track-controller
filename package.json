@@ -1,6 +1,6 @@
 {
   "name": "media-stream-track-controller",
-  "version": "1.0.1",
+  "version": "1.1.0-alpha",
   "description": "Controller library for browser-based MediaStreamTrack objects",
   "main": "src/index.js",
   "scripts": {
@@ -13,7 +13,11 @@
     "type": "git",
     "url": "git+https://github.com/zenOSmosis/media-stream-track-controller.git"
   },
-  "author": "jeremy.harris@zenosmosis.com",
+  "author": {
+    "name": "zenOSmosis",
+    "email": "info@zenosmosis.com",
+    "url": "https://zenosmosis.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zenOSmosis/media-stream-track-controller/issues"
