@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "phantom-core": "github:zenosmosis/phantom-core#v2.0.0-alpha"
+    "phantom-core": "github:zenosmosis/phantom-core#v2/feature--core-utils"
   },
   "devDependencies": {
     "airtap": "^4.0.3",
@@ -32,7 +32,6 @@
     "airtap-system": "^0.1.0",
     "dotenv-cli": "^4.0.0",
     "nyc": "^15.1.0",
-    "tape": "^5.2.2",
-    "tape-async": "^2.3.0"
+    "tape": "^5.3.1"
   }
 }

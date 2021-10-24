@@ -1,4 +1,4 @@
-const test = require("tape-async");
+const test = require("tape");
 const {
   debug,
   AudioMediaStreamTrackController,
