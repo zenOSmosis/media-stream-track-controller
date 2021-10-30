@@ -22,7 +22,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     }
 
     const DEFAULT_OPTIONS = {
-      isReady: false,
+      isAsync: true,
     };
 
     super(inputMediaStreamTrack, deepMerge(DEFAULT_OPTIONS, options));
