@@ -1,3 +1,4 @@
+const { deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 const { getSharedAudioContext } = require("../utils/getAudioContext");
@@ -21,13 +22,10 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     }
 
     const DEFAULT_OPTIONS = {
-      isReady: false,
+      isAsync: true,
     };
 
-    super(
-      inputMediaStreamTrack,
-      AudioMediaStreamTrackController.mergeOptions(DEFAULT_OPTIONS, options)
-    );
+    super(inputMediaStreamTrack, deepMerge(DEFAULT_OPTIONS, options));
 
     // TODO: Make dynamic w/ passed config
     this._audioCtx = getSharedAudioContext();
