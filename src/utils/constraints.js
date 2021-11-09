@@ -2,6 +2,7 @@
 // @see https://bugs.chromium.org/p/webrtc/issues/detail?id=8133
 
 const PhantomCore = require("phantom-core");
+const { deepMerge } = PhantomCore;
 
 /**
  * Deep merges the given user constraints onto the default constraints, where
@@ -12,7 +13,7 @@ const PhantomCore = require("phantom-core");
  * @return {Object}
  */
 function mergeConstraints(defaultConstraints, userConstraints) {
-  return PhantomCore.mergeOptions(defaultConstraints, userConstraints);
+  return deepMerge(defaultConstraints, userConstraints);
 }
 
 /**

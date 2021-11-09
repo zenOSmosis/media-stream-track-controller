@@ -1,6 +1,6 @@
 {
   "name": "media-stream-track-controller",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Controller library for browser-based MediaStreamTrack objects",
   "main": "src/index.js",
   "scripts": {
@@ -13,14 +13,18 @@
     "type": "git",
     "url": "git+https://github.com/zenOSmosis/media-stream-track-controller.git"
   },
-  "author": "jeremy.harris@zenosmosis.com",
+  "author": {
+    "name": "zenOSmosis",
+    "email": "info@zenosmosis.com",
+    "url": "https://zenosmosis.com"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/zenOSmosis/media-stream-track-controller/issues"
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "phantom-core": "github:zenosmosis/phantom-core#v1.0.1"
+    "phantom-core": "github:zenosmosis/phantom-core#v2.0.0"
   },
   "devDependencies": {
     "airtap": "^4.0.3",
@@ -28,7 +32,6 @@
     "airtap-system": "^0.1.0",
     "dotenv-cli": "^4.0.0",
     "nyc": "^15.1.0",
-    "tape": "^5.2.2",
-    "tape-async": "^2.3.0"
+    "tape": "^5.3.1"
   }
 }
