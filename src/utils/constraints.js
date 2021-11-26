@@ -71,8 +71,8 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
   // Apply default audio / video constraints to normalized constraints
   const nextConstraints =
     kind === AUDIO_DEVICE_KIND
-      ? createAudioConstraints(userConstraints, false)
-      : createVideoConstraints(userConstraints, false);
+      ? createDefaultAudioConstraints(userConstraints, false)
+      : createDefaultVideoConstraints(userConstraints, false);
 
   return nextConstraints;
 }
@@ -83,7 +83,7 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
  * constraints will be normalized after merging
  * @return {Object}
  */
-function createAudioConstraints(
+function createDefaultAudioConstraints(
   userConstraints = {},
   isPostNormalizing = true
 ) {
@@ -110,7 +110,7 @@ function createAudioConstraints(
  * constraints will be normalized after merging
  * @return {Object}
  */
-function createVideoConstraints(
+function createDefaultVideoConstraints(
   userConstraints = {},
   isPostNormalizing = true
 ) {
@@ -142,12 +142,12 @@ function createScreenCaptureConstraints(userConstraints = {}) {
     // To enable audio capturing in Chromium-based browsers, the user typically
     // needs to enable it in the UI dialog presented when initiating the screen
     // capture, and is sometimes easy to miss.
-    ...createAudioConstraints(userConstraints && userConstraints.audio),
+    ...createDefaultAudioConstraints(userConstraints && userConstraints.audio),
 
     // NOTE: Video constraints add cursor capturing capability on top of
     // existing default video constraints, hence why mergeConstraints is used
-    // in the createVideoConstraints argument.
-    ...createVideoConstraints(
+    // in the createDefaultVideoConstraints argument.
+    ...createDefaultVideoConstraints(
       mergeConstraints(
         {
           cursor: "always",
@@ -237,8 +237,8 @@ function getSpecificDeviceCaptureConstraints(
 module.exports = {
   mergeConstraints,
   createNormalizedConstraintsOfKind,
-  createAudioConstraints,
-  createVideoConstraints,
+  createDefaultAudioConstraints,
+  createDefaultVideoConstraints,
   createScreenCaptureConstraints,
   getSpecificDeviceIdCaptureConstraints,
   getSpecificDeviceCaptureConstraints,

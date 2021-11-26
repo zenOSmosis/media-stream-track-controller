@@ -611,10 +611,10 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
     utils.constraints.getSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
-      utils.constraints.createAudioConstraints()
+      utils.constraints.createDefaultAudioConstraints()
     ),
     {
-      ...utils.constraints.createAudioConstraints({
+      ...utils.constraints.createDefaultAudioConstraints({
         deviceId: {
           exact: "test-audio-device-id",
         },
@@ -629,11 +629,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
       "test-audio-device-id",
       "audio",
       {
-        audio: utils.constraints.createAudioConstraints(),
+        audio: utils.constraints.createDefaultAudioConstraints(),
       }
     ),
     {
-      ...utils.constraints.createAudioConstraints({
+      ...utils.constraints.createDefaultAudioConstraints({
         deviceId: {
           exact: "test-audio-device-id",
         },
@@ -684,10 +684,10 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
     utils.constraints.getSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
-      utils.constraints.createVideoConstraints()
+      utils.constraints.createDefaultVideoConstraints()
     ),
     {
-      ...utils.constraints.createVideoConstraints({
+      ...utils.constraints.createDefaultVideoConstraints({
         deviceId: {
           exact: "test-video-device-id",
         },
@@ -702,11 +702,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
       "test-video-device-id",
       "video",
       {
-        video: utils.constraints.createVideoConstraints(),
+        video: utils.constraints.createDefaultVideoConstraints(),
       }
     ),
     {
-      ...utils.constraints.createVideoConstraints({
+      ...utils.constraints.createDefaultVideoConstraints({
         deviceId: {
           exact: "test-video-device-id",
         },
@@ -750,11 +750,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
   t.end();
 });
 
-test("utils.constraints.createAudioConstraints", t => {
+test("utils.constraints.createDefaultAudioConstraints", t => {
   t.plan(1);
 
   t.deepEquals(
-    Object.keys(utils.constraints.createAudioConstraints()),
+    Object.keys(utils.constraints.createDefaultAudioConstraints()),
     ["audio"],
     "create audio constraints has audio key"
   );
