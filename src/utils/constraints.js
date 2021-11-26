@@ -187,7 +187,9 @@ function getSpecificDeviceIdCaptureConstraints(
 
   const OVERRIDE_CONSTRAINTS = {
     [deviceKind]: {
-      exact: deviceId || "default",
+      deviceId: {
+        exact: deviceId || "default",
+      },
     },
 
     // Prevent device of alternate type from starting (especially prevents mic
