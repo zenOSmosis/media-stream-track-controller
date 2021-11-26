@@ -457,34 +457,60 @@ function MediaElement({ trackController, inputMediaDevices }) {
       <div
         style={{ backgroundColor: "#000", color: "#fff", textAlign: "left" }}
       >
-        {!matchedInputMediaDevice ? (
-          <div>Input Device ID: {inputDeviceId || "N/A"}</div>
-        ) : (
-          <div>
-            <h3>Matched Input Media Device</h3>
-            {Object.entries(matchedInputMediaDevice).map(
-              ([key, value], idx) => {
-                return (
-                  <div key={idx}>
-                    {key}: {value}
-                  </div>
-                );
-              }
-            )}
-          </div>
-        )}
+        <div>
+          {!matchedInputMediaDevice ? (
+            <div>Input Device ID: {inputDeviceId || "N/A"}</div>
+          ) : (
+            <div>
+              <h3>Matched Input Media Device</h3>
+              {Object.entries(matchedInputMediaDevice).map(
+                ([key, value], idx) => {
+                  return (
+                    <div key={idx}>
+                      {key}:{" "}
+                      {typeof value === "boolean"
+                        ? Boolean(value)
+                          ? "true"
+                          : "false"
+                        : value}
+                    </div>
+                  );
+                }
+              )}
+            </div>
+          )}
+        </div>
 
-        {
-          // TODO: Render track settings
-          /*
-          <div>
-          Input settings: {JSON.stringify(trackController.getInputSettings())}
-          </div>
-          <div>
-            Output settings: {JSON.stringify(trackController.getOutputSettings())}
-          </div>
-          */
-        }
+        <div>
+          <h3>Input settings</h3>
+          {Object.entries(trackController.getInputSettings()).map(
+            ([key, value], idx) => {
+              return (
+                <div key={idx}>
+                  {key}:{" "}
+                  {typeof value === "boolean"
+                    ? Boolean(value)
+                      ? "true"
+                      : "false"
+                    : value}
+                </div>
+              );
+            }
+          )}
+        </div>
+
+        <div>
+          <h3>Output settings</h3>
+          {Object.entries(trackController.getOutputSettings()).map(
+            ([key, value], idx) => {
+              return (
+                <div key={idx}>
+                  {key}: {value}
+                </div>
+              );
+            }
+          )}
+        </div>
       </div>
 
       <div>{trackController.getOutputMediaStreamTrack().readyState}</div>
