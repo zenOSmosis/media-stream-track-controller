@@ -44,10 +44,12 @@ async function captureSpecificMediaDevice(
   constraints = {},
   factoryOptions = {}
 ) {
-  return captureMediaDevice(
-    getSpecificDeviceCaptureConstraints(mediaDeviceInfo, "audio", constraints),
-    factoryOptions
+  const nextConstraints = getSpecificDeviceCaptureConstraints(
+    mediaDeviceInfo,
+    constraints
   );
+
+  return captureMediaDevice(nextConstraints, factoryOptions);
 }
 
 /**

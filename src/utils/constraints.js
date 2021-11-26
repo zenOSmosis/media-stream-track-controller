@@ -68,14 +68,22 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
     userConstraints[kind] = { ...userConstraints[kind][kind] };
   }
 
-  return userConstraints;
+  const nextConstraints =
+    kind === AUDIO_DEVICE_KIND
+      ? createAudioConstraints(userConstraints, false)
+      : createVideoConstraints(userConstraints, false);
+
+  return nextConstraints;
 }
 
 /**
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
-function createAudioConstraints(userConstraints = {}) {
+function createAudioConstraints(
+  userConstraints = {},
+  isPostNormalizing = true
+) {
   const DEFAULT_AUDIO_CONSTRAINTS = {
     audio: {
       echoCancellation: false,
@@ -86,26 +94,31 @@ function createAudioConstraints(userConstraints = {}) {
     },
   };
 
-  return mergeConstraints(
-    DEFAULT_AUDIO_CONSTRAINTS,
-    createNormalizedConstraintsOfKind(AUDIO_DEVICE_KIND, userConstraints)
-  );
+  const updatedConstraints = isPostNormalizing
+    ? createNormalizedConstraintsOfKind(AUDIO_DEVICE_KIND, userConstraints)
+    : userConstraints;
+
+  return mergeConstraints(DEFAULT_AUDIO_CONSTRAINTS, updatedConstraints);
 }
 
 /**
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
-function createVideoConstraints(userConstraints = {}) {
+function createVideoConstraints(
+  userConstraints = {},
+  isPostNormalizing = true
+) {
   const DEFAULT_VIDEO_CONSTRAINTS = {
     // TODO: Finish adding
     video: {},
   };
 
-  return mergeConstraints(
-    DEFAULT_VIDEO_CONSTRAINTS,
-    createNormalizedConstraintsOfKind(VIDEO_DEVICE_KIND, userConstraints)
-  );
+  const updatedConstraints = isPostNormalizing
+    ? createNormalizedConstraintsOfKind(VIDEO_DEVICE_KIND, userConstraints)
+    : userConstraints;
+
+  return mergeConstraints(DEFAULT_VIDEO_CONSTRAINTS, updatedConstraints);
 }
 
 /**
@@ -146,41 +159,43 @@ function createScreenCaptureConstraints(userConstraints = {}) {
  * Helper method for obtaining constraints to capture from a specific media
  * device with a given device id and type.
  *
+ * IMPORTANT: If the device id is not obtainable, it will use the default
+ * device for the kind.
+ *
  * @param {string} deviceId
- * @param {"audio" | "video"} deviceType
+ * @param {"audio" | "video"} deviceKind
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object}
  */
 function getSpecificDeviceIdCaptureConstraints(
   deviceId,
-  deviceType,
+  deviceKind,
   userConstraints = {}
 ) {
-  if (deviceType !== AUDIO_DEVICE_KIND && deviceType !== VIDEO_DEVICE_KIND) {
-    throw new TypeError("deviceType must be audio or video");
+  if (deviceKind !== AUDIO_DEVICE_KIND && deviceKind !== VIDEO_DEVICE_KIND) {
+    throw new TypeError("deviceKind must be audio or video");
   }
 
   const OVERRIDE_CONSTRAINTS = {
-    [deviceType]: {
-      deviceId: {
-        exact: deviceId,
-      },
+    [deviceKind]: {
+      exact: deviceId || "default",
     },
+
     // Prevent device of alternate type from starting (especially prevents mic
     // from starting when wanting to only capture video)
-    [deviceType === AUDIO_DEVICE_KIND
+    [deviceKind === AUDIO_DEVICE_KIND
       ? VIDEO_DEVICE_KIND
       : AUDIO_DEVICE_KIND]: false,
   };
 
-  // Normalize userConstraints to have deviceType first child object
+  // Normalize userConstraints to have deviceKind first child object
   userConstraints = createNormalizedConstraintsOfKind(
-    deviceType,
+    deviceKind,
     userConstraints
   );
 
   // Prevent device from being captured if {audio/video: false} is set
-  if (userConstraints[deviceType] === false) {
+  if (userConstraints[deviceKind] === false) {
     return {};
   }
 
