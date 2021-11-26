@@ -78,6 +78,8 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
 }
 
 /**
+ * Creates default audio constraints, opting for high-fidelity audio.
+ *
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @param {boolean} isPostNormalizing? [default = true] Whether or not the
  * constraints will be normalized after merging
@@ -105,6 +107,8 @@ function createDefaultAudioConstraints(
 }
 
 /**
+ * Creates default video constraints.
+ *
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @param {boolean} isPostNormalizing? [default = true] Whether or not the
  * constraints will be normalized after merging
