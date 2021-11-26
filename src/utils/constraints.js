@@ -4,6 +4,9 @@
 const PhantomCore = require("phantom-core");
 const { deepMerge } = PhantomCore;
 
+const AUDIO_DEVICE_KIND = "audio";
+const VIDEO_DEVICE_KIND = "video";
+
 /**
  * Deep merges the given user constraints onto the default constraints, where
  * user constraints take precedence.
@@ -27,7 +30,7 @@ function mergeConstraints(defaultConstraints, userConstraints) {
  * @return {Object}
  */
 function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
-  if (kind !== "audio" && kind !== "video") {
+  if (kind !== AUDIO_DEVICE_KIND && kind !== VIDEO_DEVICE_KIND) {
     throw new TypeError("kind must be either audio or video");
   }
 
@@ -76,7 +79,7 @@ function createAudioConstraints(userConstraints = {}) {
 
   return mergeConstraints(
     DEFAULT_AUDIO_CONSTRAINTS,
-    createNormalizedConstraintsOfKind("audio", userConstraints)
+    createNormalizedConstraintsOfKind(AUDIO_DEVICE_KIND, userConstraints)
   );
 }
 
@@ -92,7 +95,7 @@ function createVideoConstraints(userConstraints = {}) {
 
   return mergeConstraints(
     DEFAULT_VIDEO_CONSTRAINTS,
-    createNormalizedConstraintsOfKind("video", userConstraints)
+    createNormalizedConstraintsOfKind(VIDEO_DEVICE_KIND, userConstraints)
   );
 }
 
@@ -144,10 +147,7 @@ function getSpecificDeviceIdCaptureConstraints(
   deviceType,
   userConstraints = {}
 ) {
-  const AUDIO_DEVICE_TYPE = "audio";
-  const VIDEO_DEVICE_TYPE = "video";
-
-  if (deviceType !== AUDIO_DEVICE_TYPE && deviceType !== VIDEO_DEVICE_TYPE) {
+  if (deviceType !== AUDIO_DEVICE_KIND && deviceType !== VIDEO_DEVICE_KIND) {
     throw new TypeError("deviceType must be audio or video");
   }
 
@@ -159,9 +159,9 @@ function getSpecificDeviceIdCaptureConstraints(
     },
     // Prevent device of alternate type from starting (especially prevents mic
     // from starting when wanting to only capture video)
-    [deviceType === AUDIO_DEVICE_TYPE
-      ? VIDEO_DEVICE_TYPE
-      : AUDIO_DEVICE_TYPE]: false,
+    [deviceType === AUDIO_DEVICE_KIND
+      ? VIDEO_DEVICE_KIND
+      : AUDIO_DEVICE_KIND]: false,
   };
 
   // Normalize userConstraints to have deviceType first child object
@@ -198,7 +198,9 @@ function getSpecificDeviceCaptureConstraints(
 
   return getSpecificDeviceIdCaptureConstraints(
     mediaDeviceInfo.deviceId,
-    mediaDeviceInfo.kind === "audioinput" ? "audio" : "video",
+    mediaDeviceInfo.kind === "audioinput"
+      ? AUDIO_DEVICE_KIND
+      : VIDEO_DEVICE_KIND,
     userConstraints
   );
 }
