@@ -473,6 +473,18 @@ function MediaElement({ trackController, inputMediaDevices }) {
             )}
           </div>
         )}
+
+        {
+          // TODO: Render track settings
+          /*
+          <div>
+          Input settings: {JSON.stringify(trackController.getInputSettings())}
+          </div>
+          <div>
+            Output settings: {JSON.stringify(trackController.getOutputSettings())}
+          </div>
+          */
+        }
       </div>
 
       <div>{trackController.getOutputMediaStreamTrack().readyState}</div>
