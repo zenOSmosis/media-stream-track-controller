@@ -68,6 +68,7 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
     userConstraints[kind] = { ...userConstraints[kind][kind] };
   }
 
+  // Apply default audio / video constraints to normalized constraints
   const nextConstraints =
     kind === AUDIO_DEVICE_KIND
       ? createAudioConstraints(userConstraints, false)
@@ -78,6 +79,8 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
 
 /**
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
+ * @param {boolean} isPostNormalizing? [default = true] Whether or not the
+ * constraints will be normalized after merging
  * @return {Object}
  */
 function createAudioConstraints(
@@ -103,6 +106,8 @@ function createAudioConstraints(
 
 /**
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
+ * @param {boolean} isPostNormalizing? [default = true] Whether or not the
+ * constraints will be normalized after merging
  * @return {Object}
  */
 function createVideoConstraints(
