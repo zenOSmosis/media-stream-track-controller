@@ -164,7 +164,7 @@ function getSpecificDeviceIdCaptureConstraints(
       : AUDIO_DEVICE_TYPE]: false,
   };
 
-  // Normalize userConstaints to have deviceType first child object
+  // Normalize userConstraints to have deviceType first child object
   userConstraints = createNormalizedConstraintsOfKind(
     deviceType,
     userConstraints
