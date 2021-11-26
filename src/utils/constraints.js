@@ -34,7 +34,16 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
     throw new TypeError("kind must be either audio or video");
   }
 
-  // Implement direct boolean passthru w/ base sub-object
+  if (
+    typeof userConstraints !== "object" &&
+    typeof userConstraints !== "boolean"
+  ) {
+    throw new TypeError(
+      `userConstraints must be either an object or a boolean; received "${typeof userConstraints}" type`
+    );
+  }
+
+  // Implement direct boolean pass-thru w/ base sub-object
   if (typeof userConstraints === "boolean") {
     return {
       [kind]: userConstraints,
