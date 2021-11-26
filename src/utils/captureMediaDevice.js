@@ -4,7 +4,7 @@ const MediaStreamTrackControllerFactory = require("../MediaStreamTrackController
 const {
   mergeConstraints,
   getSpecificDeviceCaptureConstraints,
-  createAudioConstraints,
+  createDefaultAudioConstraints,
 } = require("./constraints");
 
 /**
@@ -16,10 +16,10 @@ const {
  */
 async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
-    ...createAudioConstraints(constraints && constraints.audio),
+    ...createDefaultAudioConstraints(constraints && constraints.audio),
 
     // FIXME: Implement video constraints if video will be captured by default
-    // ...createVideoConstraints(constraints && constraints.video),
+    // ...createDefaultVideoConstraints(constraints && constraints.video),
     video: false,
   };
 
@@ -44,10 +44,12 @@ async function captureSpecificMediaDevice(
   constraints = {},
   factoryOptions = {}
 ) {
-  return captureMediaDevice(
-    getSpecificDeviceCaptureConstraints(mediaDeviceInfo, "audio", constraints),
-    factoryOptions
+  const nextConstraints = getSpecificDeviceCaptureConstraints(
+    mediaDeviceInfo,
+    constraints
   );
+
+  return captureMediaDevice(nextConstraints, factoryOptions);
 }
 
 /**
