@@ -131,7 +131,7 @@ function createScreenCaptureConstraints(userConstraints = {}) {
 }
 
 /**
- * Helper method for obtaining constaints to capture from a specific media
+ * Helper method for obtaining constraints to capture from a specific media
  * device with a given device id and type.
  *
  * @param {string} deviceId
@@ -179,7 +179,7 @@ function getSpecificDeviceIdCaptureConstraints(
 }
 
 /**
- * Helper method for obtaining constaints to capture from a specific media
+ * Helper method for obtaining constraints to capture from a specific media
  * device.
  *
  * @param {MediaDeviceInfo} mediaDeviceInfo @see fetchMediaDevices
