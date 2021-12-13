@@ -2,8 +2,8 @@ sauce_connect: true
 browsers:
   - name: firefox
     version: latest
-  - name: safari
-    version: latest
+  # - name: safari
+  #   version: latest
   - name: edge
     version: latest
   - name: and_chr
