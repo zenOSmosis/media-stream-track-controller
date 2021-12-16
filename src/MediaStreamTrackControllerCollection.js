@@ -13,8 +13,6 @@ const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerB
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
 
-// TODO: Add ability to acquire output MediaStream / MediaStreamTracks?
-
 /**
  * Manages an arbitrary amount of MediaStreamTrackControllers, where mute states
  * are linked together.
