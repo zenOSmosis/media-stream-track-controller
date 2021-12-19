@@ -64,6 +64,23 @@ const fetchMediaDevices = (() => {
 })();
 
 /**
+ * Lists all input media devices.
+ *
+ * IMPORTANT: Unlike the underlying call to
+ * navigator.mediaDevices.enumerateDevices, this function will resolve the same
+ * MediaDeviceInfo instances across subsequent calls (as long as isAggressive
+ * is not changed between calls).
+ *
+ * @param {boolean} isAggressive? [optional; default=true]
+ * @return {Promise<MediaDeviceInfo[]>}
+ */
+const fetchInputMediaDevices = async (isAggressive = true) => {
+  const mediaDevices = await fetchMediaDevices(isAggressive);
+
+  return filterInputMediaDevices(mediaDevices);
+};
+
+/**
  * @param {MediaDeviceInfo[] | Object[]} prevMediaDevices
  * @param {MediaDeviceInfo[] | Object[]} nextMediaDevices
  * @return {MediaDeviceInfo[] | Object[]}
@@ -182,6 +199,7 @@ const filterVideoOutputDevices = mediaDeviceInfoList => {
 };
 
 module.exports = fetchMediaDevices;
+module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
 
 module.exports.cacheDiffMediaDevices = cacheDiffMediaDevices;
 
