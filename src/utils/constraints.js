@@ -135,7 +135,7 @@ function createDefaultVideoConstraints(
  * @return {Object}
  */
 function createScreenCaptureConstraints(userConstraints = {}) {
-  DEFAULT_CONSTRAINTS = {
+  const DEFAULT_CONSTRAINTS = {
     // NOTE: Audio capturing is typically only available in Chromium-based
     // browsers and typically only works for capturing audio in browser tabs.
     //
