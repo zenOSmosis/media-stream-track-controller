@@ -223,41 +223,41 @@ test("utils.fetchMediaDevices.cacheDiffMediaDevices", t => {
   t.end();
 });
 
-test("utils.fetchMediaDevices filters", t => {
+test("utils.mediaDeviceInfoFilters", t => {
   t.plan(6);
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterInputMediaDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterInputMediaDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("input")),
     "deep equals input media devices"
   );
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterAudioInputDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterAudioInputDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("audioinput")),
     "deep equals audio input devices"
   );
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterVideoInputDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterVideoInputDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("videoinput")),
     "deep equals video input devices"
   );
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterOutputMediaDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterOutputMediaDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("output")),
     "deep equals output media devices"
   );
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterAudioOutputDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterAudioOutputDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("audiooutput")),
     "deep equals audio output devices"
   );
 
   t.deepEquals(
-    utils.fetchMediaDevices.filterVideoOutputDevices(MOCK_MEDIA_DEVICES),
+    utils.mediaDeviceInfoFilters.filterVideoOutputDevices(MOCK_MEDIA_DEVICES),
     MOCK_MEDIA_DEVICES.filter(device => device.kind.includes("videooutput")),
     "deep equals video output devices"
   );

@@ -68,11 +68,11 @@ function App() {
   // Determine input / output media devices and add them to the state
   useEffect(() => {
     setInputMediaDevices(
-      utils.fetchMediaDevices.filterInputMediaDevices(mediaDevices)
+      utils.mediaDeviceInfoFilters.filterInputMediaDevices(mediaDevices)
     );
 
     setOutputMediaDevices(
-      utils.fetchMediaDevices.filterOutputMediaDevices(mediaDevices)
+      utils.mediaDeviceInfoFilters.filterOutputMediaDevices(mediaDevices)
     );
   }, [mediaDevices]);
 

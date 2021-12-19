@@ -4,6 +4,7 @@ const captureScreen = require("./captureScreen");
 const { getIsScreenCaptureSupported } = captureScreen;
 const fetchMediaDevices = require("./fetchMediaDevices");
 const { fetchInputMediaDevices } = fetchMediaDevices;
+const mediaDeviceInfoFilters = require('./mediaDeviceInfoFilters')
 const {
   getNewAudioContext,
   getSharedAudioContext,
@@ -20,6 +21,7 @@ module.exports = {
   getIsScreenCaptureSupported,
   fetchMediaDevices,
   fetchInputMediaDevices,
+  mediaDeviceInfoFilters,
   getNewAudioContext,
   getSharedAudioContext,
   untilAudioContextResumed,
