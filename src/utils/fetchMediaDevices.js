@@ -6,7 +6,8 @@
  * MediaDeviceInfo instances across subsequent calls (as long as isAggressive
  * is not changed between calls).
  *
- * @param {boolean} isAggressive? [optional; default=true]
+ * @param {boolean} isAggressive? [optional; default=true] If true, temporarily
+ * turn on devices in order to obtain label information.
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchMediaDevices = (() => {
@@ -25,17 +26,21 @@ const fetchMediaDevices = (() => {
 
     let devices = await fetchDevices();
 
+    // TODO: Skip this step (or change internal constraints) if already capturing type
     // If not able to fetch label for all devices...
+    // TODO: Document the !label.length thing... why was this needed?
     if (isAggressive && devices.some(({ label }) => !label.length)) {
       // ... temporarily turn on microphone...
       const tempMediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
+
+        // TODO: Provide optional video aggressive labeling (i.e. video: true)
       });
 
       //  ... and fetch again
       devices = await fetchDevices();
 
-      // ... then turn off the mic
+      // ... then turn off the aggressively captured media devices
       tempMediaStream.getTracks().forEach(track => track.stop());
     }
 
@@ -71,7 +76,8 @@ const fetchMediaDevices = (() => {
  * MediaDeviceInfo instances across subsequent calls (as long as isAggressive
  * is not changed between calls).
  *
- * @param {boolean} isAggressive? [optional; default=true]
+ * @param {boolean} isAggressive? [optional; default=true] If true, temporarily
+ * turn on devices in order to obtain label information.
  * @return {Promise<MediaDeviceInfo[]>}
  */
 const fetchInputMediaDevices = async (isAggressive = true) => {
@@ -81,6 +87,10 @@ const fetchInputMediaDevices = async (isAggressive = true) => {
 };
 
 /**
+ * Applies a differential cache to prev / next media devices to enable
+ * subsequent calls to fetchMediaDevices to retrieve the same device info
+ * during the session duration.
+ *
  * @param {MediaDeviceInfo[] | Object[]} prevMediaDevices
  * @param {MediaDeviceInfo[] | Object[]} nextMediaDevices
  * @return {MediaDeviceInfo[] | Object[]}
@@ -128,6 +138,9 @@ const cacheDiffMediaDevices = (prevMediaDevices, nextMediaDevices) => {
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * input devices only.
  *
+ * NOTE: This was implemented as a separate array filter function in order to
+ * perform unit testing.
+ *
  * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
  * @return {MediaDeviceInfo | Object}
  */
@@ -152,6 +165,9 @@ const filterAudioInputDevices = mediaDeviceInfoList => {
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * video input devices only.
  *
+ * NOTE: This was implemented as a separate array filter function in order to
+ * perform unit testing.
+ *
  * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
  * @return {MediaDeviceInfo | Object}
  */
@@ -165,6 +181,9 @@ const filterVideoInputDevices = mediaDeviceInfoList => {
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * output devices only.
  *
+ * NOTE: This was implemented as a separate array filter function in order to
+ * perform unit testing.
+ *
  * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
  * @return {MediaDeviceInfo | Object}
  */
@@ -175,6 +194,9 @@ const filterOutputMediaDevices = mediaDeviceInfoList => {
 /**
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * audio output devices only.
+ *
+ * NOTE: This was implemented as a separate array filter function in order to
+ * perform unit testing.
  *
  * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
  * @return {MediaDeviceInfo | Object}
@@ -188,6 +210,9 @@ const filterAudioOutputDevices = mediaDeviceInfoList => {
 /**
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * video output devices only.
+ *
+ * NOTE: This was implemented as a separate array filter function in order to
+ * perform unit testing.
  *
  * @param {MediaDeviceInfo[] | Object[]} mediaDeviceInfoList
  * @return {MediaDeviceInfo | Object}
