@@ -82,7 +82,9 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
  *
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @param {boolean} isPostNormalizing? [default = true] Whether or not the
- * constraints will be normalized after merging
+ * constraints will be normalized after merging.  This is mainly used to
+ * prevent infinite loop during constraint building and shouldn't be necessary
+ * for external usage.
  * @return {Object}
  */
 function createDefaultAudioConstraints(
