@@ -1,6 +1,7 @@
 const { getNewAudioContext, stopMediaStream } = require("../utils");
 const { logger } = require("phantom-core");
 
+// TODO: Fix issue where stream plays out speakers despite the destination
 /**
  * Returns a MediaStream with a single pulsing, test audio track which
  * automatically ends at the specified duration.
