@@ -165,6 +165,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this._pollingStartTime = this.getTime();
 
+    // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
