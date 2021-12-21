@@ -483,7 +483,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
 
         <div>
           <h3>Input settings</h3>
-          {Object.entries(trackController.getInputSettings()).map(
+          {Object.entries(trackController.getSettings()).map(
             ([key, value], idx) => {
               return (
                 <div key={idx}>
@@ -493,19 +493,6 @@ function MediaElement({ trackController, inputMediaDevices }) {
                       ? "true"
                       : "false"
                     : value}
-                </div>
-              );
-            }
-          )}
-        </div>
-
-        <div>
-          <h3>Output settings</h3>
-          {Object.entries(trackController.getOutputSettings()).map(
-            ([key, value], idx) => {
-              return (
-                <div key={idx}>
-                  {key}: {value}
                 </div>
               );
             }

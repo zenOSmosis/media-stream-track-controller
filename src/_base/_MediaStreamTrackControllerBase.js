@@ -157,18 +157,8 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    *
    * @return {MediaTrackSettings}
    */
-  getInputSettings() {
+  getSettings() {
     return this._inputMediaStreamTrack.getSettings();
-  }
-
-  /**
-   * Retrieves the settings related to the output MediaStreamTrack (does not
-   * reflect the device the track is rendered on or listened to).
-   *
-   * @return {MediaTrackSettings}
-   */
-  getOutputSettings() {
-    return this._outputMediaStreamTrack.getSettings();
   }
 
   /**
@@ -178,7 +168,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    * @return {string}
    */
   getInputDeviceId() {
-    const inputSettings = this.getInputSettings();
+    const inputSettings = this.getSettings();
 
     if (inputSettings) {
       return inputSettings.deviceId;

@@ -101,6 +101,72 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
 
     return this._gainNode && this._gainNode.gain && this._gainNode.gain.value;
   }
+
+  // TODO: Document
+  getIsNoiseSuppressionEnabled() {
+    return this.getSettings().noiseSuppression;
+  }
+
+  // TODO: Document
+  async setIsNoiseSuppressionEnabled(isNoiseSuppressionEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      noiseSuppression: isNoiseSuppressionEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isNoiseSuppressionEnabled !== this.getIsAutoGainControlEnabled()) {
+      throw new Error(
+        "Could not successfully apply noiseSuppression update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
+  }
+
+  // TODO: Document
+  getIsEchoCancellationEnabled() {
+    return this.getSettings().echoCancellation;
+  }
+
+  // TODO: Document
+  async setIsEchoCancellationEnabled(isEchoCancellationEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      echoCancellation: isEchoCancellationEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isEchoCancellationEnabled !== this.getIsEchoCancellationEnabled()) {
+      throw new Error(
+        "Could not successfully apply echoCancellation update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
+  }
+
+  // TODO: Document
+  getIsAutoGainControlEnabled() {
+    return this.getSettings().autoGainControl;
+  }
+
+  // TODO: Document
+  async setIsAutoGainControlEnabled(isAutoGainControlEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      autoGainControl: isAutoGainControlEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isAutoGainControlEnabled !== this.getIsAutoGainControlEnabled()) {
+      throw new Error(
+        "Could not successfully apply autoGainControl update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
+  }
 }
 
 module.exports = AudioMediaStreamTrackController;
