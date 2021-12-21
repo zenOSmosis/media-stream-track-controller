@@ -9,7 +9,7 @@ const { logger } = require("phantom-core");
  * last.
  * @return {MediaStream}
  */
-function createTestAudioMediaStream(duration = 5) {
+module.exports = function createTestAudioMediaStream(duration = 5) {
   const pulseHz = 880;
   const lfoHz = 30;
 
@@ -47,6 +47,4 @@ function createTestAudioMediaStream(duration = 5) {
   }, duration * 1000);
 
   return mediaStream;
-}
-
-module.exports = createTestAudioMediaStream;
+};
