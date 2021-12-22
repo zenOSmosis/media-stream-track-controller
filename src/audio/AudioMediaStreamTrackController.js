@@ -102,7 +102,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     return this._gainNode && this._gainNode.gain && this._gainNode.gain.value;
   }
 
-  // TODO: Document
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
   getIsNoiseSuppressionEnabled() {
     return this.getSettings().noiseSuppression;
   }
@@ -113,7 +118,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       noiseSuppression: isNoiseSuppressionEnabled,
     });
 
-    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
     // updates and silently ignores the fact
     if (isNoiseSuppressionEnabled !== this.getIsAutoGainControlEnabled()) {
       throw new Error(
@@ -124,7 +129,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     this.emit(EVT_UPDATED);
   }
 
-  // TODO: Document
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
   getIsEchoCancellationEnabled() {
     return this.getSettings().echoCancellation;
   }
@@ -135,7 +145,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       echoCancellation: isEchoCancellationEnabled,
     });
 
-    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
     // updates and silently ignores the fact
     if (isEchoCancellationEnabled !== this.getIsEchoCancellationEnabled()) {
       throw new Error(
@@ -146,7 +156,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     this.emit(EVT_UPDATED);
   }
 
-  // TODO: Document
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
   getIsAutoGainControlEnabled() {
     return this.getSettings().autoGainControl;
   }
@@ -157,7 +172,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       autoGainControl: isAutoGainControlEnabled,
     });
 
-    // NOTE: Chrome <= 96.x has a bug which does not allow for constraint
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
     // updates and silently ignores the fact
     if (isAutoGainControlEnabled !== this.getIsAutoGainControlEnabled()) {
       throw new Error(
