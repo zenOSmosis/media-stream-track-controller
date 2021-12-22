@@ -1,127 +1,43 @@
 // TODO: While not directly related, this thread might have some useful information regarding constraints to set regarding stereo audio
 // @see https://bugs.chromium.org/p/webrtc/issues/detail?id=8133
 
-const { deepMerge } = require("phantom-core");
+const mergeConstraints = require("./mergeConstraints");
 const {
   getAudioQualityPresetConstraints,
   AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
 } = require("./audioQualityPresets");
 
+// TODO: Move into "constants" file
 const AUDIO_DEVICE_KIND = "audio";
 const VIDEO_DEVICE_KIND = "video";
-
-/**
- * Given the set of constraints of the given kind (audio or video), normalizes
- * the constraints with the kind as a sub-object and the constraints defined
- * within that sub-object, regardless if the sub-object was part of the
- * supplied constraints.
- *
- * IMPORTANT: This should be considered a "helper" utility and shouldn't
- * generally be utilized on its own.
- *
- * FIXME: (jh) Consider refactoring elsewhere.
- *
- * @param {"audio" | "video"} kind
- * @param {Object | boolean} userConstraints
- * @return {Object} // TODO: Document return object
- */
-function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
-  if (kind !== AUDIO_DEVICE_KIND && kind !== VIDEO_DEVICE_KIND) {
-    throw new TypeError("kind must be either audio or video");
-  }
-
-  if (
-    typeof userConstraints !== "object" &&
-    typeof userConstraints !== "boolean"
-  ) {
-    throw new TypeError(
-      `userConstraints must be either an object or a boolean; received "${typeof userConstraints}" type`
-    );
-  }
-
-  // Implement direct boolean pass-thru w/ base sub-object
-  if (typeof userConstraints === "boolean") {
-    return {
-      [kind]: userConstraints,
-    };
-  }
-
-  // Allow userConstraints to be null
-  if (userConstraints === null || userConstraints === undefined) {
-    userConstraints = {};
-  }
-
-  if (userConstraints[kind] === undefined) {
-    // Migrate existing user constraints to new object
-    const prevUserConstraints = { ...userConstraints };
-
-    userConstraints = {
-      [kind]: prevUserConstraints,
-    };
-  } else if (userConstraints[kind][kind] !== undefined) {
-    // Fix situations where doubled-up kind may be inadvertently passed via
-    // userConstraints
-    userConstraints[kind] = { ...userConstraints[kind][kind] };
-  }
-
-  // Apply default audio / video constraints to normalized constraints
-  const nextConstraints =
-    kind === AUDIO_DEVICE_KIND
-      ? createDefaultAudioConstraints(userConstraints, false)
-      : createDefaultVideoConstraints(userConstraints, false);
-
-  return nextConstraints;
-}
 
 /**
  * Creates default audio constraints, opting for high-fidelity audio.
  *
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
- * @param {boolean} isPostNormalizing? [default = true] Whether or not the
- * constraints will be normalized after merging.  This is mainly used to
- * prevent infinite loop during constraint building and shouldn't be necessary
- * for external usage.
  * @return {Object} // TODO: Document return object
  */
-function createDefaultAudioConstraints(
-  userConstraints = {},
-  isPostNormalizing = true
-) {
-  const DEFAULT_AUDIO_CONSTRAINTS = {
-    audio: getAudioQualityPresetConstraints(
-      AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
-    ),
-  };
+function createDefaultAudioConstraints(userConstraints = {}) {
+  const DEFAULT_AUDIO_CONSTRAINTS = getAudioQualityPresetConstraints(
+    AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
+  );
 
-  const updatedConstraints = isPostNormalizing
-    ? createNormalizedConstraintsOfKind(AUDIO_DEVICE_KIND, userConstraints)
-    : userConstraints;
-
-  return mergeConstraints(DEFAULT_AUDIO_CONSTRAINTS, updatedConstraints);
+  return mergeConstraints(DEFAULT_AUDIO_CONSTRAINTS, userConstraints);
 }
 
 /**
  * Creates default video constraints.
  *
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
- * @param {boolean} isPostNormalizing? [default = true] Whether or not the
- * constraints will be normalized after merging
  * @return {Object} // TODO: Document return object
  */
-function createDefaultVideoConstraints(
-  userConstraints = {},
-  isPostNormalizing = true
-) {
+function createDefaultVideoConstraints(userConstraints = {}) {
   const DEFAULT_VIDEO_CONSTRAINTS = {
     // TODO: Finish adding
     video: {},
   };
 
-  const updatedConstraints = isPostNormalizing
-    ? createNormalizedConstraintsOfKind(VIDEO_DEVICE_KIND, userConstraints)
-    : userConstraints;
-
-  return mergeConstraints(DEFAULT_VIDEO_CONSTRAINTS, updatedConstraints);
+  return mergeConstraints(DEFAULT_VIDEO_CONSTRAINTS, userConstraints);
 }
 
 /**
@@ -148,7 +64,9 @@ function createScreenCaptureConstraints(userConstraints = {}) {
     ...createDefaultVideoConstraints(
       mergeConstraints(
         {
-          cursor: "always",
+          video: {
+            cursor: "always",
+          },
         },
         userConstraints && userConstraints.video
       )
@@ -193,17 +111,13 @@ function getSpecificDeviceIdCaptureConstraints(
       : AUDIO_DEVICE_KIND]: false,
   };
 
-  // Normalize userConstraints to have deviceKind first child object
-  userConstraints = createNormalizedConstraintsOfKind(
-    deviceKind,
-    userConstraints
-  );
-
   // Prevent device from being captured if {audio/video: false} is set
   if (userConstraints[deviceKind] === false) {
+    // FIXME: (jh) Continue to return empty object for this condition?
     return {};
   }
 
+  // IMPORTANT: OVERRIDE_CONSTRAINTS takes precedence here
   return mergeConstraints(userConstraints, OVERRIDE_CONSTRAINTS);
 }
 
@@ -234,24 +148,8 @@ function getSpecificDeviceCaptureConstraints(
   );
 }
 
-/**
- * Deep merges the given user constraints onto the default constraints, where
- * user constraints take precedence.
- *
- * TODO: Apply normalization here (protection against mix of booleans &
- * objects, multi-level audio.audio objects, etc.)
- *
- * @param {MediaTrackConstraints} defaultConstraints
- * @param {MediaTrackConstraints} userConstraints
- * @return {Object} // TODO: Document return object
- */
-function mergeConstraints(defaultConstraints, userConstraints) {
-  return deepMerge(defaultConstraints, userConstraints);
-}
-
 module.exports = {
   mergeConstraints,
-  createNormalizedConstraintsOfKind,
   createDefaultAudioConstraints,
   createDefaultVideoConstraints,
   createScreenCaptureConstraints,
