@@ -112,7 +112,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     return this.getSettings().noiseSuppression;
   }
 
-  // TODO: Document
+  /**
+   * Sets whether noise suppression filtering should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
   async setIsNoiseSuppressionEnabled(isNoiseSuppressionEnabled) {
     await this._inputMediaStreamTrack.applyConstraints({
       noiseSuppression: isNoiseSuppressionEnabled,
@@ -139,7 +144,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     return this.getSettings().echoCancellation;
   }
 
-  // TODO: Document
+  /**
+   * Sets whether echo cancellation filtering should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
   async setIsEchoCancellationEnabled(isEchoCancellationEnabled) {
     await this._inputMediaStreamTrack.applyConstraints({
       echoCancellation: isEchoCancellationEnabled,
@@ -166,7 +176,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     return this.getSettings().autoGainControl;
   }
 
-  // TODO: Document
+  /**
+   * Sets whether auto gain control should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
   async setIsAutoGainControlEnabled(isAutoGainControlEnabled) {
     await this._inputMediaStreamTrack.applyConstraints({
       autoGainControl: isAutoGainControlEnabled,
