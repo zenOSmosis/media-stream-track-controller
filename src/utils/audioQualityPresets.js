@@ -11,8 +11,6 @@ const AUDIO_QUALITY_PRESET_TALK_RADIO = {
     },
   },
 };
-module.exports.AUDIO_QUALITY_PRESET_TALK_RADIO =
-  AUDIO_QUALITY_PRESET_TALK_RADIO;
 
 /** @export */
 const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
@@ -28,9 +26,6 @@ const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   },
 };
 
-module.exports.AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY =
-  AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY;
-
 /** @export */
 const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   name: "Music - High Quality",
@@ -44,6 +39,19 @@ const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
     },
   },
 };
+
+module.exports = [
+  AUDIO_QUALITY_PRESET_TALK_RADIO,
+  AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,
+  AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
+];
+
+module.exports.AUDIO_QUALITY_PRESET_TALK_RADIO =
+  AUDIO_QUALITY_PRESET_TALK_RADIO;
+
+module.exports.AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY =
+  AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY;
+
 module.exports.AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY =
   AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY;
 
@@ -57,17 +65,4 @@ module.exports.getAudioQualityPresetConstraints = (
   audioQualityPreset = AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
 ) => {
   return audioQualityPreset?.constraints;
-};
-
-/**
- * Retrieves all of the audio quality presets defined in this file.
- *
- * @return {Object[]}
- */
-module.exports.getAudioQualityPresets = () => {
-  return [
-    AUDIO_QUALITY_PRESET_TALK_RADIO,
-    AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,
-    AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
-  ];
 };
