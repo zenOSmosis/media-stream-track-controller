@@ -80,26 +80,3 @@ module.exports.getAudioQualityPresetConstraints = (
 ) => {
   return audioQualityPreset?.constraints;
 };
-
-/**
- * Retrieves a fuzzy-matched audio quality preset based on the given track
- * settings.
- *
- * @param {MediaTrackSettings} trackSettings
- * @return {Object | void} // TODO: Typedef object
- */
-module.exports.getMatchedAudioQualityPreset = trackSettings => {
-  const matchProps = [
-    "echoCancellation",
-    "noiseSuppression",
-    "autoGainControl",
-    "channelCount",
-
-    // NOTE: Sample rate and sample size may be dynamically altered by the
-    // hardware, so they are not reliable to match against
-  ];
-
-  return audioQualityPresets.find(preset =>
-    matchProps.every(prop => preset.constraints[prop] === trackSettings[prop])
-  );
-};
