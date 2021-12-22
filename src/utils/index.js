@@ -1,10 +1,11 @@
+const audioQualityPresets = require("./audioQualityPresets");
 const constraints = require("./constraints");
 const captureMediaDevice = require("./captureMediaDevice");
 const captureScreen = require("./captureScreen");
 const { getIsScreenCaptureSupported } = captureScreen;
 const fetchMediaDevices = require("./fetchMediaDevices");
 const { fetchInputMediaDevices } = fetchMediaDevices;
-const mediaDeviceInfoFilters = require('./mediaDeviceInfoFilters')
+const mediaDeviceInfoFilters = require("./mediaDeviceInfoFilters");
 const {
   getNewAudioContext,
   getSharedAudioContext,
@@ -15,6 +16,7 @@ const stopMediaStream = require("./stopMediaStream");
 const getMediaStreamTrackControllerInstances = require("./getMediaStreamTrackControllerInstances");
 
 module.exports = {
+  audioQualityPresets,
   constraints,
   captureMediaDevice,
   captureScreen,
