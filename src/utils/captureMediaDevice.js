@@ -8,7 +8,13 @@ const {
 } = require("./constraints");
 
 /**
- * IMPORTANT: At this time, video is not captured by default.
+ * Capture device media (gUM) and resolve a controller factory to manage the
+ * media track(s).
+ *
+ * IMPORTANT: At this time, video is not captured by default but can be enabled
+ * with constraints.
+ *
+ * For additional reading, @see https://w3c.github.io/mediacapture-main.
  *
  * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]

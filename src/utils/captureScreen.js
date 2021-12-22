@@ -3,6 +3,11 @@ const MediaStreamTrackControllerFactory = require("../MediaStreamTrackController
 const { createScreenCaptureConstraints } = require("./constraints");
 
 /**
+ * Capture screen  content and resolve a controller factory to manage the media
+ * track(s).
+ *
+ * For additional reading, @see https://w3c.github.io/mediacapture-main.
+ *
  * @param {MediaTrackConstraints} constraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
