@@ -1,29 +1,25 @@
 // TODO: While not directly related, this thread might have some useful information regarding constraints to set regarding stereo audio
 // @see https://bugs.chromium.org/p/webrtc/issues/detail?id=8133
 
-const PhantomCore = require("phantom-core");
-const { deepMerge } = PhantomCore;
+const { deepMerge } = require("phantom-core");
+const {
+  getAudioQualityPresetConstraints,
+  AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
+} = require("./audioQualityPresets");
 
 const AUDIO_DEVICE_KIND = "audio";
 const VIDEO_DEVICE_KIND = "video";
-
-/**
- * Deep merges the given user constraints onto the default constraints, where
- * user constraints take precedence.
- *
- * @param {MediaTrackConstraints} defaultConstraints
- * @param {MediaTrackConstraints} userConstraints
- * @return {Object}
- */
-function mergeConstraints(defaultConstraints, userConstraints) {
-  return deepMerge(defaultConstraints, userConstraints);
-}
 
 /**
  * Given the set of constraints of the given kind (audio or video), normalizes
  * the constraints with the kind as a sub-object and the constraints defined
  * within that sub-object, regardless if the sub-object was part of the
  * supplied constraints.
+ *
+ * IMPORTANT: This should be considered a "helper" utility and shouldn't
+ * generally be utilized on its own.
+ *
+ * FIXME: (jh) Consider refactoring elsewhere.
  *
  * @param {"audio" | "video"} kind
  * @param {Object | boolean} userConstraints
@@ -92,13 +88,9 @@ function createDefaultAudioConstraints(
   isPostNormalizing = true
 ) {
   const DEFAULT_AUDIO_CONSTRAINTS = {
-    audio: {
-      echoCancellation: false,
-      noiseSuppression: false,
-      autoGainControl: false,
-      sampleRate: 48000,
-      sampleSize: 16,
-    },
+    audio: getAudioQualityPresetConstraints(
+      AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
+    ),
   };
 
   const updatedConstraints = isPostNormalizing
@@ -240,6 +232,18 @@ function getSpecificDeviceCaptureConstraints(
       : VIDEO_DEVICE_KIND,
     userConstraints
   );
+}
+
+/**
+ * Deep merges the given user constraints onto the default constraints, where
+ * user constraints take precedence.
+ *
+ * @param {MediaTrackConstraints} defaultConstraints
+ * @param {MediaTrackConstraints} userConstraints
+ * @return {Object}
+ */
+function mergeConstraints(defaultConstraints, userConstraints) {
+  return deepMerge(defaultConstraints, userConstraints);
 }
 
 module.exports = {
