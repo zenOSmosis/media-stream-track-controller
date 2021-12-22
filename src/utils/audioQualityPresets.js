@@ -2,14 +2,16 @@
 const AUDIO_QUALITY_PRESET_TALK_RADIO = {
   name: "Talk Radio",
   constraints: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true,
-    // FIXME: (jh) Configure sampleRate / sampleSize?
-    sampleRate: 48000,
-    sampleSize: 16,
-    // Mono
-    channelCount: 1,
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true,
+      // FIXME: (jh) Configure sampleRate / sampleSize?
+      sampleRate: 48000,
+      sampleSize: 16,
+      // Mono
+      channelCount: 1,
+    },
   },
 };
 
@@ -17,14 +19,16 @@ const AUDIO_QUALITY_PRESET_TALK_RADIO = {
 const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   name: "Music - Low Quality",
   constraints: {
-    echoCancellation: false,
-    noiseSuppression: false,
-    autoGainControl: false,
-    // FIXME: (jh) Configure sampleRate / sampleSize?
-    sampleRate: 48000,
-    sampleSize: 16,
-    // Mono
-    channelCount: 1,
+    audio: {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      // FIXME: (jh) Configure sampleRate / sampleSize?
+      sampleRate: 48000,
+      sampleSize: 16,
+      // Mono
+      channelCount: 1,
+    },
   },
 };
 
@@ -32,13 +36,15 @@ const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
 const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   name: "Music - High Quality",
   constraints: {
-    echoCancellation: false,
-    noiseSuppression: false,
-    autoGainControl: false,
-    sampleRate: 48000,
-    sampleSize: 16,
-    // Stereo
-    channelCount: 2,
+    audio: {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false,
+      sampleRate: 48000,
+      sampleSize: 16,
+      // Stereo
+      channelCount: 2,
+    },
   },
 };
 
