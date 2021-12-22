@@ -111,8 +111,11 @@ function getSpecificDeviceIdCaptureConstraints(
       : AUDIO_DEVICE_KIND]: false,
   };
 
+  // TODO: Remove
+  console.log({ userConstraints, deviceId, deviceKind });
+
   // Prevent device from being captured if {audio/video: false} is set
-  if (userConstraints[deviceKind] === false) {
+  if (!userConstraints || userConstraints[deviceKind] === false) {
     // FIXME: (jh) Continue to return empty object for this condition?
     return {};
   }
@@ -139,8 +142,12 @@ function getSpecificDeviceCaptureConstraints(
     throw new TypeError("mediaDeviceInfo must be of MediaDeviceInfo type");
   }
 
+  // TODO: Remove
+  console.log({ mediaDeviceInfo, userConstraints });
+
   return getSpecificDeviceIdCaptureConstraints(
     mediaDeviceInfo.deviceId,
+    // TODO: Use constant here
     mediaDeviceInfo.kind === "audioinput"
       ? AUDIO_DEVICE_KIND
       : VIDEO_DEVICE_KIND,
