@@ -15,14 +15,15 @@ module.exports = function getMatchedMediaDevice(
   mediaDeviceInfo,
   mediaDeviceInfoList
 ) {
-  const AVAILABLE_KINDS = [
+  // TODO: Move these to a more centralized location
+  const POSSIBLE_KINDS = [
     "audioinput",
     "videoinput",
     "audiooutput",
     "videooutput",
   ];
 
-  if (!AVAILABLE_KINDS.includes(kind)) {
+  if (!POSSIBLE_KINDS.includes(kind)) {
     throw new ReferenceError(`Invalid kind "${kind}"`);
   }
 
