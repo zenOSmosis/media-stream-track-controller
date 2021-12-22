@@ -478,6 +478,7 @@ test("utils.captureMediaDevice.getIsMediaDeviceBeingCaptured", t => {
   t.end();
 });
 
+/*
 test("utils.constraints.createNormalizedConstraintsOfKind", t => {
   t.plan(6);
 
@@ -567,6 +568,7 @@ test("utils.constraints.createNormalizedConstraintsOfKind", t => {
 
   t.end();
 });
+*/
 
 test("utils.constraints.mergeConstraints", t => {
   t.plan(1);
@@ -756,7 +758,7 @@ test("utils.constraints.createDefaultAudioConstraints", t => {
   t.deepEquals(
     Object.keys(utils.constraints.createDefaultAudioConstraints()),
     ["audio"],
-    "create audio constraints has audio key"
+    "create audio constraints only has audio key"
   );
 
   t.end();

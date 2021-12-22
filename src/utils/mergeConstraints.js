@@ -60,7 +60,7 @@ module.exports = function mergeConstraints(
  * generally be utilized on its own.
  *
  * @param {"audio" | "video"} kind
- * @param {Object | boolean} userConstraints
+ * @param {Object | boolean | null | undefined} userConstraints
  * @return {Object} // TODO: Document return object
  */
 function normalizeConstraints(kind, userConstraints = {}) {
@@ -80,7 +80,7 @@ function normalizeConstraints(kind, userConstraints = {}) {
   // Implement direct boolean pass-thru w/ base sub-object
   if (typeof userConstraints === "boolean") {
     return {
-      [kind]: userConstraints,
+      [kind]: Boolean(userConstraints),
     };
   }
 
@@ -100,6 +100,11 @@ function normalizeConstraints(kind, userConstraints = {}) {
     // Fix situations where doubled-up kind may be inadvertently passed via
     // userConstraints
     userConstraints[kind] = { ...userConstraints[kind][kind] };
+  }
+
+  // Return empty object if no constraints of the given kind
+  if (!Object.keys(userConstraints[kind]).length) {
+    return {};
   }
 
   return userConstraints;
