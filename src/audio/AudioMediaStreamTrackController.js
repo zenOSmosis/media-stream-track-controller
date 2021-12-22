@@ -201,7 +201,12 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     this.emit(EVT_UPDATED);
   }
 
-  // TODO: Document
+  /**
+   * Retrieves a fuzzy-matched audio quality preset based on the given track
+   * settings.
+   *
+   * @return {Object | void}
+   */
   getMatchedAudioQualityPreset() {
     const settings = this.getSettings();
 

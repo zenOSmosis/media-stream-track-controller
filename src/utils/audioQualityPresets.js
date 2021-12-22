@@ -64,7 +64,7 @@ module.exports.AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY =
  * Retrieves the associated audio quality preset with the given name.
  *
  * @param {string} name
- * @return {Object | void}
+ * @return {Object | void} // TODO: Typedef object
  */
 module.exports.getAudioQualityPresetWithName = name =>
   audioQualityPresets.find(({ name: presetName }) => name === presetName);
@@ -73,7 +73,7 @@ module.exports.getAudioQualityPresetWithName = name =>
  * Retrieves the constraints associated with the given audio quality preset.
  *
  * @param {Object} audioQualityPreset
- * @return {Object | void}
+ * @return {Object | void} // TODO: Typedef object
  */
 module.exports.getAudioQualityPresetConstraints = (
   audioQualityPreset = AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
@@ -81,7 +81,13 @@ module.exports.getAudioQualityPresetConstraints = (
   return audioQualityPreset?.constraints;
 };
 
-// TODO: Document
+/**
+ * Retrieves a fuzzy-matched audio quality preset based on the given track
+ * settings.
+ *
+ * @param {MediaTrackSettings} trackSettings
+ * @return {Object | void} // TODO: Typedef object
+ */
 module.exports.getMatchedAudioQualityPreset = trackSettings => {
   const matchProps = [
     "echoCancellation",
