@@ -16,21 +16,21 @@ const {
  *
  * For additional reading, @see https://w3c.github.io/mediacapture-main.
  *
- * @param {MediaTrackConstraints} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
-async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
+async function captureMediaDevice(userConstraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
-    ...createDefaultAudioConstraints(constraints && constraints.audio),
+    ...createDefaultAudioConstraints(userConstraints && userConstraints.audio),
 
     // FIXME: Implement video constraints if video will be captured by default
-    // ...createDefaultVideoConstraints(constraints && constraints.video),
+    // ...createDefaultVideoConstraints(userConstraints && userConstraints.video),
     video: false,
   };
 
   const mediaStream = await navigator.mediaDevices.getUserMedia(
-    mergeConstraints(DEFAULT_CONSTRAINTS, constraints)
+    mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints)
   );
 
   return new MediaStreamTrackControllerFactory(mediaStream, factoryOptions);
@@ -41,18 +41,18 @@ async function captureMediaDevice(constraints = {}, factoryOptions = {}) {
  * mediaDeviceId.
  *
  * @param {MediaDeviceInfo | Object} mediaDeviceInfo The media device info of the device to capture. @see fetchMediaDevices
- * @param {MediaTrackConstraints} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
 async function captureSpecificMediaDevice(
   mediaDeviceInfo,
-  constraints = {},
+  userConstraints = {},
   factoryOptions = {}
 ) {
   const nextConstraints = getSpecificDeviceCaptureConstraints(
     mediaDeviceInfo,
-    constraints
+    userConstraints
   );
 
   return captureMediaDevice(nextConstraints, factoryOptions);

@@ -8,13 +8,13 @@ const { createScreenCaptureConstraints } = require("./constraints");
  *
  * For additional reading, @see https://w3c.github.io/mediacapture-main.
  *
- * @param {MediaTrackConstraints} constraints? [optional; default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]
  * @return {Promise<MediaStreamTrackControllerFactory>}
  */
-async function captureScreen(constraints = {}, factoryOptions = {}) {
+async function captureScreen(userConstraints = {}, factoryOptions = {}) {
   const mediaStream = await navigator.mediaDevices.getDisplayMedia(
-    createScreenCaptureConstraints(constraints)
+    createScreenCaptureConstraints(userConstraints)
   );
 
   return new MediaStreamTrackControllerFactory(mediaStream, factoryOptions);
