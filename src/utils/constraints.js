@@ -238,6 +238,9 @@ function getSpecificDeviceCaptureConstraints(
  * Deep merges the given user constraints onto the default constraints, where
  * user constraints take precedence.
  *
+ * TODO: Apply normalization here (protection against mix of booleans &
+ * objects, multi-level audio.audio objects, etc.)
+ *
  * @param {MediaTrackConstraints} defaultConstraints
  * @param {MediaTrackConstraints} userConstraints
  * @return {Object}
