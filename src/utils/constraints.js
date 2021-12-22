@@ -23,7 +23,7 @@ const VIDEO_DEVICE_KIND = "video";
  *
  * @param {"audio" | "video"} kind
  * @param {Object | boolean} userConstraints
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
   if (kind !== AUDIO_DEVICE_KIND && kind !== VIDEO_DEVICE_KIND) {
@@ -81,7 +81,7 @@ function createNormalizedConstraintsOfKind(kind, userConstraints = {}) {
  * constraints will be normalized after merging.  This is mainly used to
  * prevent infinite loop during constraint building and shouldn't be necessary
  * for external usage.
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function createDefaultAudioConstraints(
   userConstraints = {},
@@ -106,7 +106,7 @@ function createDefaultAudioConstraints(
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @param {boolean} isPostNormalizing? [default = true] Whether or not the
  * constraints will be normalized after merging
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function createDefaultVideoConstraints(
   userConstraints = {},
@@ -126,7 +126,7 @@ function createDefaultVideoConstraints(
 
 /**
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function createScreenCaptureConstraints(userConstraints = {}) {
   const DEFAULT_CONSTRAINTS = {
@@ -168,7 +168,7 @@ function createScreenCaptureConstraints(userConstraints = {}) {
  * @param {string} deviceId
  * @param {"audio" | "video"} deviceKind
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function getSpecificDeviceIdCaptureConstraints(
   deviceId,
@@ -213,7 +213,7 @@ function getSpecificDeviceIdCaptureConstraints(
  *
  * @param {MediaDeviceInfo} mediaDeviceInfo @see fetchMediaDevices
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function getSpecificDeviceCaptureConstraints(
   mediaDeviceInfo,
@@ -243,7 +243,7 @@ function getSpecificDeviceCaptureConstraints(
  *
  * @param {MediaTrackConstraints} defaultConstraints
  * @param {MediaTrackConstraints} userConstraints
- * @return {Object}
+ * @return {Object} // TODO: Document return object
  */
 function mergeConstraints(defaultConstraints, userConstraints) {
   return deepMerge(defaultConstraints, userConstraints);
