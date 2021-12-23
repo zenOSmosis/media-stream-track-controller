@@ -6,10 +6,9 @@ module.exports = {
   },
   constraints: {
     audioQualityPresets: require("./constraints/audioQualityPresets"),
-    // TODO: Rename to makeSpecificDeviceCaptureConstraints
-    getSpecificDeviceCaptureConstraints: require("./constraints/getSpecificDeviceCaptureConstraints"),
     makeAudioConstraints: require("./constraints/makeAudioConstraints"),
     makeScreenCaptureConstraints: require("./constraints/makeScreenCaptureConstraints"),
+    makeSpecificDeviceCaptureConstraints: require("./constraints/makeSpecificDeviceCaptureConstraints"),
     makeVideoConstraints: require("./constraints/makeVideoConstraints"),
     mergeConstraints: require("./constraints/mergeConstraints"),
   },

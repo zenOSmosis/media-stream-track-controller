@@ -4,7 +4,6 @@ const mergeConstraints = require("./mergeConstraints");
 const AUDIO_DEVICE_KIND = "audio";
 const VIDEO_DEVICE_KIND = "video";
 
-// TODO: Rename to makeSpecificDeviceCaptureConstraints
 /**
  * Helper method for obtaining constraints to capture from a specific media
  * device.
@@ -13,7 +12,7 @@ const VIDEO_DEVICE_KIND = "video";
  * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object} // TODO: Document return object
  */
-module.exports = function getSpecificDeviceCaptureConstraints(
+module.exports = function makeSpecificDeviceCaptureConstraints(
   mediaDeviceInfo,
   userConstraints = {}
 ) {

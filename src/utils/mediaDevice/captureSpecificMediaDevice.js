@@ -1,6 +1,6 @@
 const MediaStreamTrackControllerFactory = require("../../MediaStreamTrackControllerFactory");
 const captureMediaDevice = require("./captureMediaDevice");
-const getSpecificDeviceCaptureConstraints = require("../constraints/getSpecificDeviceCaptureConstraints");
+const makeSpecificDeviceCaptureConstraints = require("../constraints/makeSpecificDeviceCaptureConstraints");
 
 /**
  * Captures audio from the specific audio input device with the given
@@ -16,7 +16,7 @@ module.exports = async function captureSpecificMediaDevice(
   userConstraints = {},
   factoryOptions = {}
 ) {
-  const nextConstraints = getSpecificDeviceCaptureConstraints(
+  const nextConstraints = makeSpecificDeviceCaptureConstraints(
     mediaDeviceInfo,
     userConstraints
   );
