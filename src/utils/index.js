@@ -1,6 +1,6 @@
 module.exports = {
   audioContext: {
-    getNewAudioContext: require("./audioContext/getNewAudioContext"),
+    createNewAudioContext: require("./audioContext/createNewAudioContext"),
     getSharedAudioContext: require("./audioContext/getSharedAudioContext"),
     untilAudioContextResumed: require("./audioContext/untilAudioContextResumed"),
   },

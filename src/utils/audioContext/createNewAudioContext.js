@@ -7,7 +7,7 @@
  *
  * @return {AudioContext | null}
  */
-module.exports = function getNewAudioContext() {
+module.exports = function createNewAudioContext() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
   const audioCtx = AudioContext ? new AudioContext() : null;
 

@@ -20,10 +20,10 @@ test("utils.audioContext", t => {
     "subsequent call to getSharedAudioContext() retrieves same audio context"
   );
 
-  const audioCtx3 = utils.audioContext.getNewAudioContext();
+  const audioCtx3 = utils.audioContext.createNewAudioContext();
   t.ok(
     !Object.is(audioCtx, audioCtx3),
-    "getNewAudioContext() is different than shared audio context"
+    "createNewAudioContext() is different than shared audio context"
   );
 
   // TODO: untilAudioContextResumed may not be able to be tested w/o mocking touch

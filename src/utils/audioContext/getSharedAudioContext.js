@@ -1,4 +1,4 @@
-const getNewAudioContext = require("./getNewAudioContext");
+const createNewAudioContext = require("./createNewAudioContext");
 
 /**
  * Retrieves a memoized shared audio context, or creates a new one and memoizes
@@ -8,7 +8,7 @@ const getNewAudioContext = require("./getNewAudioContext");
  */
 const getSharedAudioContext = (() => {
   // Use for caching
-  const sharedAudioCtx = getNewAudioContext();
+  const sharedAudioCtx = createNewAudioContext();
 
   /**
    * Retrieves the shared AudioContext instance, creating it if not already

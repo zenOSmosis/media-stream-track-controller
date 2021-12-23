@@ -1,4 +1,4 @@
-const getNewAudioContext = require("../../audioContext/getNewAudioContext");
+const createNewAudioContext = require("../../audioContext/createNewAudioContext");
 const stopMediaStream = require("../stopMediaStream");
 const { logger } = require("phantom-core");
 
@@ -11,7 +11,7 @@ const { logger } = require("phantom-core");
  * @return {MediaStream}
  */
 module.exports = function createEmptyAudioMediaStream(duration = 5) {
-  const audioCtx = getNewAudioContext();
+  const audioCtx = createNewAudioContext();
 
   const streamOutput = audioCtx.createMediaStreamDestination();
 

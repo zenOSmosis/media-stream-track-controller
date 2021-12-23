@@ -1,4 +1,4 @@
-const getNewAudioContext = require("../../audioContext/getNewAudioContext");
+const createNewAudioContext = require("../../audioContext/createNewAudioContext");
 const stopMediaStream = require("../stopMediaStream");
 const { logger } = require("phantom-core");
 
@@ -14,7 +14,7 @@ module.exports = function createTestAudioMediaStream(duration = 5) {
   const pulseHz = 880;
   const lfoHz = 30;
 
-  const audioCtx = getNewAudioContext();
+  const audioCtx = createNewAudioContext();
 
   let osc = audioCtx.createOscillator();
   osc.type = "sine";
