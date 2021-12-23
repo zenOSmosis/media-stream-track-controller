@@ -93,6 +93,7 @@ async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
   );
 }
 
+// TODO: Move into another file
 /**
  * Retrieves the associated track controllers for the given media device.
  *
@@ -111,6 +112,7 @@ function getMediaDeviceTrackControllers(mediaDeviceInfo) {
   );
 }
 
+// TODO: Move into another file
 /**
  * Determines if the given media device is being captured.
  *
@@ -121,6 +123,7 @@ function getIsMediaDeviceBeingCaptured(mediaDeviceInfo) {
   return getMediaDeviceTrackControllers(mediaDeviceInfo).length > 0;
 }
 
+// TODO: Move into another file
 /**
  * Determines if the user device / browser is capable / configured to support
  * media device capturing.
