@@ -12,6 +12,17 @@ import { logger } from "phantom-core";
  */
 export default function useVideoMediaStreamTrackSnapshot() {
   const takeSnapshot = useCallback(async videoMediaStreamTrack => {
+    if (!(videoMediaStreamTrack instanceof MediaStreamTrack)) {
+      throw new TypeError(
+        "videoMediaStreamTrack is not a MediaStreamTrack instance"
+      );
+    } else if (videoMediaStreamTrack.kind === "video") {
+      // TODO: Use constant for "video"
+      throw new TypeError(
+        "videoMediaStreamTrack is not a video MediaStreamTrack"
+      );
+    }
+
     const { width, height } = videoMediaStreamTrack.getSettings();
 
     const videoEl = document.createElement("video");
