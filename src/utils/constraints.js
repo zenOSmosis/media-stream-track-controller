@@ -33,8 +33,7 @@ function createDefaultAudioConstraints(userConstraints = {}) {
  */
 function createDefaultVideoConstraints(userConstraints = {}) {
   const DEFAULT_VIDEO_CONSTRAINTS = {
-    // TODO: Finish adding
-    video: {},
+    video: true,
   };
 
   return mergeConstraints(DEFAULT_VIDEO_CONSTRAINTS, userConstraints);
@@ -97,6 +96,13 @@ function getSpecificDeviceIdCaptureConstraints(
     throw new TypeError("deviceKind must be audio or video");
   }
 
+  // Prevent device from being captured if {audio/video: false} is set
+  if (userConstraints && userConstraints[deviceKind] === false) {
+    return {
+      [deviceKind]: false,
+    };
+  }
+
   const OVERRIDE_CONSTRAINTS = {
     [deviceKind]: {
       deviceId: {
@@ -110,11 +116,6 @@ function getSpecificDeviceIdCaptureConstraints(
       ? VIDEO_DEVICE_KIND
       : AUDIO_DEVICE_KIND]: false,
   };
-
-  // Prevent device from being captured if {audio/video: false} is set
-  if (!userConstraints || userConstraints[deviceKind] === false) {
-    userConstraints = {};
-  }
 
   // IMPORTANT: OVERRIDE_CONSTRAINTS takes precedence here
   return mergeConstraints(userConstraints, OVERRIDE_CONSTRAINTS);

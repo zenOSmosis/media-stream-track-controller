@@ -22,33 +22,41 @@ module.exports = function mergeConstraints(
 ) {
   const defaultAudioConstraints = normalizeConstraints(
     "audio",
-    (defaultConstraints && defaultConstraints.audio) || {}
+    defaultConstraints && defaultConstraints.audio
   );
   const defaultVideoConstraints = normalizeConstraints(
     "video",
-    (defaultConstraints && defaultConstraints.video) || {}
+    defaultConstraints && defaultConstraints.video
   );
 
   const userAudioConstraints = normalizeConstraints(
     "audio",
-    (userConstraints && userConstraints.audio) || {}
+    userConstraints && userConstraints.audio
   );
   const userVideoConstraints = normalizeConstraints(
     "video",
-    (userConstraints && userConstraints.video) || {}
+    userConstraints && userConstraints.video
   );
 
   const nextDefaultConstraints = deepMerge(
     defaultAudioConstraints,
     defaultVideoConstraints
   );
+
   const nextUserConstraints = deepMerge(
     userAudioConstraints,
     userVideoConstraints
   );
 
-  // TODO: Return here, directly
   const merged = deepMerge(nextDefaultConstraints, nextUserConstraints);
+
+  if (merged.audio === undefined) {
+    merged.audio = false;
+  }
+
+  if (merged.video === undefined) {
+    merged.video = false;
+  }
 
   return merged;
 };

@@ -580,13 +580,14 @@ test("utils.constraints.mergeConstraints", t => {
           foo: "bar",
         },
       },
-      { audio: { test: 123 } }
+      { audio: { test: 123 }, video: false }
     ),
     {
       audio: {
         test: 123,
         foo: "bar",
       },
+      video: false,
     },
     "recursively merges"
   );
@@ -595,8 +596,7 @@ test("utils.constraints.mergeConstraints", t => {
 });
 
 test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
-  // TODO: Reimplement
-  // t.plan(5);
+  t.plan(5);
 
   t.throws(
     () => {
@@ -616,11 +616,15 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
       utils.constraints.createDefaultAudioConstraints()
     ),
     {
-      ...utils.constraints.createDefaultAudioConstraints({
-        deviceId: {
-          exact: "test-audio-device-id",
-        },
-      }),
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+        deviceId: { exact: "test-audio-device-id" },
+      },
       video: false,
     },
     "exact deviceId spliced onto default audio constraints (without audio userConstraints root object)"
@@ -635,11 +639,15 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
       }
     ),
     {
-      ...utils.constraints.createDefaultAudioConstraints({
-        deviceId: {
-          exact: "test-audio-device-id",
-        },
-      }),
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+        deviceId: { exact: "test-audio-device-id" },
+      },
       video: false,
     },
     "exact deviceId spliced onto default audio constraints (with audio userConstraints root object)"
@@ -672,8 +680,8 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
         audio: false,
       }
     ),
-    {},
-    "passing boolean false as userConstraints[audio] returns empty object"
+    { audio: false },
+    "passing boolean false as userConstraints[audio] returns false audio"
   );
 
   t.end();
@@ -689,11 +697,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
       utils.constraints.createDefaultVideoConstraints()
     ),
     {
-      ...utils.constraints.createDefaultVideoConstraints({
+      video: {
         deviceId: {
           exact: "test-video-device-id",
         },
-      }),
+      },
       audio: false,
     },
     "exact deviceId spliced onto default video constraints (without video userConstraints root object)"
@@ -708,11 +716,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
       }
     ),
     {
-      ...utils.constraints.createDefaultVideoConstraints({
+      video: {
         deviceId: {
           exact: "test-video-device-id",
         },
-      }),
+      },
       audio: false,
     },
     "exact deviceId spliced onto default video constraints (with video userConstraints root object)"
@@ -724,6 +732,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
       "video",
       {
         video: true,
+        audio: false,
       }
     ),
     {
@@ -745,8 +754,10 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
         video: false,
       }
     ),
-    {},
-    "passing boolean false as userConstraints[video] returns empty object"
+    {
+      video: false,
+    },
+    "passing boolean false as userConstraints[video] returns video false"
   );
 
   t.end();
@@ -756,9 +767,20 @@ test("utils.constraints.createDefaultAudioConstraints", t => {
   t.plan(1);
 
   t.deepEquals(
-    Object.keys(utils.constraints.createDefaultAudioConstraints()),
-    ["audio"],
-    "create audio constraints only has audio key"
+    utils.constraints.createDefaultAudioConstraints(),
+    {
+      // TODO: Obtain presets (refactor?)
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+      },
+      video: false,
+    },
+    "default audio constraints matches high quality audio and false video"
   );
 
   t.end();
