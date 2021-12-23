@@ -1,3 +1,5 @@
+const filterInputMediaDevices = require("./filterInputMediaDevices");
+
 /**
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * audio input devices only.

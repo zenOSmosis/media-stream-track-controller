@@ -1,3 +1,4 @@
+const fetchMediaDevices = require("./fetchMediaDevices");
 const filterInputMediaDevices = require("./mediaDeviceInfoFilters/filterInputMediaDevices");
 
 /**

@@ -1,3 +1,5 @@
+const MediaStreamTrackControllerBase = require("../../_base/_MediaStreamTrackControllerBase");
+
 /**
  * Retrieves the associated track controllers for the given media device.
  *

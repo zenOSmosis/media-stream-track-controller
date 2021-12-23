@@ -1,3 +1,5 @@
+const filterInputMediaDevices = require("./filterInputMediaDevices");
+
 /**
  * Returns a filtered array of MediaDeviceInfo[-like] structures, representing
  * video input devices only.

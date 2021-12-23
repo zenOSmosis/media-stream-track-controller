@@ -1,3 +1,5 @@
+const getMediaDeviceTrackControllers = require("./getMediaDeviceTrackControllers");
+
 /**
  * Determines if the given media device is being captured.
  *
