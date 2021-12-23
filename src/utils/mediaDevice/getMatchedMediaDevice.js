@@ -10,15 +10,20 @@
  * MediaDeviceInfo[-like] objects to compare against.
  * @return {MediaDeviceInfo | Object | null}
  */
-const getMatchedMediaDevice = (kind, mediaDeviceInfo, mediaDeviceInfoList) => {
-  const AVAILABLE_KINDS = [
+module.exports = function getMatchedMediaDevice(
+  kind,
+  mediaDeviceInfo,
+  mediaDeviceInfoList
+) {
+  // TODO: Move these to a more centralized location
+  const POSSIBLE_KINDS = [
     "audioinput",
     "videoinput",
     "audiooutput",
     "videooutput",
   ];
 
-  if (!AVAILABLE_KINDS.includes(kind)) {
+  if (!POSSIBLE_KINDS.includes(kind)) {
     throw new ReferenceError(`Invalid kind "${kind}"`);
   }
 
@@ -54,7 +59,3 @@ const getMatchedMediaDevice = (kind, mediaDeviceInfo, mediaDeviceInfoList) => {
   // of this function
   return null;
 };
-
-// NOTE: This is left as a non-default export because other methods may follow,
-// one of which may match the filename
-module.exports = getMatchedMediaDevice;

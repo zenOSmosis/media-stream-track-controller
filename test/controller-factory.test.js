@@ -1,11 +1,7 @@
 const test = require("tape");
-const {
-  MediaStreamTrackControllerFactory,
-  MediaStreamTrackControllerEvents,
-  debug,
-} = require("../src");
+const { MediaStreamTrackControllerFactory, utils } = require("../src");
 
-const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
+const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerFactory;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.plan(7);
@@ -15,7 +11,8 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
     "expects inputMediaStream parameter"
   );
 
-  const mediaStream1 = debug.createTestAudioMediaStream();
+  const mediaStream1 =
+    utils.mediaStream.generators.createTestAudioMediaStream();
 
   // NOTE: Due to issues w/ testing canvas-generated video streams on iOS
   // simulator, we're only testing for audio here
@@ -113,7 +110,10 @@ test("factory auto-destruct when all track controllers are removed", async t => 
   const selfDestructFactory = new MediaStreamTrackControllerFactory(
     new MediaStream(
       [...new Array(8)].map(
-        () => debug.createTestAudioMediaStream().getTracks()[0]
+        () =>
+          utils.mediaStream.generators
+            .createTestAudioMediaStream()
+            .getTracks()[0]
       )
     )
   );
@@ -162,14 +162,16 @@ test("factory auto-destruct when all track controllers are removed", async t => 
 test("stop calls destruct", async t => {
   t.plan(5);
 
-  const mediaStream1 = debug.createTestAudioMediaStream();
+  const mediaStream1 =
+    utils.mediaStream.generators.createTestAudioMediaStream();
   const factory1 = new MediaStreamTrackControllerFactory(mediaStream1);
 
   await factory1.stop();
 
   t.ok(factory1.getIsDestroyed(), "calling stop() destructs factory1");
 
-  const mediaStream2 = debug.createTestAudioMediaStream();
+  const mediaStream2 =
+    utils.mediaStream.generators.createTestAudioMediaStream();
   const factory2 = new MediaStreamTrackControllerFactory(mediaStream2);
   const factory2TrackController = factory2.getTrackControllers()[0];
 
@@ -195,7 +197,7 @@ test("stop calls destruct", async t => {
 test("factory and controller input device IDs", async t => {
   t.plan(1);
 
-  const mediaStream = debug.createTestAudioMediaStream();
+  const mediaStream = utils.mediaStream.generators.createTestAudioMediaStream();
 
   const factory = new MediaStreamTrackControllerFactory(mediaStream);
 

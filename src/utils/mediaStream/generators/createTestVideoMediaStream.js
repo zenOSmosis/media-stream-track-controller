@@ -1,4 +1,4 @@
-const { stopMediaStream } = require("../utils");
+const stopMediaStream = require("../stopMediaStream");
 const { logger } = require("phantom-core");
 
 /**
@@ -9,7 +9,7 @@ const { logger } = require("phantom-core");
  * last.
  * @return {MediaStream}
  */
-function createTestVideoMediaStream(duration = 5) {
+module.exports = function createTestVideoMediaStream(duration = 5) {
   const canvas = document.createElement("canvas");
 
   document.body.appendChild(canvas);
@@ -25,6 +25,4 @@ function createTestVideoMediaStream(duration = 5) {
   }, duration * 1000);
 
   return mediaStream;
-}
-
-module.exports = createTestVideoMediaStream;
+};

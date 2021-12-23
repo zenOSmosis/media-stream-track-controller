@@ -48,7 +48,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
    * controllers originating from the given input media device.
    *
    * @param {MediaDeviceInfo | Object} mediaDeviceInfo
-   * @param {string | null} kind? [default = null]
+   * @param {string | null} kind? [default = null] // TODO: Specify available kinds
    * @return {MediaStreamTrackControllerFactory[]}
    */
   static getFactoriesWithInputMediaDevice(mediaDeviceInfo, kind = null) {

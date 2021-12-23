@@ -1,7 +1,7 @@
 const { deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
-const { getSharedAudioContext } = require("../utils/getAudioContext");
+const getSharedAudioContext = require("../utils/audioContext/getSharedAudioContext");
 
 // TODO: Add stereo panner
 // https://stackoverflow.com/questions/5123844/change-left-right-balance-on-playing-audio-in-javascript?rq=1
@@ -100,6 +100,102 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
     }
 
     return this._gainNode && this._gainNode.gain && this._gainNode.gain.value;
+  }
+
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
+  getIsNoiseSuppressionEnabled() {
+    return this.getSettings().noiseSuppression;
+  }
+
+  /**
+   * Sets whether noise suppression filtering should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
+  async setIsNoiseSuppressionEnabled(isNoiseSuppressionEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      noiseSuppression: isNoiseSuppressionEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isNoiseSuppressionEnabled !== this.getIsAutoGainControlEnabled()) {
+      throw new Error(
+        "Could not successfully apply noiseSuppression update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
+  }
+
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
+  getIsEchoCancellationEnabled() {
+    return this.getSettings().echoCancellation;
+  }
+
+  /**
+   * Sets whether echo cancellation filtering should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
+  async setIsEchoCancellationEnabled(isEchoCancellationEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      echoCancellation: isEchoCancellationEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isEchoCancellationEnabled !== this.getIsEchoCancellationEnabled()) {
+      throw new Error(
+        "Could not successfully apply echoCancellation update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
+  }
+
+  /**
+   * IMPORTANT: This is only accurate if the input MediaStreamTrack is directly
+   * linked (not copied) to a getUserMedia or getDisplayMedia call.
+   *
+   * @return {boolean}
+   */
+  getIsAutoGainControlEnabled() {
+    return this.getSettings().autoGainControl;
+  }
+
+  /**
+   * Sets whether auto gain control should be applied to the track.
+   *
+   * @param {boolean} isNoiseSuppressionEnabled
+   * @return {Promise<void>}
+   */
+  async setIsAutoGainControlEnabled(isAutoGainControlEnabled) {
+    await this._inputMediaStreamTrack.applyConstraints({
+      autoGainControl: isAutoGainControlEnabled,
+    });
+
+    // NOTE: Chrome <= 96.x(+?) has a bug which does not allow for constraint
+    // updates and silently ignores the fact
+    if (isAutoGainControlEnabled !== this.getIsAutoGainControlEnabled()) {
+      throw new Error(
+        "Could not successfully apply autoGainControl update to currently running track"
+      );
+    }
+
+    this.emit(EVT_UPDATED);
   }
 }
 

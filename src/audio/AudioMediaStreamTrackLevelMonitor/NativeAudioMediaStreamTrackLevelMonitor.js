@@ -1,6 +1,6 @@
 const PhantomCore = require("phantom-core");
 const { /** @exports */ EVT_DESTROYED } = PhantomCore;
-const { getSharedAudioContext } = require("../../utils/getAudioContext");
+const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 
 // Emits after audio level has changed, with a value from 0 - 10
 /** @exports */
@@ -165,6 +165,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this._pollingStartTime = this.getTime();
 
+    // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
