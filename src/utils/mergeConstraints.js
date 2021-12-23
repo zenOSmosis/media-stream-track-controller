@@ -50,15 +50,6 @@ module.exports = function mergeConstraints(
   // TODO: Return here, directly
   const merged = deepMerge(nextDefaultConstraints, nextUserConstraints);
 
-  // TODO: Remove
-  console.log({
-    merged,
-    defaultAudioConstraints,
-    defaultVideoConstraints,
-    userAudioConstraints,
-    userVideoConstraints,
-  });
-
   return merged;
 };
 

@@ -111,9 +111,6 @@ function getSpecificDeviceIdCaptureConstraints(
       : AUDIO_DEVICE_KIND]: false,
   };
 
-  // TODO: Remove
-  console.log({ userConstraints, deviceId, deviceKind, OVERRIDE_CONSTRAINTS });
-
   // Prevent device from being captured if {audio/video: false} is set
   if (!userConstraints || userConstraints[deviceKind] === false) {
     userConstraints = {};
@@ -140,9 +137,6 @@ function getSpecificDeviceCaptureConstraints(
 
     throw new TypeError("mediaDeviceInfo must be of MediaDeviceInfo type");
   }
-
-  // TODO: Remove
-  console.log({ mediaDeviceInfo, userConstraints });
 
   return getSpecificDeviceIdCaptureConstraints(
     mediaDeviceInfo.deviceId,
