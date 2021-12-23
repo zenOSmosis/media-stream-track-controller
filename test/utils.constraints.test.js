@@ -221,8 +221,8 @@ test("utils.constraints.audioQualityPresets.getAudioQualityPresetWithName", t =>
     );
 
   t.deepEquals(
-    talkRadioPreset,
-    AUDIO_QUALITY_PRESET_TALK_RADIO,
+    lqMusicPreset,
+    AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,
     "low quality music preset is obtainable"
   );
 
