@@ -116,8 +116,7 @@ function getSpecificDeviceIdCaptureConstraints(
 
   // Prevent device from being captured if {audio/video: false} is set
   if (!userConstraints || userConstraints[deviceKind] === false) {
-    // FIXME: (jh) Continue to return empty object for this condition?
-    return {};
+    userConstraints = {};
   }
 
   // IMPORTANT: OVERRIDE_CONSTRAINTS takes precedence here
