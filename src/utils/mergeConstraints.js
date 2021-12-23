@@ -12,30 +12,30 @@ const VIDEO_DEVICE_KIND = "video";
  * protection against mix of booleans and objects, multi-level intermediate
  * objects (improperly formed constraints), etc.
  *
- * @param {MediaTrackConstraints} defaultConstraints
- * @param {MediaTrackConstraints} userConstraints
+ * @param {MediaTrackConstraints} defaultConstraints? [default = {}]
+ * @param {MediaTrackConstraints} userConstraints? [default = {}]
  * @return {Object} // TODO: Document return object
  */
 module.exports = function mergeConstraints(
-  defaultConstraints,
-  userConstraints
+  defaultConstraints = {},
+  userConstraints = {}
 ) {
   const defaultAudioConstraints = normalizeConstraints(
     "audio",
-    defaultConstraints.audio || {}
+    (defaultConstraints && defaultConstraints.audio) || {}
   );
   const defaultVideoConstraints = normalizeConstraints(
     "video",
-    defaultConstraints.video || {}
+    (defaultConstraints && defaultConstraints.video) || {}
   );
 
   const userAudioConstraints = normalizeConstraints(
     "audio",
-    userConstraints.audio || {}
+    (userConstraints && userConstraints.audio) || {}
   );
   const userVideoConstraints = normalizeConstraints(
     "video",
-    userConstraints.video || {}
+    (userConstraints && userConstraints.video) || {}
   );
 
   const nextDefaultConstraints = deepMerge(
@@ -47,7 +47,19 @@ module.exports = function mergeConstraints(
     userVideoConstraints
   );
 
-  return deepMerge(nextDefaultConstraints, nextUserConstraints);
+  // TODO: Return here, directly
+  const merged = deepMerge(nextDefaultConstraints, nextUserConstraints);
+
+  // TODO: Remove
+  console.log({
+    merged,
+    defaultAudioConstraints,
+    defaultVideoConstraints,
+    userAudioConstraints,
+    userVideoConstraints,
+  });
+
+  return merged;
 };
 
 /**

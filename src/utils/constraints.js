@@ -112,7 +112,7 @@ function getSpecificDeviceIdCaptureConstraints(
   };
 
   // TODO: Remove
-  console.log({ userConstraints, deviceId, deviceKind });
+  console.log({ userConstraints, deviceId, deviceKind, OVERRIDE_CONSTRAINTS });
 
   // Prevent device from being captured if {audio/video: false} is set
   if (!userConstraints || userConstraints[deviceKind] === false) {

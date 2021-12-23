@@ -22,7 +22,18 @@ const {
  */
 async function captureMediaDevice(userConstraints = {}, factoryOptions = {}) {
   const DEFAULT_CONSTRAINTS = {
-    ...createDefaultAudioConstraints(userConstraints && userConstraints.audio),
+    ...(() => {
+      // Capture audio if no user constraints are provided; if audio
+      // constraints are provided, merge them in with default audio
+      // constraints, where userConstraints takes precedence over defaults
+      if (!userConstraints || userConstraints.audio) {
+        return createDefaultAudioConstraints(
+          userConstraints && userConstraints.audio
+        );
+      } else {
+        return {};
+      }
+    })(),
 
     // FIXME: Implement video constraints if video will be captured by default
     // ...createDefaultVideoConstraints(userConstraints && userConstraints.video),
