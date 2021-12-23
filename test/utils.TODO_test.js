@@ -10,39 +10,6 @@ test("pulsing audio media stream is a MediaStream", t => {
   t.end();
 });
 
-test("utils.captureMediaDevice.uncaptureSpecificMediaDevice", async t => {
-  t.plan(2);
-
-  // NOTE: t.throws doesn't seem to be working correct when using async
-  // methods, so this try / catch is used as a workaround
-  try {
-    await utils.captureMediaDevice.uncaptureSpecificMediaDevice({
-      label: "test",
-    });
-  } catch (err) {
-    t.ok(
-      err instanceof ReferenceError,
-      "throws ReferenceError when deviceId is not set"
-    );
-  }
-
-  // NOTE: t.throws doesn't seem to be working correct when using async
-  // methods, so this try / catch is used as a workaround
-  try {
-    await utils.captureMediaDevice.uncaptureSpecificMediaDevice({
-      deviceId: "test",
-    });
-    t.ok("does not throw when deviceId is set");
-  } catch (err) {
-    throw err;
-  }
-
-  // NOTE: At this time, it may be nearly impossible to automatically test this
-  // function completely works, so refer to dev UI for manual testing
-
-  t.end();
-});
-
 /*
 test("utils.constraints.createNormalizedConstraintsOfKind", t => {
   t.plan(6);
