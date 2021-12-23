@@ -10,27 +10,6 @@ test("pulsing audio media stream is a MediaStream", t => {
   t.end();
 });
 
-test("utils.stopMediaStream", t => {
-  // TODO: Incorporate video streams in to this test
-
-  t.plan(3);
-
-  const mediaStream = debug.createTestAudioMediaStream();
-
-  t.equals(mediaStream.getTracks().length, 1);
-
-  const mediaStream2 = debug.createTestAudioMediaStream();
-  mediaStream2.getTracks().forEach(track => mediaStream.addTrack(track));
-
-  t.equals(mediaStream.getTracks().length, 2);
-
-  utils.stopMediaStream(mediaStream);
-
-  t.equals(mediaStream.getTracks().length, 0);
-
-  t.end();
-});
-
 test("utils.captureMediaDevice.uncaptureSpecificMediaDevice", async t => {
   t.plan(2);
 
