@@ -1,3 +1,7 @@
+const makeAudioConstraints = require("./makeAudioConstraints");
+const makeVideoConstraints = require("./makeVideoConstraints");
+const mergeConstraints = require("./mergeConstraints");
+
 /**
  * Form screen capture constraints, merging optional user constraints onto
  * internal default constraints.
@@ -5,7 +9,7 @@
  * @param {MediaTrackConstraints | Object} userConstraints? [default = {}]
  * @return {MediaTrackConstraints | Object}
  */
-function makeScreenCaptureConstraints(userConstraints = {}) {
+module.exports = function makeScreenCaptureConstraints(userConstraints = {}) {
   const DEFAULT_CONSTRAINTS = {
     // NOTE: Audio capturing is typically only available in Chromium-based
     // browsers and typically only works for capturing audio in browser tabs.
@@ -35,4 +39,4 @@ function makeScreenCaptureConstraints(userConstraints = {}) {
   };
 
   return mergeConstraints(DEFAULT_CONSTRAINTS, userConstraints);
-}
+};

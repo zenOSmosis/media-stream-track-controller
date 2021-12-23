@@ -1,3 +1,5 @@
+const mergeConstraints = require("./mergeConstraints");
+
 /**
  * Form video capture constraints, merging optional user constraints onto
  * internal default constraints.

@@ -263,7 +263,7 @@ function App() {
             <h2>Screen Capture</h2>
             <button
               onClick={() =>
-                utils
+                utils.screen
                   .captureScreen(null, {
                     title: "captureScreen",
                   })

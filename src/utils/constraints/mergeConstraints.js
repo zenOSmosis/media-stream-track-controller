@@ -50,14 +50,6 @@ module.exports = function mergeConstraints(
 
   const merged = deepMerge(nextDefaultConstraints, nextUserConstraints);
 
-  if (merged.audio === undefined) {
-    merged.audio = false;
-  }
-
-  if (merged.video === undefined) {
-    merged.video = false;
-  }
-
   return merged;
 };
 

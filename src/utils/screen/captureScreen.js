@@ -1,3 +1,6 @@
+const MediaStreamTrackControllerFactory = require("../../MediaStreamTrackControllerFactory");
+const makeScreenCaptureConstraints = require("../constraints/makeScreenCaptureConstraints");
+
 /**
  * Capture screen  content and resolve a controller factory to manage the media
  * track(s).
@@ -13,7 +16,7 @@ module.exports = async function captureScreen(
   factoryOptions = {}
 ) {
   const mediaStream = await navigator.mediaDevices.getDisplayMedia(
-    createScreenCaptureConstraints(userConstraints)
+    makeScreenCaptureConstraints(userConstraints)
   );
 
   return new MediaStreamTrackControllerFactory(mediaStream, factoryOptions);
