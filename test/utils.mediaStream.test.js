@@ -35,3 +35,19 @@ test("utils.mediaStream.stopMediaStream", t => {
 
   t.end();
 });
+
+test("audio generators produce MediaStream instances", t => {
+  t.plan(2);
+
+  t.ok(
+    utils.mediaStream.generators.createTestAudioMediaStream() instanceof
+      MediaStream
+  );
+
+  t.ok(
+    utils.mediaStream.generators.createEmptyAudioMediaStream() instanceof
+      MediaStream
+  );
+
+  t.end();
+});

@@ -1,15 +1,222 @@
 const test = require("tape");
-const { debug, utils } = require("../src");
-const { mergeConstraints } = require("../src/utils/constraints");
+const { utils } = require("../src");
 
-test("pulsing audio media stream is a MediaStream", t => {
+test("utils.constraints.mergeConstraints", t => {
   t.plan(1);
 
-  t.ok(debug.createTestAudioMediaStream() instanceof MediaStream);
+  t.deepEquals(
+    utils.constraints.mergeConstraints(
+      {
+        audio: {
+          foo: "bar",
+        },
+      },
+      { audio: { test: 123 }, video: false }
+    ),
+    {
+      audio: {
+        test: 123,
+        foo: "bar",
+      },
+      video: false,
+    },
+    "recursively merges"
+  );
 
   t.end();
 });
 
+test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
+  t.plan(5);
+
+  t.throws(
+    () => {
+      utils.constraints.makeSpecificDeviceIdCaptureConstraints(
+        "test-audio-device-id",
+        "audio-video"
+      );
+    },
+    TypeError,
+    "throws TypeError when adding invalid device type"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-audio-device-id",
+      "audio",
+      utils.constraints.makeAudioConstraints()
+    ),
+    {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+        deviceId: { exact: "test-audio-device-id" },
+      },
+      video: false,
+    },
+    "exact deviceId spliced onto default audio constraints (without audio userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-audio-device-id",
+      "audio",
+      {
+        audio: utils.constraints.makeAudioConstraints(),
+      }
+    ),
+    {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+        deviceId: { exact: "test-audio-device-id" },
+      },
+      video: false,
+    },
+    "exact deviceId spliced onto default audio constraints (with audio userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-audio-device-id",
+      "audio",
+      {
+        audio: true,
+      }
+    ),
+    {
+      audio: {
+        deviceId: {
+          exact: "test-audio-device-id",
+        },
+      },
+      video: false,
+    },
+    "passing boolean true as userConstraints[audio] does not override deviceId"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-audio-device-id",
+      "audio",
+      {
+        audio: false,
+      }
+    ),
+    { audio: false },
+    "passing boolean false as userConstraints[audio] returns false audio"
+  );
+
+  t.end();
+});
+
+test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
+  t.plan(4);
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      utils.constraints.makeVideoConstraints()
+    ),
+    {
+      video: {
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "exact deviceId spliced onto default video constraints (without video userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: utils.constraints.makeVideoConstraints(),
+      }
+    ),
+    {
+      video: {
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "exact deviceId spliced onto default video constraints (with video userConstraints root object)"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: true,
+        audio: false,
+      }
+    ),
+    {
+      video: {
+        deviceId: {
+          exact: "test-video-device-id",
+        },
+      },
+      audio: false,
+    },
+    "passing boolean true as userConstraints[video] does not override deviceId"
+  );
+
+  t.deepEquals(
+    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+      "test-video-device-id",
+      "video",
+      {
+        video: false,
+      }
+    ),
+    {
+      video: false,
+    },
+    "passing boolean false as userConstraints[video] returns video false"
+  );
+
+  t.end();
+});
+
+test("utils.constraints.makeAudioConstraints", t => {
+  t.plan(1);
+
+  t.deepEquals(
+    utils.constraints.makeAudioConstraints(),
+    {
+      // TODO: Obtain presets (refactor?)
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+      },
+    },
+    "default audio constraints matches high quality audio and false video"
+  );
+
+  t.end();
+});
+
+// TODO: Implement
 /*
 test("utils.constraints.createNormalizedConstraintsOfKind", t => {
   t.plan(6);
@@ -101,221 +308,5 @@ test("utils.constraints.createNormalizedConstraintsOfKind", t => {
   t.end();
 });
 */
-
-test("utils.constraints.mergeConstraints", t => {
-  t.plan(1);
-
-  t.deepEquals(
-    mergeConstraints(
-      {
-        audio: {
-          foo: "bar",
-        },
-      },
-      { audio: { test: 123 }, video: false }
-    ),
-    {
-      audio: {
-        test: 123,
-        foo: "bar",
-      },
-      video: false,
-    },
-    "recursively merges"
-  );
-
-  t.end();
-});
-
-test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
-  t.plan(5);
-
-  t.throws(
-    () => {
-      utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-        "test-audio-device-id",
-        "audio-video"
-      );
-    },
-    TypeError,
-    "throws TypeError when adding invalid device type"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      utils.constraints.createDefaultAudioConstraints()
-    ),
-    {
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-        sampleRate: 48000,
-        sampleSize: 16,
-        channelCount: 2,
-        deviceId: { exact: "test-audio-device-id" },
-      },
-      video: false,
-    },
-    "exact deviceId spliced onto default audio constraints (without audio userConstraints root object)"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: utils.constraints.createDefaultAudioConstraints(),
-      }
-    ),
-    {
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-        sampleRate: 48000,
-        sampleSize: 16,
-        channelCount: 2,
-        deviceId: { exact: "test-audio-device-id" },
-      },
-      video: false,
-    },
-    "exact deviceId spliced onto default audio constraints (with audio userConstraints root object)"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: true,
-      }
-    ),
-    {
-      audio: {
-        deviceId: {
-          exact: "test-audio-device-id",
-        },
-      },
-      video: false,
-    },
-    "passing boolean true as userConstraints[audio] does not override deviceId"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: false,
-      }
-    ),
-    { audio: false },
-    "passing boolean false as userConstraints[audio] returns false audio"
-  );
-
-  t.end();
-});
-
-test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
-  t.plan(4);
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      utils.constraints.createDefaultVideoConstraints()
-    ),
-    {
-      video: {
-        deviceId: {
-          exact: "test-video-device-id",
-        },
-      },
-      audio: false,
-    },
-    "exact deviceId spliced onto default video constraints (without video userConstraints root object)"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: utils.constraints.createDefaultVideoConstraints(),
-      }
-    ),
-    {
-      video: {
-        deviceId: {
-          exact: "test-video-device-id",
-        },
-      },
-      audio: false,
-    },
-    "exact deviceId spliced onto default video constraints (with video userConstraints root object)"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: true,
-        audio: false,
-      }
-    ),
-    {
-      video: {
-        deviceId: {
-          exact: "test-video-device-id",
-        },
-      },
-      audio: false,
-    },
-    "passing boolean true as userConstraints[video] does not override deviceId"
-  );
-
-  t.deepEquals(
-    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: false,
-      }
-    ),
-    {
-      video: false,
-    },
-    "passing boolean false as userConstraints[video] returns video false"
-  );
-
-  t.end();
-});
-
-test("utils.constraints.createDefaultAudioConstraints", t => {
-  t.plan(1);
-
-  t.deepEquals(
-    utils.constraints.createDefaultAudioConstraints(),
-    {
-      // TODO: Obtain presets (refactor?)
-      audio: {
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
-        sampleRate: 48000,
-        sampleSize: 16,
-        channelCount: 2,
-      },
-      video: false,
-    },
-    "default audio constraints matches high quality audio and false video"
-  );
-
-  t.end();
-});
 
 // TODO: Add additional tests for constraints
