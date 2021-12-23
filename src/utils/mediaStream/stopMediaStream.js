@@ -7,7 +7,7 @@ const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackContro
  * @param {MediaStream} mediaStream
  * @return {void}
  */
-function stopMediaStream(mediaStream) {
+module.exports = function stopMediaStream(mediaStream) {
   mediaStream.getTracks().forEach(track => {
     track.stop();
 
@@ -37,6 +37,4 @@ function stopMediaStream(mediaStream) {
 
     mediaStream.removeTrack(track);
   });
-}
-
-module.exports = stopMediaStream;
+};

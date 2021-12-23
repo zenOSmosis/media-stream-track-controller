@@ -1,4 +1,4 @@
-const { filterInputMediaDevices } = require("./mediaDeviceInfoFilters");
+const { filterInputMediaDevices } = require("../mediaDeviceInfoFilters");
 
 /**
  * Lists all input and output media devices.
