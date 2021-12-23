@@ -1,8 +1,8 @@
 const test = require("tape");
 const {
-  debug,
   AudioMediaStreamTrackLevelMonitor,
   MultiAudioMediaStreamTrackLevelMonitor,
+  utils,
 } = require("../src");
 
 const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
@@ -11,10 +11,18 @@ const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
 test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations / shutdown handling", async t => {
   t.plan(30);
 
-  const testTrack1 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack2 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack3 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack4 = debug.createTestAudioMediaStream().getTracks()[0];
+  const testTrack1 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack2 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack3 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack4 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
 
   const multiAudioMonitor = new MultiAudioMediaStreamTrackLevelMonitor([
     testTrack1,
@@ -101,13 +109,13 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
 
   t.doesNotThrow(() => {
     multiAudioMonitor.addMediaStreamTrack(
-      debug.createTestAudioMediaStream().getTracks()[0]
+      utils.mediaStream.generators.createTestAudioMediaStream().getTracks()[0]
     );
   }, "accepts additional arbitrary call to addMediaStreamTrack()");
 
   t.doesNotThrow(() => {
     multiAudioMonitor.addChild(
-      debug.createTestAudioMediaStream().getTracks()[0]
+      utils.mediaStream.generators.createTestAudioMediaStream().getTracks()[0]
     );
   }, "accepts additional arbitrary call to addChild() without a key");
 
@@ -146,10 +154,18 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
 test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
   t.plan(1);
 
-  const testTrack1 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack2 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack3 = debug.createTestAudioMediaStream().getTracks()[0];
-  const testTrack4 = debug.createTestAudioMediaStream().getTracks()[0];
+  const testTrack1 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack2 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack3 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+  const testTrack4 = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
 
   const multiAudioMonitor = new MultiAudioMediaStreamTrackLevelMonitor([
     testTrack1,

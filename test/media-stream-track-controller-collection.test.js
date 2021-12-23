@@ -1,15 +1,17 @@
 const test = require("tape");
 const {
-  debug,
   AudioMediaStreamTrackController,
   MediaStreamTrackControllerCollection,
+  utils,
 } = require("../src");
 
 const { EVT_CHILD_INSTANCE_ADDED, EVT_CHILD_INSTANCE_REMOVED } =
   MediaStreamTrackControllerCollection;
 
 const _createTestAudioMediaStreamController = () => {
-  const mediaStreamTrack = debug.createTestAudioMediaStream().getTracks()[0];
+  const mediaStreamTrack = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
 
   return new AudioMediaStreamTrackController(mediaStreamTrack);
 };
