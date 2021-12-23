@@ -1,6 +1,9 @@
 const test = require("tape");
 const { utils } = require("../src");
 
+const { makeSpecificDeviceIdCaptureConstraints } =
+  utils.constraints.makeSpecificDeviceCaptureConstraints;
+
 test("utils.constraints.mergeConstraints", t => {
   t.plan(1);
 
@@ -26,12 +29,12 @@ test("utils.constraints.mergeConstraints", t => {
   t.end();
 });
 
-test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
+test("makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.plan(5);
 
   t.throws(
     () => {
-      utils.constraints.makeSpecificDeviceIdCaptureConstraints(
+      makeSpecificDeviceIdCaptureConstraints(
         "test-audio-device-id",
         "audio-video"
       );
@@ -41,7 +44,7 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+    makeSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
       utils.constraints.makeAudioConstraints()
@@ -62,13 +65,9 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: utils.constraints.makeAudioConstraints(),
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-audio-device-id", "audio", {
+      audio: utils.constraints.makeAudioConstraints(),
+    }),
     {
       audio: {
         echoCancellation: false,
@@ -85,13 +84,9 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: true,
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-audio-device-id", "audio", {
+      audio: true,
+    }),
     {
       audio: {
         deviceId: {
@@ -104,13 +99,9 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-audio-device-id",
-      "audio",
-      {
-        audio: false,
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-audio-device-id", "audio", {
+      audio: false,
+    }),
     { audio: false },
     "passing boolean false as userConstraints[audio] returns false audio"
   );
@@ -118,11 +109,11 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.end();
 });
 
-test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
+test("makeSpecificDeviceIdCaptureConstraints (video)", t => {
   t.plan(4);
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
+    makeSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
       utils.constraints.makeVideoConstraints()
@@ -139,13 +130,9 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: utils.constraints.makeVideoConstraints(),
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-video-device-id", "video", {
+      video: utils.constraints.makeVideoConstraints(),
+    }),
     {
       video: {
         deviceId: {
@@ -158,14 +145,10 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: true,
-        audio: false,
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-video-device-id", "video", {
+      video: true,
+      audio: false,
+    }),
     {
       video: {
         deviceId: {
@@ -178,13 +161,9 @@ test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints(
-      "test-video-device-id",
-      "video",
-      {
-        video: false,
-      }
-    ),
+    makeSpecificDeviceIdCaptureConstraints("test-video-device-id", "video", {
+      video: false,
+    }),
     {
       video: false,
     },
