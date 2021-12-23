@@ -195,6 +195,125 @@ test("utils.constraints.makeAudioConstraints", t => {
   t.end();
 });
 
+const [
+  AUDIO_QUALITY_PRESET_TALK_RADIO,
+  AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,
+  AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
+] = utils.constraints.audioQualityPresets;
+
+test("utils.constraints.audioQualityPresets.getAudioQualityPresetWithName", t => {
+  t.plan(3);
+
+  const talkRadioPreset =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetWithName(
+      "Talk Radio"
+    );
+
+  t.deepEquals(
+    talkRadioPreset,
+    AUDIO_QUALITY_PRESET_TALK_RADIO,
+    "talk radio preset is obtainable"
+  );
+
+  const lqMusicPreset =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetWithName(
+      "Music - Low Quality"
+    );
+
+  t.deepEquals(
+    lqMusicPreset,
+    AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,
+    "low quality music preset is obtainable"
+  );
+
+  const hqMusicPreset =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetWithName(
+      "Music - High Quality"
+    );
+
+  t.deepEquals(
+    hqMusicPreset,
+    AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,
+    "hiqh quality music preset is obtainable"
+  );
+
+  t.end();
+});
+
+test("utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints", t => {
+  t.plan(4);
+
+  const talkRadioConstraints =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints(
+      AUDIO_QUALITY_PRESET_TALK_RADIO
+    );
+
+  t.deepEquals(
+    talkRadioConstraints,
+    {
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 1,
+      },
+    },
+    "high quality music constraints match expected"
+  );
+
+  const lqMusicConstraints =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints(
+      AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY
+    );
+
+  t.deepEquals(
+    lqMusicConstraints,
+    {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 1,
+      },
+    },
+    "high quality music constraints match expected"
+  );
+
+  const hqMusicConstraints =
+    utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints(
+      AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
+    );
+
+  t.deepEquals(
+    hqMusicConstraints,
+    {
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        sampleRate: 48000,
+        sampleSize: 16,
+        channelCount: 2,
+      },
+    },
+    "high quality music constraints match expected"
+  );
+
+  t.deepEquals(
+    utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints(),
+    utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints(
+      AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
+    ),
+    "passing no arguments defaults to high quality"
+  );
+
+  t.end();
+});
+
 // TODO: Implement
 /*
 test("utils.constraints.createNormalizedConstraintsOfKind", t => {
