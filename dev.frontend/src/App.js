@@ -12,7 +12,6 @@ import "./App.css";
 import {
   MediaStreamTrackControllerFactory,
   MediaStreamTrackControllerCollection,
-  MediaStreamTrackControllerEvents,
   utils,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
@@ -111,22 +110,25 @@ function App() {
 
     mediaStreamTrackControllerFactories.forEach(controller => {
       controller.once(
-        MediaStreamTrackControllerEvents.EVT_DESTROYED,
+        MediaStreamTrackControllerFactory.EVT_DESTROYED,
         handleUpdate
       );
 
-      controller.on(MediaStreamTrackControllerEvents.EVT_UPDATED, handleUpdate);
+      controller.on(
+        MediaStreamTrackControllerFactory.EVT_UPDATED,
+        handleUpdate
+      );
     });
 
     return function unmount() {
       mediaStreamTrackControllerFactories.forEach(controller => {
         controller.off(
-          MediaStreamTrackControllerEvents.EVT_DESTROYED,
+          MediaStreamTrackControllerFactory.EVT_DESTROYED,
           handleUpdate
         );
 
         controller.off(
-          MediaStreamTrackControllerEvents.EVT_UPDATED,
+          MediaStreamTrackControllerFactory.EVT_UPDATED,
           handleUpdate
         );
       });

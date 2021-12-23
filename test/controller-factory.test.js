@@ -1,11 +1,7 @@
 const test = require("tape");
-const {
-  MediaStreamTrackControllerFactory,
-  MediaStreamTrackControllerEvents,
-  utils,
-} = require("../src");
+const { MediaStreamTrackControllerFactory, utils } = require("../src");
 
-const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerEvents;
+const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerFactory;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.plan(7);
