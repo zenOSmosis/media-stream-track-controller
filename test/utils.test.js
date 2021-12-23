@@ -595,12 +595,12 @@ test("utils.constraints.mergeConstraints", t => {
   t.end();
 });
 
-test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
+test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.plan(5);
 
   t.throws(
     () => {
-      utils.constraints.getSpecificDeviceIdCaptureConstraints(
+      utils.constraints.makeSpecificDeviceIdCaptureConstraints(
         "test-audio-device-id",
         "audio-video"
       );
@@ -610,7 +610,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
       utils.constraints.createDefaultAudioConstraints()
@@ -631,7 +631,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
       {
@@ -654,7 +654,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
       {
@@ -673,7 +673,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-audio-device-id",
       "audio",
       {
@@ -687,11 +687,11 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.end();
 });
 
-test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
+test("utils.constraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
   t.plan(4);
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
       utils.constraints.createDefaultVideoConstraints()
@@ -708,7 +708,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
       {
@@ -727,7 +727,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
       {
@@ -747,7 +747,7 @@ test("utils.constraints.getSpecificDeviceIdCaptureConstraints (video)", t => {
   );
 
   t.deepEquals(
-    utils.constraints.getSpecificDeviceIdCaptureConstraints(
+    utils.constraints.makeSpecificDeviceIdCaptureConstraints(
       "test-video-device-id",
       "video",
       {
