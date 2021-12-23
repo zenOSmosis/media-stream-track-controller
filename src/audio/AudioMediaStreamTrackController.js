@@ -1,10 +1,7 @@
 const { deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
-const { getSharedAudioContext } = require("../utils/getAudioContext");
-const {
-  getMatchedAudioQualityPreset,
-} = require("../utils/audioQualityPresets");
+const getSharedAudioContext = require("../utils/audioContext/getSharedAudioContext");
 
 // TODO: Add stereo panner
 // https://stackoverflow.com/questions/5123844/change-left-right-balance-on-playing-audio-in-javascript?rq=1

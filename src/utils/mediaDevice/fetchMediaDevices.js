@@ -1,4 +1,4 @@
-const { filterInputMediaDevices } = require("../mediaDeviceInfoFilters");
+const cacheDiffMediaDevices = require("./cacheDiffMediaDevices");
 
 /**
  * Lists all input and output media devices.
@@ -70,73 +70,4 @@ const fetchMediaDevices = (() => {
   };
 })();
 
-/**
- * Lists all input media devices.
- *
- * IMPORTANT: Unlike the underlying call to
- * navigator.mediaDevices.enumerateDevices, this function will resolve the same
- * MediaDeviceInfo instances across subsequent calls (as long as isAggressive
- * is not changed between calls).
- *
- * @param {boolean} isAggressive? [optional; default=true] If true, temporarily
- * turn on devices in order to obtain label information.
- * @return {Promise<MediaDeviceInfo[]>}
- */
-const fetchInputMediaDevices = async (isAggressive = true) => {
-  const mediaDevices = await fetchMediaDevices(isAggressive);
-
-  return filterInputMediaDevices(mediaDevices);
-};
-
-/**
- * Applies a differential cache to prev / next media devices to enable
- * subsequent calls to fetchMediaDevices to retrieve the same device info
- * during the session duration.
- *
- * @param {MediaDeviceInfo[] | Object[]} prevMediaDevices
- * @param {MediaDeviceInfo[] | Object[]} nextMediaDevices
- * @return {MediaDeviceInfo[] | Object[]}
- */
-const cacheDiffMediaDevices = (prevMediaDevices, nextMediaDevices) => {
-  /**
-   * This will become what is written back to the mediaDevices state.
-   *
-   * This original value represents the current state of mediaDevices with
-   * removed new devices filtered out.
-   *
-   * @type {MediaDeviceList[]}
-   */
-  const next = prevMediaDevices.filter(device =>
-    Boolean(
-      nextMediaDevices.find(predicate => {
-        const isMatch =
-          predicate.kind === device.kind &&
-          predicate.deviceId === device.deviceId;
-
-        return isMatch;
-      })
-    )
-  );
-
-  // Add new media devices to the next array
-  nextMediaDevices.forEach(device => {
-    const isPrevious = Boolean(
-      prevMediaDevices.find(
-        predicate =>
-          predicate.kind === device.kind &&
-          predicate.deviceId === device.deviceId
-      )
-    );
-
-    if (!isPrevious) {
-      next.push(device);
-    }
-  });
-
-  return next;
-};
-
 module.exports = fetchMediaDevices;
-module.exports.fetchInputMediaDevices = fetchInputMediaDevices;
-
-module.exports.cacheDiffMediaDevices = cacheDiffMediaDevices;

@@ -1,4 +1,4 @@
-const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
+const MediaStreamTrackControllerBase = require("../../_base/_MediaStreamTrackControllerBase");
 
 /**
  * Stops all of the tracks of the given MediaStream, then removes them from the

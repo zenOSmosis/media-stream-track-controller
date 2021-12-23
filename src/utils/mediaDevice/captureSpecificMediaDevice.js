@@ -1,6 +1,6 @@
-const MediaStreamTrackControllerFactory = require("../MediaStreamTrackControllerFactory");
-
-const { getSpecificDeviceCaptureConstraints } = require("./constraints");
+const MediaStreamTrackControllerFactory = require("../../MediaStreamTrackControllerFactory");
+const captureMediaDevice = require("./captureMediaDevice");
+const getSpecificDeviceCaptureConstraints = require("../constraints/getSpecificDeviceCaptureConstraints");
 
 /**
  * Captures audio from the specific audio input device with the given

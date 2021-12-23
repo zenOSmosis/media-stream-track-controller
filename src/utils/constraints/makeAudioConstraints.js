@@ -1,3 +1,5 @@
+const mergeConstraints = require("./mergeConstraints");
+
 const {
   getAudioQualityPresetConstraints,
   AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY,

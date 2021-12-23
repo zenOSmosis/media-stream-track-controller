@@ -1,6 +1,6 @@
 /**
- * Determines if the user device / browser is capable / configured to support
- * media device capturing.
+ * Determines if the browser is capable of capturing input from audio / video
+ * devices.
  *
  * @return {boolean}
  */

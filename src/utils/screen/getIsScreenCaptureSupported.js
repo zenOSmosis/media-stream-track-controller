@@ -1,10 +1,12 @@
 /**
+ * Determines if screen capture is supported in the browser.
+ *
  * @return {boolean}
  */
-function getIsScreenCaptureSupported() {
+module.exports = function getIsScreenCaptureSupported() {
   return (
     navigator &&
     navigator.mediaDevices &&
     typeof navigator.mediaDevices.getDisplayMedia === "function"
   );
-}
+};

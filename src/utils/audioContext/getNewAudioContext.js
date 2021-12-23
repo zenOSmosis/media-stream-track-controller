@@ -1,3 +1,4 @@
+// TODO: Rename to createNewAudioContext
 /**
  * Retrieves a new AudioContext instance.
  *

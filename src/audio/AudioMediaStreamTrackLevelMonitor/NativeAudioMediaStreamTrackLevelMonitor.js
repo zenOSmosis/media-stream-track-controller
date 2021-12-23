@@ -1,6 +1,6 @@
 const PhantomCore = require("phantom-core");
 const { /** @exports */ EVT_DESTROYED } = PhantomCore;
-const { getSharedAudioContext } = require("../../utils/getAudioContext");
+const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 
 // Emits after audio level has changed, with a value from 0 - 10
 /** @exports */

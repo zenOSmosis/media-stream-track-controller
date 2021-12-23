@@ -1,3 +1,5 @@
+// TODO: Use style exposed via PhantomCore index.js: https://github.com/zenOSmosis/phantom-core/blob/main/src/index.js
+
 const {
   EVT_READY,
   EVT_UPDATED,
@@ -8,7 +10,6 @@ const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackCo
 const MediaStreamTrackControllerFactory = require("./MediaStreamTrackControllerFactory");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const utils = require("./utils");
-const debug = require("./debug");
 const AudioMediaStreamTrackLevelMonitor = require("./audio/AudioMediaStreamTrackLevelMonitor");
 const {
   EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
@@ -31,7 +32,6 @@ module.exports = {
   MediaStreamTrackControllerFactory,
   MediaStreamTrackControllerCollection,
   utils,
-  debug,
   AudioMediaStreamTrackLevelMonitor,
 
   // FIXME: Remove; just obtain from the individual module itself

@@ -210,8 +210,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     //
     // Fixes Uncaught TypeError: Class extends value #<Object> is not a
     // constructor or null
-    const utils = require("../utils");
-    const { getMatchedMediaDevice } = utils;
+    const getMatchedMediaDevice = require("../utils/mediaDevice/getMatchedMediaDevice");
 
     const partialMediaDeviceInfo = this.getPartialMediaDeviceInfo();
 

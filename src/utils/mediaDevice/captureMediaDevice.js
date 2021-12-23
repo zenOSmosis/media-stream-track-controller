@@ -1,9 +1,6 @@
-const MediaStreamTrackControllerFactory = require("../MediaStreamTrackControllerFactory");
-
-const {
-  mergeConstraints,
-  createDefaultAudioConstraints,
-} = require("./constraints");
+const MediaStreamTrackControllerFactory = require("../../MediaStreamTrackControllerFactory");
+const mergeConstraints = require("../constraints/mergeConstraints");
+const makeAudioConstraints = require("../constraints/makeAudioConstraints");
 
 /**
  * Capture device media (gUM) and resolve a controller factory to manage the
@@ -28,9 +25,7 @@ module.exports = async function captureMediaDevice(
       // constraints are provided, merge them in with default audio
       // constraints, where userConstraints takes precedence over defaults
       if (!userConstraints || userConstraints.audio) {
-        return createDefaultAudioConstraints(
-          userConstraints && userConstraints.audio
-        );
+        return makeAudioConstraints(userConstraints && userConstraints.audio);
       } else {
         return {};
       }

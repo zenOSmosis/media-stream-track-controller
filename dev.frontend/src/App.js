@@ -14,7 +14,6 @@ import {
   MediaStreamTrackControllerCollection,
   MediaStreamTrackControllerEvents,
   utils,
-  debug,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
 import { logger } from "phantom-core";
@@ -68,11 +67,15 @@ function App() {
   // Determine input / output media devices and add them to the state
   useEffect(() => {
     setInputMediaDevices(
-      utils.mediaDeviceInfoFilters.filterInputMediaDevices(mediaDevices)
+      utils.mediaDevice.mediaDeviceInfoFilters.filterInputMediaDevices(
+        mediaDevices
+      )
     );
 
     setOutputMediaDevices(
-      utils.mediaDeviceInfoFilters.filterOutputMediaDevices(mediaDevices)
+      utils.mediaDevice.mediaDeviceInfoFilters.filterOutputMediaDevices(
+        mediaDevices
+      )
     );
   }, [mediaDevices]);
 
@@ -131,7 +134,8 @@ function App() {
   }, [mediaStreamTrackControllerFactories]);
 
   const createPulsatingAudio = useCallback(() => {
-    const mediaStream = debug.createTestAudioMediaStream();
+    const mediaStream =
+      utils.mediaStream.generators.createTestAudioMediaStream();
 
     registerControllerFactory(
       new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
@@ -144,42 +148,44 @@ function App() {
         <h1>Utils</h1>
         <div style={{ border: "1px #ccc solid", margin: 5 }}>
           <h2>Audio Context</h2>
-          <button onClick={() => alert(utils.getSharedAudioContext())}>
-            utils.getSharedAudioContext()
+          <button
+            onClick={() => alert(utils.audioContext.getSharedAudioContext())}
+          >
+            utils.audioContext.getSharedAudioContext()
           </button>
         </div>
         <div style={{ border: "1px #ccc solid", margin: 5 }}>
           <h2>Media Devices</h2>
           {[
             {
-              name: "utils.fetchMediaDevices [aggressive]",
+              name: "utils.mediaDevice.fetchMediaDevices [aggressive]",
               cb: () =>
-                utils
+                utils.mediaDevice
                   .fetchMediaDevices()
                   .then(devices => setMediaDevices(devices)),
             },
             //
             {
-              name: "utils.fetchMediaDevices [non-aggressive]",
+              name: "utils.mediaDevice.fetchMediaDevices [non-aggressive]",
               cb: () =>
-                utils
+                utils.mediaDevice
                   .fetchMediaDevices(false)
                   .then(devices => setMediaDevices(devices)),
             },
             //
             {
-              name: "utils.captureMediaDevice()",
+              name: "utils.mediaDevice.captureMediaDevice()",
               cb: () =>
-                utils
+                utils.mediaDevice
                   .captureMediaDevice(null, {
                     title: "captureMediaDevice",
                   })
                   .then(registerControllerFactory),
             },
             {
-              name: "utils.captureMediaDevice() (with video)",
+              name: "utils.mediaDevice.captureMediaDevice() (with video)",
               cb: () =>
-                utils
+                utils.mediaDevice
                   .captureMediaDevice(
                     { video: true },
                     {
@@ -218,7 +224,7 @@ function App() {
                           "CAUTION: The capture will immediately begin playing audio or video and can introduce enormous feedback with audio."
                         )
                       ) {
-                        utils.captureMediaDevice
+                        utils.mediaDevice
                           .captureSpecificMediaDevice(device, null, {
                             title: device.label,
                           })
@@ -264,10 +270,12 @@ function App() {
                   .then(registerControllerFactory)
               }
             >
-              utils.captureScreen()
+              utils.screen.captureScreen()
             </button>
-            <button onClick={() => alert(utils.getIsScreenCaptureSupported())}>
-              utils.getIsScreenCaptureSupported()
+            <button
+              onClick={() => alert(utils.screen.getIsScreenCaptureSupported())}
+            >
+              utils.screen.getIsScreenCaptureSupported()
             </button>
           </div>
         </div>
@@ -537,7 +545,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
         <button
           disabled={!Boolean(matchedInputMediaDevice)}
           onClick={() =>
-            utils.captureMediaDevice.uncaptureSpecificMediaDevice(
+            utils.mediaDevice.uncaptureSpecificMediaDevice(
               matchedInputMediaDevice
             )
           }

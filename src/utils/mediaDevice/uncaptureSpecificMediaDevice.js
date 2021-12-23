@@ -1,3 +1,5 @@
+const MediaStreamTrackControllerBase = require("../../_base/_MediaStreamTrackControllerBase");
+
 /**
  * Searches for, and destructs, all track controllers with the given
  * mediaDeviceInfo as the input device.

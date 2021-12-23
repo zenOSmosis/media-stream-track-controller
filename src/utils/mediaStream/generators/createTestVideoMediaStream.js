@@ -1,4 +1,4 @@
-const { stopMediaStream } = require("../utils");
+const stopMediaStream = require("../stopMediaStream");
 const { logger } = require("phantom-core");
 
 /**

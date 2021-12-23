@@ -1,4 +1,5 @@
-const { getNewAudioContext, stopMediaStream } = require("../utils");
+const getNewAudioContext = require("../../audioContext/getNewAudioContext");
+const stopMediaStream = require("../stopMediaStream");
 const { logger } = require("phantom-core");
 
 /**
