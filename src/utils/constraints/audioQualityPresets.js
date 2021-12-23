@@ -80,11 +80,11 @@ module.exports.getAudioQualityPresetWithName = name =>
 /**
  * Retrieves the constraints associated with the given audio quality preset.
  *
- * @param {Object} audioQualityPreset
+ * @param {Object} audioQualityPreset? [default = AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY]
  * @return {Object | void} // TODO: Typedef object
  */
 module.exports.getAudioQualityPresetConstraints = (
   audioQualityPreset = AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY
 ) => {
-  return audioQualityPreset?.constraints;
+  return audioQualityPreset.constraints;
 };
