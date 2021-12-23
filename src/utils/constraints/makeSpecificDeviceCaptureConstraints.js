@@ -25,6 +25,7 @@ module.exports = function makeSpecificDeviceCaptureConstraints(
   return makeSpecificDeviceIdCaptureConstraints(
     mediaDeviceInfo.deviceId,
     // TODO: Use constant here
+    // TODO: Strip off "input" instead of the ternary operation
     mediaDeviceInfo.kind === "audioinput"
       ? AUDIO_DEVICE_KIND
       : VIDEO_DEVICE_KIND,
