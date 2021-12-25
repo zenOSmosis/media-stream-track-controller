@@ -2,6 +2,10 @@
  * Determines best-guess comparison of the given MediaDeviceInfo[-like] against
  * an array of MediaDeviceInfo[-like] objects.
  *
+ * WHY: Multiple gUM calls will resolve new object instances, and this attempts
+ * to abstract away those multiple calls while still targeting the relevant
+ * device.
+ *
  * @param {"audioinput" | "videoinput" | "audiooutput" | "videooutput"} kind
  * @param {MediaDeviceInfo | Object} mediaDeviceInfo A regular Object may be
  * passed if unable to acquire original MediaDeviceInfo (i.e. from a serialized
