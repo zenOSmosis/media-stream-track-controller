@@ -29,7 +29,7 @@ test("utils.constraints.mergeConstraints", t => {
   t.end();
 });
 
-test("makeSpecificDeviceIdCaptureConstraints (audio)", t => {
+test("utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.plan(5);
 
   t.throws(
@@ -109,7 +109,7 @@ test("makeSpecificDeviceIdCaptureConstraints (audio)", t => {
   t.end();
 });
 
-test("makeSpecificDeviceIdCaptureConstraints (video)", t => {
+test("utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceIdCaptureConstraints (video)", t => {
   t.plan(4);
 
   t.deepEquals(
