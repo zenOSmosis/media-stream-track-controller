@@ -296,6 +296,71 @@ test("utils.mediaDevice.getMatchedMediaDevice", t => {
   t.end();
 });
 
+test("utils.mediaDevice.getIsSameMediaDevice", t => {
+  t.plan(6);
+
+  t.throws(
+    () =>
+      utils.mediaDevice.getIsSameMediaDevice(
+        MOCK_MEDIA_DEVICES[0],
+        MOCK_MEDIA_DEVICES[0],
+        fakeKind
+      ),
+    ReferenceError,
+    "throws ReferenceError if using invalid enforcedKind"
+  );
+
+  t.ok(
+    utils.mediaDevice.getIsSameMediaDevice(
+      MOCK_MEDIA_DEVICES[0],
+      MOCK_MEDIA_DEVICES[0]
+    ),
+    "detects same mock device as being same"
+  );
+
+  t.notOk(
+    utils.mediaDevice.getIsSameMediaDevice(
+      MOCK_MEDIA_DEVICES[0],
+      MOCK_MEDIA_DEVICES[1]
+    ),
+    "detects different mock devices as being different"
+  );
+
+  t.throws(
+    () =>
+      utils.mediaDevice.getIsSameMediaDevice(
+        { ...MOCK_MEDIA_DEVICES[0], ...{ kind: undefined } },
+        { ...MOCK_MEDIA_DEVICES[0], ...{ kind: undefined } },
+        "audio"
+      ),
+    ReferenceError,
+    "throws ReferenceError if both compared devices do not have a reference kind"
+  );
+
+  t.throws(
+    () =>
+      utils.mediaDevice.getIsSameMediaDevice(MOCK_MEDIA_DEVICES[0], {
+        deviceId: "default",
+      }),
+    ReferenceError,
+    "throws ReferenceError is no available kind for deviceB"
+  );
+
+  t.throws(
+    () =>
+      utils.mediaDevice.getIsSameMediaDevice(
+        {
+          deviceId: "default",
+        },
+        utils.mediaDevice.getIsSameMediaDevice(MOCK_MEDIA_DEVICES[0])
+      ),
+    ReferenceError,
+    "throws ReferenceError is no available kind for deviceA"
+  );
+
+  t.end();
+});
+
 test("utils.mediaDevice.getMediaDeviceTrackControllers", t => {
   t.plan(2);
 
