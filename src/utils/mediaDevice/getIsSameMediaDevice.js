@@ -20,6 +20,12 @@ module.exports = function getIsSameMediaDevice(
   const locDeviceB = { ...deviceB };
 
   if (enforcedKind) {
+    if (!locDeviceA.kind && !locDeviceB.kind) {
+      throw new ReferenceError(
+        "At least one of the compared devices must have a reference kind"
+      );
+    }
+
     if (!locDeviceA.kind) {
       locDeviceA.kind = enforcedKind;
     }
