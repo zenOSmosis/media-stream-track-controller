@@ -53,7 +53,6 @@ module.exports = function getIsSameMediaDevice(
   if (
     // Best match
     locDeviceA.kind === locDeviceB.kind &&
-    locDeviceA &&
     (locDeviceA.deviceId !== undefined || locDeviceB.deviceId !== undefined) &&
     locDeviceA.deviceId === locDeviceB.deviceId
   ) {
@@ -61,7 +60,6 @@ module.exports = function getIsSameMediaDevice(
   } else if (
     // Fallback match
     locDeviceA.kind === locDeviceB.kind &&
-    locDeviceA &&
     (locDeviceA.label !== undefined || locDeviceB.label !== undefined) &&
     locDeviceA.label === locDeviceB.label
   ) {
