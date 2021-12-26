@@ -283,13 +283,17 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
     }
 
-    window.requestAnimationFrame(() => {
-      this._handlePollTick({
-        pollingStartTime,
-        analyser,
-        samples,
-      });
-    });
+    setTimeout(
+      () => {
+        this._handlePollTick({
+          pollingStartTime,
+          analyser,
+          samples,
+        });
+      },
+      // TODO: Use constant to define this time between frames
+      50
+    );
   }
 
   /**
