@@ -283,17 +283,13 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
     }
 
-    // TODO: Can this utilize window.requestAnimationFrame reliably now that
-    // we're using the event proxy?
-    setTimeout(() => {
-      if (!this.getIsDestroyed()) {
-        this._handlePollTick({
-          pollingStartTime,
-          analyser,
-          samples,
-        });
-      }
-    }, 50);
+    window.requestAnimationFrame(() => {
+      this._handlePollTick({
+        pollingStartTime,
+        analyser,
+        samples,
+      });
+    });
   }
 
   /**
