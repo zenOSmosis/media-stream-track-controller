@@ -1,7 +1,8 @@
 // TODO: Incorporate into this project
 
 import { useCallback } from "react";
-import { logger } from "phantom-core";
+// import { logger } from "phantom-core";
+const { VIDEO_TRACK_KIND } = require("../constants");
 
 /**
  * Source code idea borrowed from:
@@ -16,8 +17,7 @@ export default function useVideoMediaStreamTrackSnapshot() {
       throw new TypeError(
         "videoMediaStreamTrack is not a MediaStreamTrack instance"
       );
-    } else if (videoMediaStreamTrack.kind === "video") {
-      // TODO: Use constant for "video"
+    } else if (videoMediaStreamTrack.kind === VIDEO_TRACK_KIND) {
       throw new TypeError(
         "videoMediaStreamTrack is not a video MediaStreamTrack"
       );

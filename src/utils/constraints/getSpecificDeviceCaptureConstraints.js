@@ -1,10 +1,9 @@
 const mergeConstraints = require("./mergeConstraints");
+const {
+  GENERIC_AUDIO_DEVICE_KIND,
+  GENERIC_VIDEO_DEVICE_KIND,
+} = require("../../constants");
 
-// TODO: Move into "constants" file
-const AUDIO_DEVICE_KIND = "audio";
-const VIDEO_DEVICE_KIND = "video";
-
-// TODO: Rename to makeSpecificDeviceCaptureConstraints
 /**
  * Helper method for obtaining constraints to capture from a specific media
  * device.
@@ -27,13 +26,12 @@ module.exports = function makeSpecificDeviceCaptureConstraints(
     mediaDeviceInfo.deviceId,
     // TODO: Use constant here
     mediaDeviceInfo.kind === "audioinput"
-      ? AUDIO_DEVICE_KIND
-      : VIDEO_DEVICE_KIND,
+      ? GENERIC_AUDIO_DEVICE_KIND
+      : GENERIC_VIDEO_DEVICE_KIND,
     userConstraints
   );
 };
 
-// TODO: Rename to makeSpecificDeviceIdCaptureConstraints
 /**
  * Helper method for obtaining constraints to capture from a specific media
  * device with a given device id and type.
@@ -51,7 +49,10 @@ function makeSpecificDeviceIdCaptureConstraints(
   deviceKind,
   userConstraints = {}
 ) {
-  if (deviceKind !== AUDIO_DEVICE_KIND && deviceKind !== VIDEO_DEVICE_KIND) {
+  if (
+    deviceKind !== GENERIC_AUDIO_DEVICE_KIND &&
+    deviceKind !== GENERIC_VIDEO_DEVICE_KIND
+  ) {
     throw new TypeError("deviceKind must be audio or video");
   }
 
@@ -71,9 +72,9 @@ function makeSpecificDeviceIdCaptureConstraints(
 
     // Prevent device of alternate type from starting (especially prevents mic
     // from starting when wanting to only capture video)
-    [deviceKind === AUDIO_DEVICE_KIND
-      ? VIDEO_DEVICE_KIND
-      : AUDIO_DEVICE_KIND]: false,
+    [deviceKind === GENERIC_AUDIO_DEVICE_KIND
+      ? GENERIC_VIDEO_DEVICE_KIND
+      : GENERIC_AUDIO_DEVICE_KIND]: false,
   };
 
   // IMPORTANT: OVERRIDE_CONSTRAINTS takes precedence here

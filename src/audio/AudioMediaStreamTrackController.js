@@ -2,6 +2,7 @@ const { deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
 const getSharedAudioContext = require("../utils/audioContext/getSharedAudioContext");
+const { AUDIO_TRACK_KIND } = require("../constants");
 
 // TODO: Add stereo panner
 // https://stackoverflow.com/questions/5123844/change-left-right-balance-on-playing-audio-in-javascript?rq=1
@@ -17,7 +18,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
    * @param {Object} options? [default = {}]
    */
   constructor(inputMediaStreamTrack, options = {}) {
-    if (inputMediaStreamTrack.kind !== "audio") {
+    if (inputMediaStreamTrack.kind !== AUDIO_TRACK_KIND) {
       throw new TypeError("inputMediaStreamTrack is not of audio type");
     }
 

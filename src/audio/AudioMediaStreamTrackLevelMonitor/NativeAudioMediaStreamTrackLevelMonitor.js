@@ -1,6 +1,7 @@
 const PhantomCore = require("phantom-core");
 const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
+const { AUDIO_TRACK_KIND } = require("../../constants");
 
 // Emits after audio level has changed, with a value from 0 - 10
 /** @exports */
@@ -47,7 +48,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       );
     }
 
-    if (mediaStreamTrack.kind !== "audio") {
+    if (mediaStreamTrack.kind !== AUDIO_TRACK_KIND) {
       throw new TypeError("mediaStreamTrack is not an audio track");
     }
   }

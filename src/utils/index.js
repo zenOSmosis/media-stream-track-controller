@@ -28,6 +28,7 @@ module.exports = {
     fetchMediaDevices: require("./mediaDevice/fetchMediaDevices"),
     getIsMediaDeviceBeingCaptured: require("./mediaDevice/getIsMediaDeviceBeingCaptured"),
     getIsMediaDeviceCaptureSupported: require("./mediaDevice/getIsMediaDeviceCaptureSupported"),
+    getIsSameMediaDevice: require("./mediaDevice/getIsSameMediaDevice"),
     getMatchedMediaDevice: require("./mediaDevice/getMatchedMediaDevice"),
     getMediaDeviceTrackControllers: require("./mediaDevice/getMediaDeviceTrackControllers"),
     uncaptureSpecificMediaDevice: require("./mediaDevice/uncaptureSpecificMediaDevice"),
