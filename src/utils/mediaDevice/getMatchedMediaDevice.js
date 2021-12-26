@@ -1,3 +1,5 @@
+const { MEDIA_DEVICE_KINDS } = require("../../constants");
+
 /**
  * Determines best-guess comparison of the given MediaDeviceInfo[-like] against
  * an array of MediaDeviceInfo[-like] objects.
@@ -19,17 +21,11 @@ module.exports = function getMatchedMediaDevice(
   mediaDeviceInfo,
   mediaDeviceInfoList
 ) {
-  // TODO: Move these to a more centralized location
-  const POSSIBLE_KINDS = [
-    "audioinput",
-    "videoinput",
-    "audiooutput",
-    "videooutput",
-  ];
-
-  if (!POSSIBLE_KINDS.includes(kind)) {
+  if (!MEDIA_DEVICE_KINDS.includes(kind)) {
     throw new ReferenceError(`Invalid kind "${kind}"`);
   }
+
+  // TODO: Refactor handling to getIsMatchedMediaDevice
 
   // Compare w/ deviceId match
   if (mediaDeviceInfo.deviceId) {

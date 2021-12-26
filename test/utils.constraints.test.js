@@ -179,7 +179,6 @@ test("utils.constraints.makeAudioConstraints", t => {
   t.deepEquals(
     utils.constraints.makeAudioConstraints(),
     {
-      // TODO: Obtain presets (refactor?)
       audio: {
         echoCancellation: false,
         noiseSuppression: false,

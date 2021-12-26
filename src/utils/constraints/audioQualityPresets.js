@@ -1,6 +1,6 @@
 // TODO: Expand this file
 
-/** @export */
+/** @exports */
 const AUDIO_QUALITY_PRESET_TALK_RADIO = {
   name: "Talk Radio",
   constraints: {
@@ -17,7 +17,7 @@ const AUDIO_QUALITY_PRESET_TALK_RADIO = {
   },
 };
 
-/** @export */
+/** @exports */
 const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   name: "Music - Low Quality",
   constraints: {
@@ -34,7 +34,7 @@ const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   },
 };
 
-/** @export */
+/** @exports */
 const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   name: "Music - High Quality",
   constraints: {
@@ -50,7 +50,7 @@ const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   },
 };
 
-/** @export */
+/** @exports */
 const audioQualityPresets = [
   AUDIO_QUALITY_PRESET_TALK_RADIO,
   AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,

@@ -12,6 +12,10 @@ const {
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
+const {
+  GENERIC_AUDIO_DEVICE_KIND,
+  GENERIC_VIDEO_DEVICE_KIND,
+} = require("./constants");
 
 /**
  * Manages an arbitrary amount of MediaStreamTrackControllers, where mute states
@@ -191,11 +195,11 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
         _lookupTracksFunc = "getTrackControllers";
         break;
 
-      case "audio":
+      case GENERIC_AUDIO_DEVICE_KIND:
         _lookupTracksFunc = "getAudioTrackControllers";
         break;
 
-      case "video":
+      case GENERIC_VIDEO_DEVICE_KIND:
         _lookupTracksFunc = "getVideoTrackControllers";
         break;
 

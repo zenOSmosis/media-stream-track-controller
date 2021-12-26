@@ -1,8 +1,5 @@
 const { deepMerge } = require("phantom-core");
-
-// TODO: Move into "constants" file
-const AUDIO_DEVICE_KIND = "audio";
-const VIDEO_DEVICE_KIND = "video";
+const { AUDIO_TRACK_KIND, VIDEO_TRACK_KIND } = require("../../constants");
 
 /**
  * Deep merges, the given user constraints onto the default constraints, where
@@ -21,20 +18,20 @@ module.exports = function mergeConstraints(
   userConstraints = {}
 ) {
   const defaultAudioConstraints = normalizeConstraints(
-    "audio",
+    AUDIO_TRACK_KIND,
     defaultConstraints && defaultConstraints.audio
   );
   const defaultVideoConstraints = normalizeConstraints(
-    "video",
+    VIDEO_TRACK_KIND,
     defaultConstraints && defaultConstraints.video
   );
 
   const userAudioConstraints = normalizeConstraints(
-    "audio",
+    AUDIO_TRACK_KIND,
     userConstraints && userConstraints.audio
   );
   const userVideoConstraints = normalizeConstraints(
-    "video",
+    VIDEO_TRACK_KIND,
     userConstraints && userConstraints.video
   );
 
@@ -67,7 +64,7 @@ module.exports = function mergeConstraints(
  * @return {Object} // TODO: Document return object
  */
 function normalizeConstraints(kind, userConstraints = {}) {
-  if (kind !== AUDIO_DEVICE_KIND && kind !== VIDEO_DEVICE_KIND) {
+  if (kind !== AUDIO_TRACK_KIND && kind !== VIDEO_TRACK_KIND) {
     throw new TypeError("kind must be either audio or video");
   }
 

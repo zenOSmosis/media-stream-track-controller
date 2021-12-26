@@ -15,6 +15,7 @@ const {
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
+const { AUDIO_TRACK_KIND, VIDEO_TRACK_KIND } = require("./constants");
 
 const _factoryInstances = {};
 
@@ -86,13 +87,13 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
 
     for (const track of inputMediaStream.getTracks()) {
       switch (track.kind) {
-        case "audio":
+        case AUDIO_TRACK_KIND:
           controllers.push(
             new AudioMediaStreamTrackController(track, factoryOptions)
           );
           break;
 
-        case "video":
+        case VIDEO_TRACK_KIND:
           controllers.push(
             new VideoMediaStreamTrackController(track, factoryOptions)
           );
