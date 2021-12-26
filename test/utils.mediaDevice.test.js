@@ -267,7 +267,7 @@ test("utils.mediaDevice.getMatchedMediaDevice", t => {
       },
       MOCK_MEDIA_DEVICES
     ),
-    null,
+    undefined,
     "no match on undefined label"
   );
 
@@ -279,7 +279,7 @@ test("utils.mediaDevice.getMatchedMediaDevice", t => {
       },
       MOCK_MEDIA_DEVICES
     ),
-    null,
+    undefined,
     "no match on unknown label"
   );
 
@@ -289,7 +289,7 @@ test("utils.mediaDevice.getMatchedMediaDevice", t => {
       {},
       MOCK_MEDIA_DEVICES
     ),
-    null,
+    undefined,
     "no match on no previous info"
   );
 
