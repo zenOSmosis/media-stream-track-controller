@@ -1,7 +1,6 @@
 const { MEDIA_DEVICE_KINDS } = require("../../constants");
 const getIsSameMediaDevice = require("./getIsSameMediaDevice");
 
-// TODO: Document why kind is used
 /**
  * Determines best-guess comparison of the given MediaDeviceInfo[-like] against
  * an array of MediaDeviceInfo[-like] objects.
@@ -11,6 +10,10 @@ const getIsSameMediaDevice = require("./getIsSameMediaDevice");
  * device.
  *
  * @param {"audioinput" | "videoinput" | "audiooutput" | "videooutput"} kind
+ * IMPORTANT: Kind is required because there are potential situations where
+ * partialMediaDeviceInfo may only contain "default" for deviceId and no
+ * additional information related to its type (@see getPartialMediaDeviceInfo
+ * in _MediaStreamTrackControllerBase, for example).
  * @param {MediaDeviceInfo | Object} partialMediaDeviceInfo A regular Object may be
  * passed if unable to acquire original MediaDeviceInfo (i.e. from a serialized
  * cache, etc.)

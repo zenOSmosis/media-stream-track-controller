@@ -1,10 +1,17 @@
 const { MEDIA_DEVICE_KINDS } = require("../../constants");
 
-// TODO: Document
 /**
- * @param {MediaDeviceInfo | Object} deviceA
- * @param {MediaDeviceInfo | Object} deviceB
- * @param {string} enforcedKind? [default = null]
+ * Determines whether the given media devices are the same.
+ *
+ * NOTE: One of these devices may represent partial data, such as one of them
+ * only having a deviceId.
+ *
+ * @param {MediaDeviceInfo | Object} deviceA Partial, or complete data
+ * representation of the device
+ * @param {MediaDeviceInfo | Object} deviceB Partial, or complete data
+ * representation of the device
+ * @param {string} enforcedKind? [default = null] Utilized for augmentation of
+ * device info should one of the devices be missing this type
  * @return {boolean}
  */
 module.exports = function getIsSameMediaDevice(
@@ -45,6 +52,7 @@ module.exports = function getIsSameMediaDevice(
     throw new ReferenceError(`Invalid kind for deviceB "${locDeviceB.kind}"`);
   } else if (
     enforcedKind &&
+    // Ensure both devices match the enforcedKind
     (locDeviceA.kind !== enforcedKind || locDeviceB.kind !== enforcedKind)
   ) {
     return false;
