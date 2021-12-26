@@ -3,7 +3,7 @@ const { MEDIA_DEVICE_KINDS } = require("../../constants");
 // TODO: Document
 /**
  * @param {MediaDeviceInfo | Object} deviceA
- * @param {MediaDeviceInfo | Object} device
+ * @param {MediaDeviceInfo | Object} deviceB
  * @param {string} enforcedKind? [default = null]
  * @return {boolean}
  */
