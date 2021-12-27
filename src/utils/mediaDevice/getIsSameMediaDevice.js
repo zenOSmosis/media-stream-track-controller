@@ -1,5 +1,4 @@
 const { MEDIA_DEVICE_KINDS } = require("../../constants");
-const { logger } = require("phantom-core");
 
 /**
  * Determines whether the given media devices are the same.
