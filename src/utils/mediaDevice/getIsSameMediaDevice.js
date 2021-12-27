@@ -1,7 +1,8 @@
 const { MEDIA_DEVICE_KINDS } = require("../../constants");
 
 /**
- * Determines whether the given media devices are the same.
+ * Determines whether the given media devices are the same, despite if their
+ * object references are different.
  *
  * This includes the ability to determine if MediaDeviceInfo matches an object
  * with MediaDeviceInfo-like properties.
@@ -35,7 +36,11 @@ module.exports = function getIsSameMediaDevice(
   // Obtain copies of the devices so that we can potentially add properties to
   // them without affecting their source reference
   const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device => {
-    if (device instanceof MediaDeviceInfo) {
+    if (
+      // MediaDeviceInfo may not be defined in non-SSL environments
+      typeof window.MediaDeviceInfo !== undefined &&
+      device instanceof window.MediaDeviceInfo
+    ) {
       /**
        * This is the only known way to iterate over MediaDeviceInfo, which is
        * returned from a gUM call.  It's not very well documented but more
