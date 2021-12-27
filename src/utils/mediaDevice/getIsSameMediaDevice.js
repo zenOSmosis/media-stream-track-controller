@@ -36,32 +36,18 @@ module.exports = function getIsSameMediaDevice(
   // Obtain copies of the devices so that we can potentially add properties to
   // them without affecting their source reference
   const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device => {
-    if (
-      // MediaDeviceInfo may not be defined in non-SSL environments
-      /*
-      typeof window.MediaDeviceInfo !== undefined &&
-      device instanceof window.MediaDeviceInfo
-      */
-      typeof device.toJSON === "function"
-    ) {
-      /**
-       * This is the only known way to iterate over MediaDeviceInfo, which is
-       * returned from a gUM call.  It's not very well documented but more
-       * information may be found on the following page:
-       * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
-       */
-      const data = device.toJSON();
-
-      // The "toJSON" is misleading; it should return an object type
-      if (typeof data !== "object") {
-        throw new TypeError("toJSON did not return an object type");
-      }
-
-      return data;
-    } else {
-      // Iterate over the object
-      return { ...device };
+    // IMPORTANT: I (jh) experimented with several attempts to iterate over a
+    // combination of MediaDeviceInfo and regular objects, and was having
+    // trouble getting tests to run in SauceLabs environment.
+    //
+    // Apparently MediaDeviceInfo cannot be iterated on with {...device}, nor
+    // is it apparently available in non-SSL environments, which I believe is
+    // the case that some of these tests are running in.
+    const ret = {};
+    for (const prop in device) {
+      ret[prop] = device[prop];
     }
+    return ret;
   });
 
   if (enforcedKind) {
