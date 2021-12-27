@@ -36,16 +36,9 @@ module.exports = function getIsSameMediaDevice(
 
   // Obtain copies of the devices so that we can potentially add properties to
   // them without affecting their source reference
-  const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device => {
-    // IMPORTANT: I (jh) experimented with several attempts to iterate over a
-    // combination of MediaDeviceInfo and regular objects, and was having
-    // trouble getting tests to run in SauceLabs environment.
-    //
-    // Apparently MediaDeviceInfo cannot be iterated on with {...device}, nor
-    // is it apparently available in non-SSL environments, which I believe is
-    // the case that some of these tests are running in.
-    return mediaDeviceToPlainObject(device);
-  });
+  const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device =>
+    mediaDeviceToPlainObject(device)
+  );
 
   if (enforcedKind) {
     // If neither device has a kind associated to it, return false
