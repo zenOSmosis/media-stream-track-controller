@@ -1,5 +1,3 @@
-const { logger } = require("phantom-core");
-
 /**
  * Converts a MediaDeviceInfo object into a plain object.
  *
