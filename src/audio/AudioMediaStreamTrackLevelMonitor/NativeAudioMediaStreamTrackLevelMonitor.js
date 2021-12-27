@@ -23,6 +23,9 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // whether there is audio in the stream or not
 const MUTED_AUDIO_LEVEL = -1;
 
+// Number of ms before determining next poll interval
+const DEFAULT_FRAME_TIME = 50;
+
 /**
  * Directly listens to the given MediaStreamTrack.
  *
@@ -283,17 +286,17 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
     }
 
-    // TODO: Can this utilize window.requestAnimationFrame reliably now that
-    // we're using the event proxy?
-    setTimeout(() => {
-      if (!this.getIsDestroyed()) {
+    setTimeout(
+      () => {
         this._handlePollTick({
           pollingStartTime,
           analyser,
           samples,
         });
-      }
-    }, 50);
+      },
+      // TODO: Allow this setting to be user-overridable
+      DEFAULT_FRAME_TIME
+    );
   }
 
   /**
