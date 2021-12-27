@@ -1,6 +1,11 @@
 const { logger } = require("phantom-core");
 
-// TODO: Document
+/**
+ * Converts a MediaDeviceInfo object into a plain object.
+ *
+ * @param {MediaDeviceInfo | Object} device
+ * @return {Object}
+ */
 module.exports = function mediaDeviceToPlainObject(device) {
   // IMPORTANT: I (jh) experimented with several attempts to iterate over a
   // combination of MediaDeviceInfo and regular objects, and was having
