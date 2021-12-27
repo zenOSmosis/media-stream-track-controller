@@ -38,8 +38,11 @@ module.exports = function getIsSameMediaDevice(
   const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device => {
     if (
       // MediaDeviceInfo may not be defined in non-SSL environments
+      /*
       typeof window.MediaDeviceInfo !== undefined &&
       device instanceof window.MediaDeviceInfo
+      */
+      typeof device.toJSON === "function"
     ) {
       /**
        * This is the only known way to iterate over MediaDeviceInfo, which is
@@ -47,7 +50,14 @@ module.exports = function getIsSameMediaDevice(
        * information may be found on the following page:
        * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
        */
-      return device.toJSON();
+      const data = device.toJSON();
+
+      // The "toJSON" is misleading; it should return an object type
+      if (typeof data !== "object") {
+        throw new TypeError("toJSON did not return an object type");
+      }
+
+      return data;
     } else {
       // Iterate over the object
       return { ...device };
