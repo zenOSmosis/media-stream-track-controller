@@ -1,3 +1,4 @@
+const mediaDeviceToPlainObject = require("./mediaDeviceToPlainObject");
 const { MEDIA_DEVICE_KINDS } = require("../../constants");
 
 /**
@@ -43,11 +44,7 @@ module.exports = function getIsSameMediaDevice(
     // Apparently MediaDeviceInfo cannot be iterated on with {...device}, nor
     // is it apparently available in non-SSL environments, which I believe is
     // the case that some of these tests are running in.
-    const ret = {};
-    for (const prop in device) {
-      ret[prop] = device[prop];
-    }
-    return ret;
+    return mediaDeviceToPlainObject(device);
   });
 
   if (enforcedKind) {
