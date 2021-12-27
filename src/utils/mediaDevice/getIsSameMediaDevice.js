@@ -3,6 +3,9 @@ const { MEDIA_DEVICE_KINDS } = require("../../constants");
 /**
  * Determines whether the given media devices are the same.
  *
+ * This includes the ability to determine if MediaDeviceInfo matches an object
+ * with MediaDeviceInfo-like properties.
+ *
  * NOTE: One of these devices may represent partial data, such as one of them
  * only having a deviceId. It is in hopes that the object would not be run
  * through this comparison algorithm if the type was never known, however, as a
@@ -29,9 +32,22 @@ module.exports = function getIsSameMediaDevice(
     throw new TypeError("deviceA and deviceB must be objects");
   }
 
-  // Shallow copy devices so we can alter their properties, if need-be
-  const locDeviceA = { ...deviceA };
-  const locDeviceB = { ...deviceB };
+  // Obtain copies of the devices so that we can potentially add properties to
+  // them without affecting their source reference
+  const [locDeviceA, locDeviceB] = [deviceA, deviceB].map(device => {
+    if (device instanceof MediaDeviceInfo) {
+      /**
+       * This is the only known way to iterate over MediaDeviceInfo, which is
+       * returned from a gUM call.  It's not very well documented but more
+       * information may be found on the following page:
+       * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
+       */
+      return device.toJSON();
+    } else {
+      // Iterate over the object
+      return { ...device };
+    }
+  });
 
   if (enforcedKind) {
     // If neither device has a kind associated to it, return false
@@ -39,19 +55,17 @@ module.exports = function getIsSameMediaDevice(
       return false;
     }
 
-    // Patch deviceA kind if previously non-existent, patch it with the
-    // enforcedKind
-    if (!locDeviceA.kind) {
-      locDeviceA.kind = enforcedKind;
-    }
-
-    // Patch deviceB kind if previously non-existent, patch it with the
-    // enforcedKind
-    if (!locDeviceB.kind) {
-      locDeviceB.kind = enforcedKind;
-    }
+    // "Conditional patch logic" follows; if either one of the devices does not
+    // have an associated kind attached to it, add the property
+    [locDeviceA, locDeviceB].forEach(device => {
+      if (!device.kind) {
+        device.kind = enforcedKind;
+      }
+    });
   }
 
+  // If either device still doesn't have an associated kind after conditional
+  // patch logic above, return false
   if (!locDeviceA.kind || !locDeviceB.kind) {
     return false;
   } else if (!MEDIA_DEVICE_KINDS.includes(locDeviceA.kind)) {
