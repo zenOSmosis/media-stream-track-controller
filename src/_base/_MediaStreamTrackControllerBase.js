@@ -155,6 +155,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   /**
    * Retrieves the settings related to the input MediaStreamTrack.
    *
+   * More information about supported properties can be found here:
+   * @link https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings
+   *
    * @return {MediaTrackSettings}
    */
   getSettings() {
