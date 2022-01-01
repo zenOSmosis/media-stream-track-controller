@@ -1,4 +1,7 @@
-// TODO: Expand this file
+/**
+ * For additional information regarding constraints:
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
+ */
 
 /** @exports */
 const AUDIO_QUALITY_PRESET_TALK_RADIO = {
@@ -8,11 +11,12 @@ const AUDIO_QUALITY_PRESET_TALK_RADIO = {
       echoCancellation: true,
       noiseSuppression: true,
       autoGainControl: true,
-      // FIXME: (jh) Configure sampleRate / sampleSize?
-      sampleRate: 48000,
-      sampleSize: 16,
+      sampleRate: 24000,
+      sampleSize: 8,
       // Mono
-      channelCount: 1,
+      channelCount: {
+        ideal: 1,
+      },
     },
   },
 };
@@ -25,11 +29,12 @@ const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
       echoCancellation: false,
       noiseSuppression: false,
       autoGainControl: false,
-      // FIXME: (jh) Configure sampleRate / sampleSize?
-      sampleRate: 48000,
-      sampleSize: 16,
+      sampleRate: 24000,
+      sampleSize: 8,
       // Mono
-      channelCount: 1,
+      channelCount: {
+        ideal: 1,
+      },
     },
   },
 };
@@ -45,7 +50,9 @@ const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
       sampleRate: 48000,
       sampleSize: 16,
       // Stereo
-      channelCount: 2,
+      channelCount: {
+        ideal: 2,
+      },
     },
   },
 };
