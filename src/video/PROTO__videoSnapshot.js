@@ -6,10 +6,10 @@ const { VIDEO_TRACK_KIND } = require("../constants");
 
 /**
  * Source code idea borrowed from:
- * @see https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos
  *
  * For the future (fun with filters):
- * @see https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos#fun_with_filters
+ * @link https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Taking_still_photos#fun_with_filters
  */
 export default function useVideoMediaStreamTrackSnapshot() {
   const takeSnapshot = useCallback(async videoMediaStreamTrack => {

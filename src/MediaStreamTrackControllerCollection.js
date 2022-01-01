@@ -242,7 +242,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 
   // FIXME: Use the following methods via mixin with
   // MediaStreamTrackController base, once support is added in PhantomCore
-  // @see https://github.com/zenOSmosis/phantom-core/issues/44
+  // @link https://github.com/zenOSmosis/phantom-core/issues/44
 
   /**
    * @param {boolean} isMuted

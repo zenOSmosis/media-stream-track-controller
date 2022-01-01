@@ -157,7 +157,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * Note: If this is called more than once, it will re-start the polling sequence.
    *
    * Derived from Twilio's documentation.
-   * @see https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
+   * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
    */
   async _initAudioLevelPolling() {
     clearTimeout(this._silenceErrorDetectionTimeout);

@@ -31,6 +31,7 @@ module.exports = {
     getIsSameMediaDevice: require("./mediaDevice/getIsSameMediaDevice"),
     getMatchedMediaDevice: require("./mediaDevice/getMatchedMediaDevice"),
     getMediaDeviceTrackControllers: require("./mediaDevice/getMediaDeviceTrackControllers"),
+    mediaDeviceToPlainObject: require("./mediaDevice/mediaDeviceToPlainObject"),
     uncaptureSpecificMediaDevice: require("./mediaDevice/uncaptureSpecificMediaDevice"),
   },
   mediaStream: {

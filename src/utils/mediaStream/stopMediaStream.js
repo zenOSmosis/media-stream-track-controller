@@ -23,7 +23,7 @@ module.exports = function stopMediaStream(mediaStream) {
      * device has been ejected, or because the remote peer permanently stopped
      * sending data.
      *
-     * @see https://stackoverflow.com/questions/55953038/why-is-the-ended-event-not-firing-for-this-mediastreamtrack
+     * @link https://stackoverflow.com/questions/55953038/why-is-the-ended-event-not-firing-for-this-mediastreamtrack
      */
     track.dispatchEvent(new Event("ended"));
 

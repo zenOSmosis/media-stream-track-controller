@@ -56,7 +56,7 @@ test("utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceI
         autoGainControl: false,
         sampleRate: 48000,
         sampleSize: 16,
-        channelCount: 2,
+        channelCount: { ideal: 2 },
         deviceId: { exact: "test-audio-device-id" },
       },
       video: false,
@@ -75,7 +75,7 @@ test("utils.constraints.makeSpecificDeviceCaptureConstraints.makeSpecificDeviceI
         autoGainControl: false,
         sampleRate: 48000,
         sampleSize: 16,
-        channelCount: 2,
+        channelCount: { ideal: 2 },
         deviceId: { exact: "test-audio-device-id" },
       },
       video: false,
@@ -185,7 +185,7 @@ test("utils.constraints.makeAudioConstraints", t => {
         autoGainControl: false,
         sampleRate: 48000,
         sampleSize: 16,
-        channelCount: 2,
+        channelCount: { ideal: 2 },
       },
     },
     "default audio constraints matches high quality audio and false video"
@@ -254,12 +254,12 @@ test("utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints", t
         echoCancellation: true,
         noiseSuppression: true,
         autoGainControl: true,
-        sampleRate: 48000,
-        sampleSize: 16,
-        channelCount: 1,
+        sampleRate: 24000,
+        sampleSize: 8,
+        channelCount: { ideal: 1 },
       },
     },
-    "high quality music constraints match expected"
+    "talk radio constraints match expected"
   );
 
   const lqMusicConstraints =
@@ -274,12 +274,12 @@ test("utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints", t
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false,
-        sampleRate: 48000,
-        sampleSize: 16,
-        channelCount: 1,
+        sampleRate: 24000,
+        sampleSize: 8,
+        channelCount: { ideal: 1 },
       },
     },
-    "high quality music constraints match expected"
+    "low quality music constraints match expected"
   );
 
   const hqMusicConstraints =
@@ -296,7 +296,7 @@ test("utils.constraints.audioQualityPresets.getAudioQualityPresetConstraints", t
         autoGainControl: false,
         sampleRate: 48000,
         sampleSize: 16,
-        channelCount: 2,
+        channelCount: { ideal: 2 },
       },
     },
     "high quality music constraints match expected"
