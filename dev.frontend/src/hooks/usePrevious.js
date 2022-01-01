@@ -4,7 +4,7 @@ const DEFAULT_REF_VALUE = null;
 
 /**
  * Adapted from:
- * @see https://usehooks.com/usePrevious
+ * @link https://usehooks.com/usePrevious
  *
  * getPreviousValue, a memoized callback with no dependencies, was added so
  * that the value could be obtained from within a hook without the value being

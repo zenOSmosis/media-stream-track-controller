@@ -5,7 +5,7 @@ const makeScreenCaptureConstraints = require("../constraints/makeScreenCaptureCo
  * Capture screen  content and resolve a controller factory to manage the media
  * track(s).
  *
- * For additional reading, @see https://w3c.github.io/mediacapture-main.
+ * For additional reading, @link https://w3c.github.io/mediacapture-main.
  *
  * @param {MediaTrackConstraints} userConstraints? [optional; default = {}]
  * @param {Object} factoryOptions? [optional; default = {}]

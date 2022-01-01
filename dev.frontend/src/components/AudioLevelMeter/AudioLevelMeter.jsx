@@ -5,7 +5,7 @@ import styles from "./AudioLevelMeter.module.css";
 /**
  * Note: This component can render multiple audio levels together as a single unit, side-by-side.
  *
- * @see https://codepen.io/snart1/pen/rRvwwr
+ * @link https://codepen.io/snart1/pen/rRvwwr
  */
 export default function AudioLevelMeter({
   className,

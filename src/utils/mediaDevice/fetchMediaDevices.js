@@ -51,7 +51,7 @@ const fetchMediaDevices = (() => {
     //
     // IMPORTANT: This Boolean coerce fixes an issue in Safari when wrapping
     // fetchMediaDevice where cached media devices were not being used
-    // @see https://github.com/zenOSmosis/speaker.app/pull/80
+    // @link https://github.com/zenOSmosis/speaker.app/pull/80
     if (Boolean(cache.lastIsAggressive) === Boolean(isAggressive)) {
       devices = cacheDiffMediaDevices(cache.lastMediaDevices, devices);
     } else {

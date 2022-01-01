@@ -106,7 +106,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    * Retrieves whether the associated input MediaStreamTrack is an audio or
    * video track.
    *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/kind
+   * @link https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/kind
    *
    * @return {"audio" | "video"}
    */
@@ -182,7 +182,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    * Retrieves an object with a structure based on a subset of MediaDeviceInfo
    * used for potential device matching with utils.getMediaDeviceMatch().
    *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
+   * @link https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo
    *
    * @return {Object}
    */

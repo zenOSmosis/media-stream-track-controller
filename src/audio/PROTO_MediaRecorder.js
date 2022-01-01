@@ -18,7 +18,7 @@ class MediaRecorder extends EventEmitter {
    * for authors to not specify this buffer size and allow the implementation
    * to pick a good buffer size to balance between latency and audio quality.
    *
-   * @see https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
+   * @link https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
    */
   static AUDIO_BUFFER_OUTPUT_SIZE = 1024;
 
@@ -61,7 +61,7 @@ class MediaRecorder extends EventEmitter {
 
     // TODO: Read input stream to determine number of input channels
     // The createScriptProcessor() method of the BaseAudioContext interface creates a ScriptProcessorNode used for direct audio processing.
-    // @see https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
+    // @link https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createScriptProcessor
     this._scriptNode = this._audioContext.createScriptProcessor(
       MediaRecorder.AUDIO_BUFFER_OUTPUT_SIZE,
       MediaRecorder.NUM_INPUT_CHANNELS,
