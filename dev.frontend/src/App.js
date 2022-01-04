@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
   MediaStreamTrackControllerFactory,
+  MediaStreamTrackControllerFactoryCollection,
   MediaStreamTrackControllerCollection,
   utils,
 } from "./media-stream-track-controller";
@@ -21,6 +22,47 @@ import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
 
 function App() {
+  const forceUpdate = useForceUpdate();
+
+  const masterMuteController = useMemo(
+    () => new MediaStreamTrackControllerFactoryCollection(),
+    []
+  );
+
+  const [isMasterAudioMuted, _setIsMasterAudioMuted] = useState(false);
+
+  useEffect(() => {
+    if (masterMuteController) {
+      let prevIsMasterAudioMuted = false;
+
+      masterMuteController.on(
+        MediaStreamTrackControllerFactoryCollection.EVT_UPDATED,
+        () => {
+          forceUpdate();
+
+          const nextIsMasterAudioMuted = masterMuteController.getIsAudioMuted();
+
+          if (nextIsMasterAudioMuted !== prevIsMasterAudioMuted) {
+            _setIsMasterAudioMuted(() => {
+              prevIsMasterAudioMuted = nextIsMasterAudioMuted;
+
+              return nextIsMasterAudioMuted;
+            });
+          }
+        }
+      );
+
+      // Destruct masterMuteController on unmount
+      return () => masterMuteController.destroy();
+    }
+  }, [forceUpdate, masterMuteController]);
+
+  // TODO: Remove
+  console.log({
+    isMasterAudioMuted,
+    c: masterMuteController.getChildren(),
+  });
+
   const [
     mediaStreamTrackControllerFactories,
     setMediaStreamTrackControllerFactories,
@@ -84,16 +126,21 @@ function App() {
    * @param {MediaStreamTrackControllerFactory} controllerFactory
    * @return {void}
    */
-  const registerControllerFactory = useCallback(controllerFactory => {
-    logger.log("registering controller factory", {
-      controllerFactory,
-    });
+  const registerControllerFactory = useCallback(
+    controllerFactory => {
+      logger.log("registering controller factory", {
+        controllerFactory,
+      });
 
-    setMediaStreamTrackControllerFactories(prev => [
-      ...prev,
-      controllerFactory,
-    ]);
-  }, []);
+      masterMuteController.addChild(controllerFactory);
+
+      setMediaStreamTrackControllerFactories(prev => [
+        ...prev,
+        controllerFactory,
+      ]);
+    },
+    [masterMuteController]
+  );
 
   // Sync mediaStreamTrackControllerFactories once a factory has been destroyed
   useEffect(() => {
@@ -314,6 +361,24 @@ function App() {
             </div>
           );
         })}
+      </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Master Audio Muting</h2>
+        <div>
+          <button
+            onClick={() => masterMuteController.muteAudio()}
+            disabled={masterMuteController.getIsAudioMuted()}
+          >
+            Mute
+          </button>{" "}
+          <button
+            onClick={() => masterMuteController.unmuteAudio()}
+            disabled={!masterMuteController.getIsAudioMuted()}
+          >
+            Unmute
+          </button>
+        </div>
       </div>
 
       <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
