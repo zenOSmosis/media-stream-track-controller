@@ -75,6 +75,13 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
       audioTrackControllers.every(controller => controller.getIsMuted())
     );
   }
+
+  // TODO: Document
+  getVideoTrackControllers() {
+    return this.getChildren()
+      .map(factory => factory.getVideoTrackControllers())
+      .flat();
+  }
 };
 
 module.exports.EVT_UPDATED = EVT_UPDATED;
