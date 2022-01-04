@@ -223,20 +223,12 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
   _syncTrackControllersMuteState() {
     const trackControllers = this.getChildren();
 
-    const areAllControllersMuted = trackControllers.every(controller =>
-      controller.getIsMuted()
-    );
-
-    if (areAllControllersMuted) {
+    if (trackControllers.every(controller => controller.getIsMuted())) {
+      // If every...
       this._isMuted = true;
-    } else {
-      const areSomeControllersUnmuted = trackControllers.some(
-        controller => !controller.getIsMuted()
-      );
-
-      if (areSomeControllersUnmuted) {
-        this._isMuted = false;
-      }
+    } else if (trackControllers.some(controller => !controller.getIsMuted())) {
+      // If some...
+      this._isMuted = false;
     }
   }
 
