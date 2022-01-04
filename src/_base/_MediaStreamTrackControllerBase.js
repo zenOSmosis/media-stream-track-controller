@@ -40,16 +40,16 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
   /**
    * @param {MediaStreamTrack} inputMediaStreamTrack
-   * @param {Object} options?
+   * @param {Object} phantomCoreOptions? [default = {}]
    */
-  constructor(inputMediaStreamTrack, options = {}) {
+  constructor(inputMediaStreamTrack, phantomCoreOptions = {}) {
     if (!(inputMediaStreamTrack instanceof MediaStreamTrack)) {
       throw new TypeError(
         "inputMediaStreamTrack is not of MediaStreamTrack type"
       );
     }
 
-    super(options);
+    super(phantomCoreOptions);
 
     _instances[this._uuid] = this;
 
