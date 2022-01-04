@@ -25,8 +25,6 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
   constructor(initialMediaStreamTrackControllers = []) {
     super(initialMediaStreamTrackControllers);
 
-    this.bindChildEventName(EVT_UPDATED);
-
     // Experimental, direct MediaStream support
 
     // FIXME: This probably should not be used for most use cases at this time,
