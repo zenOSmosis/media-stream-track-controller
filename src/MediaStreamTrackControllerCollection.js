@@ -218,6 +218,11 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    *
    * This is internally called once each track controller is updated.
    *
+   * Conditions:
+   *  - If every track controller is muted, set the _isMuted flag to true
+   *  - If some track controllers are not muted, set the _isMuted flag to false
+   *  - Otherwise, don't change the flag
+   *
    * @return {void}
    */
   _syncTrackControllersMuteState() {
