@@ -34,7 +34,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
       MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
 
     return controllers.filter(controller =>
-      Object.is(controller.UNSAFE_getInputMediaStreamTrack(), mediaStreamTrack)
+      Object.is(controller._inputMediaStreamTrack, mediaStreamTrack)
     );
   }
 
@@ -118,19 +118,6 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   getKind() {
     return this._inputMediaStreamTrack.kind;
-  }
-
-  /**
-   * Retrieves the input MediaStreamTrack.
-   *
-   * IMPORTANT: For most class implementors this should not be at all.  It was
-   * added here so we could do a static lookup of class instances with the
-   * associated input MediaStreamTrack.
-   *
-   * @return {MediaStreamTrack}
-   */
-  UNSAFE_getInputMediaStreamTrack() {
-    return this._inputMediaStreamTrack;
   }
 
   /**
