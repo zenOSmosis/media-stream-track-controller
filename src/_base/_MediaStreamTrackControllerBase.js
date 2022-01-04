@@ -2,9 +2,11 @@ const PhantomCore = require("phantom-core");
 const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
 const stopMediaStreamTrack = require("../utils/mediaStreamTrack/stopMediaStreamTrack");
 
-// TODO: Use PhantomCollection instead?
+// FIXME: Use PhantomCollection instead?
 const _instances = {};
 
+// FIXME: Extend PhantomState and use _isTrackEnded, _isMuted properties as
+// state?
 /**
  * NOTE: Once a MediaStreamTrack is associated with a track controller, it
  * will be stopped when the controller is destructed.
