@@ -1,16 +1,17 @@
 const PhantomCore = require("phantom-core");
 const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const stopMediaStreamTrack = require("../utils/mediaStreamTrack/stopMediaStreamTrack");
 
 // TODO: Use PhantomCollection instead?
 const _instances = {};
 
 /**
- * IMPORTANT: This class should not be utilized directly, and instead should be
- * utilized by the AudioMediaStreamTrackController and
- * VideoMediaStreamTrackController extension classes.
- *
- * IMPORTANT: Once a MediaStreamTrack is associated with a track controller, it
+ * NOTE: Once a MediaStreamTrack is associated with a track controller, it
  * will be stopped when the controller is destructed.
+ *
+ * IMPORTANT: For most use cases, this class should not be utilized directly,
+ * and instead should be utilized by the AudioMediaStreamTrackController and
+ * VideoMediaStreamTrackController extension classes.
  */
 class MediaStreamTrackControllerBase extends PhantomCore {
   /**
@@ -58,6 +59,11 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     // IMPORTANT: Do not clone input track for the output track because it
     // makes it difficult for the controller to stop the underlying device when
     // destructed
+    //
+    // FIXME: (jh) The previous message may no longer be the case after
+    // applying workaround fixes to track stopping, however I'm not yet
+    // positive if cloning the track would bring any additional benefit and
+    // haven't yet looked into this further
     this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     this._isTrackEnded = false;
@@ -278,14 +284,8 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   async destroy() {
     // Automatically stop input and output tracks
-    this._inputMediaStreamTrack.stop();
-    this._outputMediaStreamTrack.stop();
-
-    // This is needed for any "ended" listeners, since we may be stopping the
-    // track programmatically (instead of it ending on its own)
-    //
-    // NOTE: This MAY not be working with Firefox
-    this._outputMediaStreamTrack.dispatchEvent(new Event("ended"));
+    stopMediaStreamTrack(this._inputMediaStreamTrack);
+    stopMediaStreamTrack(this._outputMediaStreamTrack);
 
     delete _instances[this._uuid];
 
