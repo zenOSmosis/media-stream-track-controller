@@ -33,6 +33,10 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
     // FIXME: Since this exposes addEventListener property, it could create a
     // potential memory-leak should bind to it with a listener; further
     // consideration should be implemented for this
+    //
+    // FIXME: If deciding to leave in here, make a common collection called
+    // MediaStreamTrackCollection and base this class, plus
+    // ...FactoryCollection on it
     this._outputMediaStream = new MediaStream(
       this.getChildren().map(trackController =>
         trackController.getOutputMediaStreamTrack()
