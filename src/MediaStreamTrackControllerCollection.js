@@ -26,7 +26,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
     super(initialMediaStreamTrackControllers);
 
     // Experimental, direct MediaStream support
-
+    //
     // FIXME: This probably should not be used for most use cases at this time,
     // individual track controllers should likely be used instead, if possible
     //
