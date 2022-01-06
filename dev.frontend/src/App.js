@@ -187,7 +187,9 @@ function App() {
       utils.mediaStream.generators.createTestAudioMediaStream();
 
     registerControllerFactory(
-      new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
+      new MediaStreamTrackControllerFactory(mediaStream, {
+        title: "Pulsating Audio",
+      })
     );
   }, [registerControllerFactory]);
 
