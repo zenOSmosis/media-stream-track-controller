@@ -43,6 +43,7 @@ module.exports = {
     stopMediaStream: require("./mediaStream/stopMediaStream"),
   },
   mediaStreamTrack: {
+    createMediaStreamTrackControllersFromMediaStream: require("./mediaStreamTrack/createMediaStreamTrackControllersFromMediaStream"),
     getMediaStreamTrackControllerInstance: require("./mediaStreamTrack/getMediaStreamTrackControllerInstances"),
     stopMediaStreamTrack: require("./mediaStreamTrack/stopMediaStreamTrack"),
   },

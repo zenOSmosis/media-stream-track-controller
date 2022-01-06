@@ -13,9 +13,7 @@ const {
   EVT_CHILD_INSTANCE_REMOVED,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
-const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
-const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
-const { AUDIO_TRACK_KIND, VIDEO_TRACK_KIND } = require("./constants");
+const createMediaStreamTrackControllersFromMediaStream = require("./utils/mediaStreamTrack/createMediaStreamTrackControllersFromMediaStream");
 
 const _factoryInstances = {};
 
@@ -23,6 +21,8 @@ const _factoryInstances = {};
  * Factory class which breaks down a given MediaStream into
  * Audio/VideoMediaStreamTrackController constituents and uses them as a
  * collection.
+ *
+ * Generally, a single factory is utilized for a single gUM call.
  *
  * IMPORTANT: When all associated track controllers are removed, the factory
  * will self-destruct.
@@ -71,43 +71,6 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
   }
 
   /**
-   * Processes inputMediaStream, converting it into audio and video track
-   * controllers.
-   *
-   * @param {MediaStream} inputMediaStream
-   * @param {Object} factoryOptions? [optional; default = {}] If set, factoryOptions are
-   * passed collectively to track controller constructors
-   * @return {AudioMediaStreamTrackController[] | VideoMediaStreamTrackController[]}
-   */
-  static createTrackControllersFromMediaStream(
-    inputMediaStream,
-    factoryOptions = {}
-  ) {
-    const controllers = [];
-
-    for (const track of inputMediaStream.getTracks()) {
-      switch (track.kind) {
-        case AUDIO_TRACK_KIND:
-          controllers.push(
-            new AudioMediaStreamTrackController(track, factoryOptions)
-          );
-          break;
-
-        case VIDEO_TRACK_KIND:
-          controllers.push(
-            new VideoMediaStreamTrackController(track, factoryOptions)
-          );
-          break;
-
-        default:
-          throw new TypeError(`Unknown track kind: ${track.kind}`);
-      }
-    }
-
-    return controllers;
-  }
-
-  /**
    * @param {MediaStream} inputMediaStream
    * @param {Object} factoryOptions? // TODO: Document
    */
@@ -117,7 +80,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     }
 
     const initialTrackControllers =
-      MediaStreamTrackControllerFactory.createTrackControllersFromMediaStream(
+      createMediaStreamTrackControllersFromMediaStream(
         inputMediaStream,
         factoryOptions
       );
@@ -146,6 +109,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
   async destroy() {
     delete _factoryInstances[this._uuid];
 
+    // Destruct all children on shutdown
     await this.destroyAllChildren();
 
     return super.destroy();
