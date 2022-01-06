@@ -16,7 +16,12 @@ const {
 module.exports = class MediaStreamTrackControllerFactoryCollection extends (
   PhantomCollection
 ) {
-  // TODO: Document
+  /**
+   * Adds the MediaStreamTrackControllerFactory instance to the collection.
+   *
+   * @param {MediaStreamTrackControllerFactory} factory
+   * @return {void}
+   */
   addChild(factory) {
     if (!(factory instanceof MediaStreamTrackControllerFactory)) {
       throw new TypeError("factory is not a MediaStreamTrackControllerFactory");
@@ -25,17 +30,33 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
     return super.addChild(factory);
   }
 
-  // TODO: Document
+  /**
+   * Alias for this.addChild(factory).
+   *
+   * @param {MediaStreamTrackControllerFactory} factory
+   * @return {void}
+   */
   addTrackControllerFactory(factory) {
     return this.addChild(factory);
   }
 
-  // TODO: Document
+  /**
+   * Removes the given MediaStreamTrackControllerFactory instance from the
+   * collection.
+   *
+   * @param {MediaStreamTrackControllerFactory} factory
+   * @return {void}
+   */
   removeTrackControllerFactory(factory) {
     return this.removeChild(factory);
   }
 
-  // TODO: Document
+  /**
+   * Retrieves the MediaStreamTrackControllerFactory children of the
+   * collection.
+   *
+   * @return {MediaStreamTrackControllerFactory[]}
+   */
   getTrackControllerFactories() {
     return this.getChildren();
   }
@@ -47,7 +68,12 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
       .flat();
   }
 
-  // TODO: Document
+  /**
+   * // TODO: Document
+   *
+   * @param {boolean} isAudioMuted
+   * @return {void}
+   */
   setIsAudioMuted(isAudioMuted) {
     const audioTrackControllers = this.getAudioTrackControllers();
 
@@ -56,12 +82,24 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
     );
   }
 
-  // TODO: Document
+  /**
+   * Mutes the audio of the current MediaStreamTrackControllerFactory
+   * children.
+   *
+   * NOTE: Factory instances added after muting will not be muted by default.
+   *
+   * @return {void}
+   */
   muteAudio() {
     return this.setIsAudioMuted(true);
   }
 
-  // TODO: Document
+  /**
+   * Unmutes the audio of the current MediaStreamTrackControllerFactory
+   * children.
+   *
+   * @return {void}
+   */
   unmuteAudio() {
     return this.setIsAudioMuted(false);
   }
