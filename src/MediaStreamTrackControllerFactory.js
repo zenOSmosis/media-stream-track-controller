@@ -28,6 +28,7 @@ const _factoryInstances = {};
  * will self-destruct.
  */
 class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollection {
+  // TODO: Move to factory collection instead?
   /**
    * Retrieves currently active MediaStreamTrackController instances.
    *
@@ -44,6 +45,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     return Object.values(_factoryInstances);
   }
 
+  // TODO: Move to factory collection instead?
   /**
    * Retrieves the factory instances which include one or more track
    * controllers originating from the given input media device.
