@@ -22,40 +22,10 @@ import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
 
 function App() {
-  const forceUpdate = useForceUpdate();
-
   const masterMuteController = useMemo(
     () => new MediaStreamTrackControllerFactoryCollection(),
     []
   );
-
-  const [isMasterAudioMuted, _setIsMasterAudioMuted] = useState(false);
-
-  useEffect(() => {
-    if (masterMuteController) {
-      let prevIsMasterAudioMuted = false;
-
-      masterMuteController.on(
-        MediaStreamTrackControllerFactoryCollection.EVT_UPDATED,
-        () => {
-          forceUpdate();
-
-          const nextIsMasterAudioMuted = masterMuteController.getIsAudioMuted();
-
-          if (nextIsMasterAudioMuted !== prevIsMasterAudioMuted) {
-            _setIsMasterAudioMuted(() => {
-              prevIsMasterAudioMuted = nextIsMasterAudioMuted;
-
-              return nextIsMasterAudioMuted;
-            });
-          }
-        }
-      );
-
-      // Destruct masterMuteController on unmount
-      return () => masterMuteController.destroy();
-    }
-  }, [forceUpdate, masterMuteController]);
 
   const [
     mediaStreamTrackControllerFactories,
