@@ -57,12 +57,6 @@ function App() {
     }
   }, [forceUpdate, masterMuteController]);
 
-  // TODO: Remove
-  console.log({
-    isMasterAudioMuted,
-    c: masterMuteController.getChildren(),
-  });
-
   const [
     mediaStreamTrackControllerFactories,
     setMediaStreamTrackControllerFactories,
