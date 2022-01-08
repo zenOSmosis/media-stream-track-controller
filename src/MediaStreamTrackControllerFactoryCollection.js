@@ -72,13 +72,15 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
    * // TODO: Document
    *
    * @param {boolean} isAudioMuted
-   * @return {void}
+   * @return {Promise<void>}
    */
-  setIsAudioMuted(isAudioMuted) {
+  async setIsAudioMuted(isAudioMuted) {
     const audioTrackControllers = this.getAudioTrackControllers();
 
-    audioTrackControllers.forEach(controller =>
-      controller.setIsMuted(isAudioMuted)
+    await Promise.all(
+      audioTrackControllers.map(controller =>
+        controller.setIsMuted(isAudioMuted)
+      )
     );
   }
 
@@ -88,9 +90,9 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
    *
    * NOTE: Factory instances added after muting will not be muted by default.
    *
-   * @return {void}
+   * @return {Promise<void>}
    */
-  muteAudio() {
+  async muteAudio() {
     return this.setIsAudioMuted(true);
   }
 
@@ -98,7 +100,7 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
    * Unmutes the audio of the current MediaStreamTrackControllerFactory
    * children.
    *
-   * @return {void}
+   * @return {Promise<void>}
    */
   unmuteAudio() {
     return this.setIsAudioMuted(false);
