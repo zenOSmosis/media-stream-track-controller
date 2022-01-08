@@ -39,7 +39,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
     // ...FactoryCollection on it
     this._outputMediaStream = new MediaStream(
       this.getChildren().map(trackController =>
-        trackController.getOutputMediaStreamTrack()
+        trackController.getOutputTrack()
       )
     );
 
@@ -59,30 +59,34 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
           );
 
           addedTrackControllers.forEach(trackController => {
-            const mediaStreamTrack =
-              trackController.getOutputMediaStreamTrack();
+            const mediaStreamTrack = trackController.getOutputTrack();
 
+            // FIXME: Is this necessary since the track is from a controller?
             if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
               throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
             }
 
-            this._outputMediaStream.addTrack(
-              trackController.getOutputMediaStreamTrack()
-            );
+            this._outputMediaStream.addTrack(trackController.getOutputTrack());
           });
 
           removedTrackControllers.forEach(trackController => {
-            const mediaStreamTrack =
-              trackController.getOutputMediaStreamTrack();
+            const mediaStreamTrack = trackController.getOutputTrack();
 
-            if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
-              throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
+            // NOTE: The MediaStreamTrack might not be available if the
+            // controller was destructed prior to _handleUpdate being called
+            if (mediaStreamTrack) {
+              // FIXME: Is this necessary since the track is from a controller?
+              if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
+                throw new TypeError(
+                  "mediaStreamTrack is not a MediaStreamTrack"
+                );
+              }
+
+              // FIXME: (jh) This does not appear to actually remove the track
+              // from the MediaStream (tested in Chrome, Firefox and iOS 14)
+              // workaround-082320212130
+              this._outputMediaStream.removeTrack(mediaStreamTrack);
             }
-
-            // FIXME: (jh) This does not appear to actually remove the track
-            // from the MediaStream (tested in Chrome, Firefox and iOS 14)
-            // workaround-082320212130
-            this._outputMediaStream.removeTrack(mediaStreamTrack);
           });
         })();
 

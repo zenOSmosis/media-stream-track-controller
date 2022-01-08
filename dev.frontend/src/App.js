@@ -85,7 +85,7 @@ function App() {
       .flat();
 
     const audioMediaStreamTracks = audioTrackControllers.map(controller =>
-      controller.getOutputMediaStreamTrack()
+      controller.getOutputTrack()
     );
 
     const videoTrackControllers = mediaStreamTrackControllerFactories
@@ -94,7 +94,7 @@ function App() {
 
     /*
     const videoMediaStreamTracks = videoTrackControllers.map(controller =>
-      controller.getOutputMediaStreamTrack()
+      controller.getOutputTrack()
     );
     */
 
@@ -489,7 +489,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
       if (trackController && videoEl) {
         await trackController.onceReady();
 
-        const track = trackController.getOutputMediaStreamTrack();
+        const track = trackController.getOutputTrack();
 
         if (track) {
           videoEl.srcObject = new MediaStream([track]);
@@ -577,7 +577,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
         </div>
       </div>
 
-      <div>{trackController.getOutputMediaStreamTrack().readyState}</div>
+      <div>{trackController.getOutputTrack().readyState}</div>
 
       <video
         muted={true}
@@ -593,7 +593,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
             // TODO: Implement gain adjustment UI controller
           }
           <AudioMediaStreamTrackLevelMeter
-            mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
+            mediaStreamTrack={trackController.getOutputTrack()}
             style={{ height: 100 }}
           />
           <button
