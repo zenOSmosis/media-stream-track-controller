@@ -74,9 +74,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
     // Destroy instance once track ends
     (() => {
-      // IMPORTANT: This timeout is set so that _outputMediaStreamTrack can be
-      // overridden by extender's constructor.
-      setTimeout(() => {
+      // IMPORTANT: This setImmediate is utilized so that
+      // _outputMediaStreamTrack can be overridden by extender's constructor
+      setImmediate(() => {
         const _handleTrackEnded = () => {
           // This check is here to prevent an infinite loop resulting in
           // Maximum Callstack Error
