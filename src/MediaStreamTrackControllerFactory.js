@@ -13,7 +13,7 @@ const {
   EVT_CHILD_INSTANCE_REMOVED,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
-const createMediaStreamTrackControllersFromMediaStream = require("./utils/mediaStreamTrack/createMediaStreamTrackControllersFromMediaStream");
+const createTrackControllersFromMediaStream = require("./utils/mediaStreamTrack/createTrackControllersFromMediaStream");
 
 const _factoryInstances = {};
 
@@ -34,8 +34,8 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
    *
    * @return {MediaStreamTrackController[]}
    */
-  static getMediaStreamTrackControllerInstances() {
-    return MediaStreamTrackController.getMediaStreamTrackControllerInstances();
+  static getTrackControllerInstances() {
+    return MediaStreamTrackController.getTrackControllerInstances();
   }
 
   /**
@@ -81,11 +81,10 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
       throw new TypeError("inputMediaStream is not of MediaStream type");
     }
 
-    const initialTrackControllers =
-      createMediaStreamTrackControllersFromMediaStream(
-        inputMediaStream,
-        factoryOptions
-      );
+    const initialTrackControllers = createTrackControllersFromMediaStream(
+      inputMediaStream,
+      factoryOptions
+    );
 
     super(initialTrackControllers, factoryOptions);
 

@@ -13,7 +13,7 @@ module.exports = function getMediaDeviceTrackControllers(mediaDeviceInfo) {
     throw new ReferenceError("Could not obtain deviceId from mediaDeviceInfo");
   }
 
-  return MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances().filter(
+  return MediaStreamTrackControllerBase.getTrackControllerInstances().filter(
     controller => controller.getInputDeviceId() === deviceId
   );
 };

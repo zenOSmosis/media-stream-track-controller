@@ -21,7 +21,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    *
    * @return {MediaStreamTrackController[]}
    */
-  static getMediaStreamTrackControllerInstances() {
+  static getTrackControllerInstances() {
     return Object.values(_instances);
   }
 
@@ -33,7 +33,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   static getTrackControllersWithTrack(mediaStreamTrack) {
     const controllers =
-      MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
+      MediaStreamTrackControllerBase.getTrackControllerInstances();
 
     return controllers.filter(controller =>
       Object.is(controller._inputMediaStreamTrack, mediaStreamTrack)

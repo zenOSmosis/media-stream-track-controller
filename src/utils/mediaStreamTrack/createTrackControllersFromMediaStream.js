@@ -16,7 +16,7 @@ const { AUDIO_TRACK_KIND, VIDEO_TRACK_KIND } = require("../../constants");
  * passed collectively to track controller constructors
  * @return {AudioMediaStreamTrackController[] & VideoMediaStreamTrackController[]}
  */
-module.exports = function createMediaStreamTrackControllersFromMediaStream(
+module.exports = function createTrackControllersFromMediaStream(
   inputMediaStream,
   factoryOptions = {}
 ) {
