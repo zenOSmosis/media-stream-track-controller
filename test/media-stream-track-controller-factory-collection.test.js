@@ -11,6 +11,8 @@ const _createTestAudioMediaStream = () => {
 };
 
 test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => {
+  t.plan(17);
+
   const factory1 = new MediaStreamTrackControllerFactory(
     _createTestAudioMediaStream()
   );
@@ -71,4 +73,35 @@ test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => 
     factory2.getIsMuted() === false,
     "factory 2 is muted after collection audio unmute"
   );
+
+  t.ok(
+    collection.getTrackControllerFactories().length === 2,
+    "2 track controller factories before one is removed"
+  );
+
+  collection.removeTrackControllerFactory(factory2);
+
+  t.ok(
+    collection.getTrackControllerFactories().length === 1,
+    "1 track controller factory after one is removed"
+  );
+
+  t.ok(
+    factory2.getIsDestroyed() === false,
+    "factory is not destructed when removed from collection"
+  );
+
+  t.ok(
+    collection.getVideoTrackControllers().length === 0,
+    "collection reports no video track controllers"
+  );
+
+  await collection.destroy();
+
+  t.ok(
+    factory1.getIsDestroyed() === false,
+    "factory stays running after removed from collection"
+  );
+
+  t.end();
 });
