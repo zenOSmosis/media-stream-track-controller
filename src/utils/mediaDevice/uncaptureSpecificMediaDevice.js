@@ -18,7 +18,7 @@ module.exports = async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
 
   // Look up all track controllers with this mediaDeviceInfo and stop them
   return Promise.all(
-    MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances()
+    MediaStreamTrackControllerBase.getTrackControllerInstances()
       .filter(controller => controller.getInputDeviceId() === deviceId)
       .map(controller => controller.destroy())
   );

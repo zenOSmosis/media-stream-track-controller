@@ -22,22 +22,31 @@ const {
  * are linked together.
  */
 class MediaStreamTrackControllerCollection extends PhantomCollection {
-  constructor(initialMediaStreamTrackControllers = []) {
-    super(initialMediaStreamTrackControllers);
-
-    this.bindChildEventName(EVT_UPDATED);
+  /**
+   * @param {MediaStreamTrackController[]} initialMediaStreamTrackControllers? [default = []]
+   * @param {Object} phantomCollectionOptions? [default = {}]
+   */
+  constructor(
+    initialMediaStreamTrackControllers = [],
+    phantomCollectionOptions = {}
+  ) {
+    super(initialMediaStreamTrackControllers, phantomCollectionOptions);
 
     // Experimental, direct MediaStream support
-
+    //
     // FIXME: This probably should not be used for most use cases at this time,
     // individual track controllers should likely be used instead, if possible
     //
     // FIXME: Since this exposes addEventListener property, it could create a
     // potential memory-leak should bind to it with a listener; further
     // consideration should be implemented for this
+    //
+    // FIXME: If deciding to leave in here, make a common collection called
+    // MediaStreamTrackCollection and base this class, plus
+    // ...FactoryCollection on it
     this._outputMediaStream = new MediaStream(
       this.getChildren().map(trackController =>
-        trackController.getOutputMediaStreamTrack()
+        trackController.getOutputTrack()
       )
     );
 
@@ -57,30 +66,34 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
           );
 
           addedTrackControllers.forEach(trackController => {
-            const mediaStreamTrack =
-              trackController.getOutputMediaStreamTrack();
+            const mediaStreamTrack = trackController.getOutputTrack();
 
+            // FIXME: Is this necessary since the track is from a controller?
             if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
               throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
             }
 
-            this._outputMediaStream.addTrack(
-              trackController.getOutputMediaStreamTrack()
-            );
+            this._outputMediaStream.addTrack(trackController.getOutputTrack());
           });
 
           removedTrackControllers.forEach(trackController => {
-            const mediaStreamTrack =
-              trackController.getOutputMediaStreamTrack();
+            const mediaStreamTrack = trackController.getOutputTrack();
 
-            if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
-              throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
+            // NOTE: The MediaStreamTrack might not be available if the
+            // controller was destructed prior to _handleUpdate being called
+            if (mediaStreamTrack) {
+              // FIXME: Is this necessary since the track is from a controller?
+              if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
+                throw new TypeError(
+                  "mediaStreamTrack is not a MediaStreamTrack"
+                );
+              }
+
+              // FIXME: (jh) This does not appear to actually remove the track
+              // from the MediaStream (tested in Chrome, Firefox and iOS 14)
+              // workaround-082320212130
+              this._outputMediaStream.removeTrack(mediaStreamTrack);
             }
-
-            // FIXME: (jh) This does not appear to actually remove the track
-            // from the MediaStream (tested in Chrome, Firefox and iOS 14)
-            // workaround-082320212130
-            this._outputMediaStream.removeTrack(mediaStreamTrack);
           });
         })();
 
@@ -218,25 +231,22 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    *
    * This is internally called once each track controller is updated.
    *
+   * Conditions:
+   *  - If every track controller is muted, set the _isMuted flag to true
+   *  - If some track controllers are not muted, set the _isMuted flag to false
+   *  - Otherwise, don't change the flag
+   *
    * @return {void}
    */
   _syncTrackControllersMuteState() {
     const trackControllers = this.getChildren();
 
-    const areAllControllersMuted = trackControllers.every(controller =>
-      controller.getIsMuted()
-    );
-
-    if (areAllControllersMuted) {
+    if (trackControllers.every(controller => controller.getIsMuted())) {
+      // If every is muted...
       this._isMuted = true;
-    } else {
-      const areSomeControllersUnmuted = trackControllers.some(
-        controller => !controller.getIsMuted()
-      );
-
-      if (areSomeControllersUnmuted) {
-        this._isMuted = false;
-      }
+    } else if (trackControllers.some(controller => !controller.getIsMuted())) {
+      // If some are not muted...
+      this._isMuted = false;
     }
   }
 

@@ -40,8 +40,12 @@ module.exports = {
       createTestAudioMediaStream: require("./mediaStream/generators/createTestAudioMediaStream"),
       createTestVideoMediaStream: require("./mediaStream/generators/createTestVideoMediaStream"),
     },
-    getMediaStreamTrackControllerInstance: require("./mediaStream/getMediaStreamTrackControllerInstances"),
     stopMediaStream: require("./mediaStream/stopMediaStream"),
+  },
+  mediaStreamTrack: {
+    createTrackControllersFromMediaStream: require("./mediaStreamTrack/createTrackControllersFromMediaStream"),
+    getTrackControllerInstances: require("./mediaStreamTrack/getTrackControllerInstances"),
+    stopMediaStreamTrack: require("./mediaStreamTrack/stopMediaStreamTrack"),
   },
   screen: {
     captureScreen: require("./screen/captureScreen"),

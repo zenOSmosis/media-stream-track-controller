@@ -1,16 +1,19 @@
 const PhantomCore = require("phantom-core");
 const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const stopMediaStreamTrack = require("../utils/mediaStreamTrack/stopMediaStreamTrack");
 
-// TODO: Use PhantomCollection instead?
+// FIXME: Use PhantomCollection instead?
 const _instances = {};
 
+// FIXME: Extend PhantomState and use _isTrackEnded, _isMuted properties as
+// state?
 /**
- * IMPORTANT: This class should not be utilized directly, and instead should be
- * utilized by the AudioMediaStreamTrackController and
- * VideoMediaStreamTrackController extension classes.
- *
- * IMPORTANT: Once a MediaStreamTrack is associated with a track controller, it
+ * NOTE: Once a MediaStreamTrack is associated with a track controller, it
  * will be stopped when the controller is destructed.
+ *
+ * IMPORTANT: For most use cases, this class should not be utilized directly,
+ * and instead should be utilized by the AudioMediaStreamTrackController and
+ * VideoMediaStreamTrackController extension classes.
  */
 class MediaStreamTrackControllerBase extends PhantomCore {
   /**
@@ -18,7 +21,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    *
    * @return {MediaStreamTrackController[]}
    */
-  static getMediaStreamTrackControllerInstances() {
+  static getTrackControllerInstances() {
     return Object.values(_instances);
   }
 
@@ -30,25 +33,25 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   static getTrackControllersWithTrack(mediaStreamTrack) {
     const controllers =
-      MediaStreamTrackControllerBase.getMediaStreamTrackControllerInstances();
+      MediaStreamTrackControllerBase.getTrackControllerInstances();
 
     return controllers.filter(controller =>
-      Object.is(controller.UNSAFE_getInputMediaStreamTrack(), mediaStreamTrack)
+      Object.is(controller._inputMediaStreamTrack, mediaStreamTrack)
     );
   }
 
   /**
    * @param {MediaStreamTrack} inputMediaStreamTrack
-   * @param {Object} options?
+   * @param {Object} phantomCoreOptions? [default = {}]
    */
-  constructor(inputMediaStreamTrack, options = {}) {
+  constructor(inputMediaStreamTrack, phantomCoreOptions = {}) {
     if (!(inputMediaStreamTrack instanceof MediaStreamTrack)) {
       throw new TypeError(
         "inputMediaStreamTrack is not of MediaStreamTrack type"
       );
     }
 
-    super(options);
+    super(phantomCoreOptions);
 
     _instances[this._uuid] = this;
 
@@ -58,6 +61,11 @@ class MediaStreamTrackControllerBase extends PhantomCore {
     // IMPORTANT: Do not clone input track for the output track because it
     // makes it difficult for the controller to stop the underlying device when
     // destructed
+    //
+    // FIXME: (jh) The previous message may no longer be the case after
+    // applying workaround fixes to track stopping, however I'm not yet
+    // positive if cloning the track would bring any additional benefit and
+    // haven't yet looked into this further
     this._outputMediaStreamTrack = Object.seal(inputMediaStreamTrack);
 
     this._isTrackEnded = false;
@@ -66,9 +74,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
     // Destroy instance once track ends
     (() => {
-      // IMPORTANT: This timeout is set so that _outputMediaStreamTrack can be
-      // overridden by extender's constructor.
-      setTimeout(() => {
+      // IMPORTANT: This setImmediate is utilized so that
+      // _outputMediaStreamTrack can be overridden by extender's constructor
+      setImmediate(() => {
         const _handleTrackEnded = () => {
           // This check is here to prevent an infinite loop resulting in
           // Maximum Callstack Error
@@ -112,19 +120,6 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   getKind() {
     return this._inputMediaStreamTrack.kind;
-  }
-
-  /**
-   * Retrieves the input MediaStreamTrack.
-   *
-   * IMPORTANT: For most class implementors this should not be at all.  It was
-   * added here so we could do a static lookup of class instances with the
-   * associated input MediaStreamTrack.
-   *
-   * @return {MediaStreamTrack}
-   */
-  UNSAFE_getInputMediaStreamTrack() {
-    return this._inputMediaStreamTrack;
   }
 
   /**
@@ -278,14 +273,8 @@ class MediaStreamTrackControllerBase extends PhantomCore {
    */
   async destroy() {
     // Automatically stop input and output tracks
-    this._inputMediaStreamTrack.stop();
-    this._outputMediaStreamTrack.stop();
-
-    // This is needed for any "ended" listeners, since we may be stopping the
-    // track programmatically (instead of it ending on its own)
-    //
-    // NOTE: This MAY not be working with Firefox
-    this._outputMediaStreamTrack.dispatchEvent(new Event("ended"));
+    stopMediaStreamTrack(this._inputMediaStreamTrack);
+    stopMediaStreamTrack(this._outputMediaStreamTrack);
 
     delete _instances[this._uuid];
 

@@ -104,6 +104,35 @@ test("empty MediaStream initialization", async t => {
   t.end();
 });
 
+test("factory options", async t => {
+  // t.plan(3);
+
+  const mediaStream1 =
+    utils.mediaStream.generators.createTestAudioMediaStream();
+
+  const mediaStream2 =
+    utils.mediaStream.generators.createTestAudioMediaStream();
+
+  const combinedMediaStream = new MediaStream(
+    [mediaStream1, mediaStream2].map(stream => stream.getTracks()).flat()
+  );
+
+  const factory = new MediaStreamTrackControllerFactory(combinedMediaStream, {
+    title: "test factory",
+  });
+
+  t.equals(factory.getTitle(), "test factory");
+
+  const trackControllers = factory.getTrackControllers();
+
+  t.equals(trackControllers[0].getTitle(), "test factory");
+  t.equals(trackControllers[1].getTitle(), "test factory");
+
+  await factory.destroy();
+
+  t.end();
+});
+
 test("factory auto-destruct when all track controllers are removed", async t => {
   t.plan(10);
 

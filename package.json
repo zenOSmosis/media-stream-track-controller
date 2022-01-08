@@ -1,6 +1,6 @@
 {
   "name": "media-stream-track-controller",
-  "version": "2.1.3",
+  "version": "3.0.0",
   "description": "Controller library for browser-based MediaStreamTrack objects",
   "main": "src/index.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "phantom-core": "github:zenosmosis/phantom-core#v2.2.1"
+    "phantom-core": "github:zenosmosis/phantom-core#v2.2.2"
   },
   "devDependencies": {
     "airtap": "^4.0.4",

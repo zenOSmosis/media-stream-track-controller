@@ -11,6 +11,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import {
   MediaStreamTrackControllerFactory,
+  MediaStreamTrackControllerFactoryCollection,
   MediaStreamTrackControllerCollection,
   utils,
 } from "./media-stream-track-controller";
@@ -21,6 +22,11 @@ import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
 
 function App() {
+  const masterMuteController = useMemo(
+    () => new MediaStreamTrackControllerFactoryCollection(),
+    []
+  );
+
   const [
     mediaStreamTrackControllerFactories,
     setMediaStreamTrackControllerFactories,
@@ -43,7 +49,7 @@ function App() {
       .flat();
 
     const audioMediaStreamTracks = audioTrackControllers.map(controller =>
-      controller.getOutputMediaStreamTrack()
+      controller.getOutputTrack()
     );
 
     const videoTrackControllers = mediaStreamTrackControllerFactories
@@ -52,7 +58,7 @@ function App() {
 
     /*
     const videoMediaStreamTracks = videoTrackControllers.map(controller =>
-      controller.getOutputMediaStreamTrack()
+      controller.getOutputTrack()
     );
     */
 
@@ -84,16 +90,21 @@ function App() {
    * @param {MediaStreamTrackControllerFactory} controllerFactory
    * @return {void}
    */
-  const registerControllerFactory = useCallback(controllerFactory => {
-    logger.log("registering controller factory", {
-      controllerFactory,
-    });
+  const registerControllerFactory = useCallback(
+    controllerFactory => {
+      logger.log("registering controller factory", {
+        controllerFactory,
+      });
 
-    setMediaStreamTrackControllerFactories(prev => [
-      ...prev,
-      controllerFactory,
-    ]);
-  }, []);
+      masterMuteController.addChild(controllerFactory);
+
+      setMediaStreamTrackControllerFactories(prev => [
+        ...prev,
+        controllerFactory,
+      ]);
+    },
+    [masterMuteController]
+  );
 
   // Sync mediaStreamTrackControllerFactories once a factory has been destroyed
   useEffect(() => {
@@ -140,7 +151,9 @@ function App() {
       utils.mediaStream.generators.createTestAudioMediaStream();
 
     registerControllerFactory(
-      new MediaStreamTrackControllerFactory(mediaStream, "pulsatingAudio")
+      new MediaStreamTrackControllerFactory(mediaStream, {
+        title: "Pulsating Audio",
+      })
     );
   }, [registerControllerFactory]);
 
@@ -317,6 +330,24 @@ function App() {
       </div>
 
       <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
+        <h2>Master Audio Muting</h2>
+        <div>
+          <button
+            onClick={() => masterMuteController.muteAudio()}
+            disabled={masterMuteController.getIsAudioMuted()}
+          >
+            Mute
+          </button>{" "}
+          <button
+            onClick={() => masterMuteController.unmuteAudio()}
+            disabled={!masterMuteController.getIsAudioMuted()}
+          >
+            Unmute
+          </button>
+        </div>
+      </div>
+
+      <div style={{ border: "1px #ccc solid", margin: 8, padding: 8 }}>
         <h2>Mixed Audio Level</h2>
         <AudioMediaStreamTrackLevelMeter
           mediaStreamTracks={audioMediaStreamTracks}
@@ -422,7 +453,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
       if (trackController && videoEl) {
         await trackController.onceReady();
 
-        const track = trackController.getOutputMediaStreamTrack();
+        const track = trackController.getOutputTrack();
 
         if (track) {
           videoEl.srcObject = new MediaStream([track]);
@@ -510,7 +541,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
         </div>
       </div>
 
-      <div>{trackController.getOutputMediaStreamTrack().readyState}</div>
+      <div>{trackController.getOutputTrack().readyState}</div>
 
       <video
         muted={true}
@@ -526,7 +557,7 @@ function MediaElement({ trackController, inputMediaDevices }) {
             // TODO: Implement gain adjustment UI controller
           }
           <AudioMediaStreamTrackLevelMeter
-            mediaStreamTrack={trackController.getOutputMediaStreamTrack()}
+            mediaStreamTrack={trackController.getOutputTrack()}
             style={{ height: 100 }}
           />
           <button
