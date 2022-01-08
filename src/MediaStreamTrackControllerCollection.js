@@ -249,14 +249,12 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 
   /**
    * @param {boolean} isMuted
-   * @return {<Promise<void>}
+   * @return {void}
    */
-  async setIsMuted(isMuted) {
+  setIsMuted(isMuted) {
     // Mute the track controllers directly
-    await Promise.all(
-      this.getTrackControllers().map(controller =>
-        controller.setIsMuted(isMuted)
-      )
+    this.getTrackControllers().forEach(controller =>
+      controller.setIsMuted(isMuted)
     );
   }
 
@@ -268,25 +266,25 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async mute() {
+  mute() {
     return this.setIsMuted(true);
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async unmute() {
+  unmute() {
     return this.setIsMuted(false);
   }
 
   /**
    * Sets muting state to alternate state.
    *
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async toggleMute() {
+  toggleMute() {
     return this.setIsMuted(!this._isMuted);
   }
 

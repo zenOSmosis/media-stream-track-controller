@@ -221,9 +221,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
   /**
    * @param {boolean} isMuted
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async setIsMuted(isMuted) {
+  setIsMuted(isMuted) {
     this._isMuted = isMuted;
 
     this.emit(EVT_UPDATED);
@@ -237,25 +237,25 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async mute() {
+  mute() {
     return this.setIsMuted(true);
   }
 
   /**
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async unmute() {
+  unmute() {
     return this.setIsMuted(false);
   }
 
   /**
    * Sets muting state to alternate state.
    *
-   * @return {Promise<void>}
+   * @return {void}
    */
-  async toggleMute() {
+  toggleMute() {
     this.setIsMuted(!this._isMuted);
   }
 
