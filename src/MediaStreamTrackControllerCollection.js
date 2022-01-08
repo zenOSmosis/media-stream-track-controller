@@ -22,8 +22,15 @@ const {
  * are linked together.
  */
 class MediaStreamTrackControllerCollection extends PhantomCollection {
-  constructor(initialMediaStreamTrackControllers = []) {
-    super(initialMediaStreamTrackControllers);
+  /**
+   * @param {MediaStreamTrackController[]} initialMediaStreamTrackControllers? [default = []]
+   * @param {Object} phantomCollectionOptions? [default = {}]
+   */
+  constructor(
+    initialMediaStreamTrackControllers = [],
+    phantomCollectionOptions = {}
+  ) {
+    super(initialMediaStreamTrackControllers, phantomCollectionOptions);
 
     // Experimental, direct MediaStream support
     //
