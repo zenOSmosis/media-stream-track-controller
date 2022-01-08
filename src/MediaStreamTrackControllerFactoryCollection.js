@@ -12,7 +12,9 @@ const {
   EVT_CHILD_INSTANCE_REMOVED,
 } = PhantomCollection;
 
-// TODO: Document
+/**
+ * Maintains a collection of MediaStreamTrackControllerFactory instances.
+ */
 module.exports = class MediaStreamTrackControllerFactoryCollection extends (
   PhantomCollection
 ) {
@@ -61,7 +63,15 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
     return this.getChildren();
   }
 
-  // TODO: Document
+  /**
+   * Retrieves associated AudioMediaStreamTrackController instances for this
+   * collection.
+   *
+   * FIXME: This Typedef doesn't seem to be working for comments
+   * @typedef {import('./audio/AudioMediaStreamTrackController').default} AudioMediaStreamTrackController
+   *
+   * @return {AudioMediaStreamTrackController[]}
+   */
   getAudioTrackControllers() {
     return this.getChildren()
       .map(factory => factory.getAudioTrackControllers())
@@ -69,7 +79,10 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
   }
 
   /**
-   * // TODO: Document
+   * Set the audio mute state of the current MediaStreamTrackControllerFactory
+   * children.
+   *
+   * NOTE: Factory instances added after muting will not be muted by default.
    *
    * @param {boolean} isAudioMuted
    * @return {Promise<void>}
@@ -106,7 +119,12 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
     return this.setIsAudioMuted(false);
   }
 
-  // TODO: Document
+  /**
+   * Retrieves whether or not all audio track controllers associated with this
+   * collection are muted.
+   *
+   * @return {boolean}
+   */
   getIsAudioMuted() {
     const audioTrackControllers = this.getAudioTrackControllers();
 
@@ -116,7 +134,15 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
     );
   }
 
-  // TODO: Document
+  /**
+   * Retrieves associated AudioMediaStreamTrackController instances for this
+   * collection.
+   *
+   * FIXME: This Typedef doesn't seem to be working for comments
+   * @typedef {import('./video/VideoMediaStreamTrackController').default} VideoMediaStreamTrackController
+   *
+   * @return {VideoMediaStreamTrackController[]}
+   */
   getVideoTrackControllers() {
     return this.getChildren()
       .map(factory => factory.getVideoTrackControllers())
