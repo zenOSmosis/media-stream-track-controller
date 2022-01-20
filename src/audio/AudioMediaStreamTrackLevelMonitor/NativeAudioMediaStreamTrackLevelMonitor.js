@@ -224,11 +224,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     const pollingStartTime = this._pollingStartTime;
 
     // Start polling for audio level detection
-    this._handlePollTick({
-      pollingStartTime,
-      analyser: this._analyser,
-      samples,
-    });
+    this._handlePollTick(pollingStartTime, samples);
   }
 
   _emitAudioLevelTick({ rms = 0, log2Rms = 0 }) {
@@ -242,9 +238,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * Handles one tick cycle of audio level polling by capturing the audio
    * frequency data and then sending it to the audio level checker.
    *
-   * @param {AudioLevelPollLoopParams}
+   * TODO: Document parameters
    */
-  _handlePollTick({ pollingStartTime, analyser, samples }) {
+  _handlePollTick(pollingStartTime, samples) {
     if (this._isDestroyed || pollingStartTime !== this._pollingStartTime) {
       // this.log.debug("Check audio level loop time is ending");
 
@@ -262,7 +258,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         this.audioLevelDidChange(MUTED_AUDIO_LEVEL);
       }
     } else {
-      analyser.getByteFrequencyData(samples);
+      this._analyser.getByteFrequencyData(samples);
       const rms = this.rootMeanSquare(samples);
       const log2Rms = rms && Math.log2(rms);
 
@@ -288,11 +284,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     setTimeout(
       () => {
-        this._handlePollTick({
-          pollingStartTime,
-          analyser,
-          samples,
-        });
+        this._handlePollTick(pollingStartTime, samples);
       },
       // TODO: Allow this setting to be user-overridable
       DEFAULT_FRAME_TIME
