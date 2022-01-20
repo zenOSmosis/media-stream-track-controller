@@ -241,7 +241,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         this._analyser.disconnect();
       });
 
+      // TODO: Look into implications of using lower number;
+      // TODO: Make this dynamic
       this._analyser.fftSize = 1024;
+
+      // TODO: Make this dynamic
       this._analyser.smoothingTimeConstant = 0.5;
     }
 
@@ -254,7 +258,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.once(EVT_DESTROYED, () => {
+      // Disconnect tha audio source on shutdown
+      this.registerShutdownHandler(() => {
         this._source.disconnect(this._analyser);
       });
     }
