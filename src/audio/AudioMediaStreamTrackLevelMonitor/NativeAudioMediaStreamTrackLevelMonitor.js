@@ -203,7 +203,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // this._pollingStartTime = this.getTime();
 
-    // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
+    // FIXME: (jh) Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
@@ -229,7 +229,18 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Create an analyser to access the raw audio samples from the microphone.
     if (!this._analyser) {
+      /**
+       * @see https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
+       *
+       * @type {AnalyserNode}
+       */
       this._analyser = audioContext.createAnalyser();
+
+      // Disconnect tha audio analyser on shutdown
+      this.registerShutdownHandler(() => {
+        this._analyser.disconnect();
+      });
+
       this._analyser.fftSize = 1024;
       this._analyser.smoothingTimeConstant = 0.5;
     }
@@ -298,7 +309,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
     } else {
     */
+
     // Fill samples buffer with audio frequency data
+    //
+    // NOTE: getByteFrequencyData offers higher performance and less precision than getFloatFrequencyData
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/getFloatFrequencyData
     this._analyser.getByteFrequencyData(samples);
 
     // TODO: Refactor
