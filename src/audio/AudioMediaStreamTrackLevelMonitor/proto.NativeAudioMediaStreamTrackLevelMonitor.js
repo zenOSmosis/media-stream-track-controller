@@ -3,7 +3,12 @@ const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
-// Emits after audio level has changed, with a value from 0 - 10
+// TODO: Refactor
+const protoWorker = new Worker("./proto.worker.js", { type: "module" });
+console.log({ protoWorker });
+
+// TODO: Document
+// Emits after audio level has changed
 /** @exports */
 const EVT_AVERAGE_AUDIO_LEVEL_CHANGED = "audio-level-changed";
 
@@ -16,12 +21,14 @@ const EVT_AUDIO_ERROR = "audio-error";
 /** @exports */
 const EVT_AUDIO_ERROR_RECOVERED = "audio-error-recovered";
 
+// TODO: Remove?
 // Number of ms to wait before track silence should raise an error
-const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
+// const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 
+// TODO: Remove?
 // Audio level is changed to this value when muting is specified, regardless
 // whether there is audio in the stream or not
-const MUTED_AUDIO_LEVEL = -1;
+// const MUTED_AUDIO_LEVEL = -1;
 
 // Number of ms before determining next poll interval
 const DEFAULT_FRAME_TIME = 50;
@@ -61,6 +68,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * the audio levels. Must be of audio type.
    */
   constructor(mediaStreamTrack) {
+    // TODO: Determine if mediaStreamTrack is already being captured by another
+    // native monitor
+
     NativeAudioMediaStreamTrackLevelMonitor.validateAudioTrack(
       mediaStreamTrack
     );
@@ -83,9 +93,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._prevAudioLevel = 0;
 
     // TODO: Document why this is needed
-    this._pollingStartTime = null;
+    // this._pollingStartTime = null;
 
-    this._isMuted = false;
+    // this._isMuted = false;
 
     this._analyser = null;
     this._stream = null;
@@ -117,7 +127,28 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     //
     // NOTE (jh): Timeout is added as a grace period to smooth over some rapid
     // lifecycles caused by components mounting / unmounting
-    setTimeout(() => this._initAudioLevelPolling(), 50);
+    this._initStartTimeout = setTimeout(
+      () => this._initAudioLevelPolling(),
+      50
+    );
+
+    // TODO: Refactor
+    (() => {
+      const _handleAudioTick = evt => {
+        const { nativeUUID, rms } = evt.data;
+
+        if (nativeUUID === this._uuid) {
+          // TODO: Remove
+          this.emit(EVT_AUDIO_LEVEL_TICK, { rms });
+        }
+      };
+
+      protoWorker.addEventListener("message", _handleAudioTick);
+
+      this.registerShutdownHandler(() => {
+        protoWorker.removeEventListener("message", _handleAudioTick);
+      });
+    })();
   }
 
   /**
@@ -135,10 +166,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Reset the levels
     //
     // TODO: Typedef this object
+    /*
     this.emit(EVT_AUDIO_LEVEL_TICK, {
       rms: 0,
       log2Rms: 0,
     });
+    */
 
     await super.destroy();
   }
@@ -160,6 +193,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
    */
   async _initAudioLevelPolling() {
+    clearTimeout(this._initStartTimeout);
     clearTimeout(this._silenceErrorDetectionTimeout);
 
     // If we're destroyed, there's nothing we can do about it
@@ -167,9 +201,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       return;
     }
 
-    this._pollingStartTime = this.getTime();
+    // this._pollingStartTime = this.getTime();
 
-    // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
+    // FIXME: (jh) Use OfflineAudioContext, if possible... should be a lot more performant
+    // TODO: Make this available via class options
     const audioContext = getSharedAudioContext();
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
@@ -195,8 +230,23 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Create an analyser to access the raw audio samples from the microphone.
     if (!this._analyser) {
+      /**
+       * @see https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode
+       *
+       * @type {AnalyserNode}
+       */
       this._analyser = audioContext.createAnalyser();
+
+      // Disconnect tha audio analyser on shutdown
+      this.registerShutdownHandler(() => {
+        this._analyser.disconnect();
+      });
+
+      // TODO: Look into implications of using lower number;
+      // TODO: Make this dynamic
       this._analyser.fftSize = 1024;
+
+      // TODO: Make this dynamic
       this._analyser.smoothingTimeConstant = 0.5;
     }
 
@@ -206,12 +256,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     if (!this._source) {
       // Connect the LocalAudioTrack's media source to the analyser.
-      // Note: Creating a new MediaStream here to avoid having to pass a
-      // MediaStream to this class
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.once(EVT_DESTROYED, () => {
+      // Disconnect tha audio source on shutdown
+      this.registerShutdownHandler(() => {
         this._source.disconnect(this._analyser);
       });
     }
@@ -219,33 +268,35 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     const samples = new Uint8Array(this._analyser.frequencyBinCount);
 
     // Start initial detection
-    this.audioLevelDidChange(0);
+    // this.audioLevelDidChange(0);
 
-    const pollingStartTime = this._pollingStartTime;
+    // const pollingStartTime = this._pollingStartTime;
 
     // Start polling for audio level detection
-    this._handlePollTick({
-      pollingStartTime,
-      analyser: this._analyser,
-      samples,
-    });
+    // this._handlePollTick(pollingStartTime, samples);
+    this._handlePollTick(samples);
   }
 
+  // TODO: Remove?
+  /*
   _emitAudioLevelTick({ rms = 0, log2Rms = 0 }) {
     this.emit(EVT_AUDIO_LEVEL_TICK, {
       rms,
       log2Rms,
     });
   }
+  */
 
   /**
    * Handles one tick cycle of audio level polling by capturing the audio
    * frequency data and then sending it to the audio level checker.
    *
-   * @param {AudioLevelPollLoopParams}
+   * TODO: Document parameters
    */
-  _handlePollTick({ pollingStartTime, analyser, samples }) {
-    if (this._isDestroyed || pollingStartTime !== this._pollingStartTime) {
+  _handlePollTick(samples) {
+    if (
+      this._isDestroyed /* || pollingStartTime !== this._pollingStartTime */
+    ) {
       // this.log.debug("Check audio level loop time is ending");
 
       return;
@@ -255,6 +306,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // this._isMuted to true, while also muting a device's audio. That will
     // convince the following code into thinking there's unintentional silence.
 
+    /*
     if (this._isMuted) {
       if (this._prevAudioLevel !== MUTED_AUDIO_LEVEL) {
         this._prevAudioLevel = MUTED_AUDIO_LEVEL;
@@ -262,58 +314,76 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         this.audioLevelDidChange(MUTED_AUDIO_LEVEL);
       }
     } else {
-      analyser.getByteFrequencyData(samples);
-      const rms = this.rootMeanSquare(samples);
-      const log2Rms = rms && Math.log2(rms);
+    */
 
-      // Clear any levels
-      this._emitAudioLevelTick({ rms, log2Rms });
+    // Fill samples buffer with audio frequency data
+    //
+    // NOTE: getByteFrequencyData offers higher performance and less precision than getFloatFrequencyData
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/AnalyserNode/getFloatFrequencyData
+    this._analyser.getByteFrequencyData(samples);
 
-      // Audio audioLevel ranges from 0 (silence) to 10 (loudest).
-      let newAudioLevel = Math.ceil(log2Rms); // Our version; shows quieter, emits more often
-      // let newAudioLevel = Math.ceil((10 * log2Rms) / 8); // Twilio version; shows louder
+    // TODO: Refactor
+    protoWorker.postMessage({ samples, uuid: this._uuid });
 
-      if (newAudioLevel < 0) {
-        newAudioLevel = 0;
-      } else if (newAudioLevel > 10) {
-        newAudioLevel = 10;
-      }
+    // TODO: Remove
+    // console.log({ samples });
 
-      if (this._prevAudioLevel !== newAudioLevel) {
-        this._prevAudioLevel = newAudioLevel;
+    // TODO: Refactor or remove
+    // const rms = this.rootMeanSquare(samples);
+    // const log2Rms = rms && Math.log2(rms);
 
-        this.audioLevelDidChange(newAudioLevel);
-      }
+    // Clear any levels
+    // TODO: Remove?
+    // this._emitAudioLevelTick({ rms, log2Rms });
+
+    // Audio audioLevel ranges from 0 (silence) to 10 (loudest).
+    // let newAudioLevel = Math.ceil(log2Rms); // Our version; shows quieter, emits more often
+    // let newAudioLevel = Math.ceil((10 * log2Rms) / 8); // Twilio version; shows louder
+
+    /*
+    if (newAudioLevel < 0) {
+      newAudioLevel = 0;
+    } else if (newAudioLevel > 10) {
+      newAudioLevel = 10;
     }
+    */
 
+    /*
+    if (this._prevAudioLevel !== newAudioLevel) {
+      this._prevAudioLevel = newAudioLevel;
+
+      this.audioLevelDidChange(newAudioLevel);
+    }
+    */
+    // }
+
+    // TODO: Continue to use setTimeout here or is there a more efficient way?
     setTimeout(
       () => {
-        this._handlePollTick({
-          pollingStartTime,
-          analyser,
-          samples,
-        });
+        this._handlePollTick(/* pollingStartTime,*/ samples);
       },
       // TODO: Allow this setting to be user-overridable
       DEFAULT_FRAME_TIME
     );
+
+    /*
+    window.requestAnimationFrame(() => {
+      this._handlePollTick(pollingStartTime, samples);
+    });
+    */
   }
 
+  // TODO: Refactor or remove
   /**
    * @param {Uint8Array} samples
    * @return {number}
    */
+  /*
   rootMeanSquare(samples) {
     const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
     return Math.sqrt(sumSq / samples.length);
   }
-
-  /**
-   * @return {number}
-   */
-  getTime() {
-    return new Date().getTime();
-  }
+  */
 
   /**
    * Sets whether the audio for this track should be treated as its muted,
@@ -321,6 +391,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * @param {boolean}
    */
+  /*
   setIsMuted(isMuted) {
     if (isMuted === this._isMuted) {
       // Silently ignore
@@ -331,12 +402,14 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this._isMuted = isMuted;
   }
+  */
 
   /**
    * Called after audio level has changed.
    *
    * @param {number} audioLevel
    */
+  /*
   audioLevelDidChange(audioLevel) {
     this._audioLevel = audioLevel;
 
@@ -348,10 +421,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
   }
+  */
 
   /**
    * Called after period of silence has started.
    */
+  /*
   silenceDidStart() {
     clearTimeout(this._silenceErrorDetectionTimeout);
 
@@ -371,6 +446,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this.emit(EVT_AUDIO_ERROR, this._silenceAudioError);
     }, SILENCE_TO_ERROR_THRESHOLD_TIME);
   }
+  */
 
   /**
    * Called after period of silence has ended.
