@@ -313,13 +313,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
-   * @return {number}
-   */
-  getTime() {
-    return new Date().getTime();
-  }
-
-  /**
    * Sets whether the audio for this track should be treated as its muted,
    * regardless if there is audio data available in the monitor.
    *
