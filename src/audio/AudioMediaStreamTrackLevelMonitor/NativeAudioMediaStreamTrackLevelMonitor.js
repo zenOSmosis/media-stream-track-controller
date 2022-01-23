@@ -131,7 +131,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._tickInterval.stop();
     }
 
-    this._silenceErrorDetectionTimeout.stop();
+    if (this._silenceErrorDetectionTimeout) {
+      this._silenceErrorDetectionTimeout.stop();
+    }
 
     // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
     // track on its own (nor should it).  This prevents an issue in Google
