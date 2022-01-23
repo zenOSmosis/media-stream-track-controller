@@ -83,9 +83,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this._prevAudioLevel = 0;
 
-    // TODO: Document why this is needed
-    // this._pollingStartTime = null;
-
     this._isMuted = false;
 
     this._analyser = null;
@@ -107,7 +104,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // where the analyzers stop functioning when the user switches to a new tab
     // and switches back to the app.
     (() => {
-      // TODO: Debounce this
       const _handleFocus = () => this._initAudioLevelPolling();
 
       window.addEventListener("focus", _handleFocus);
@@ -169,9 +165,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
    */
   async _initAudioLevelPolling() {
-    // TODO: Remove
-    console.log("initAudioLevelPolling");
-
     // Stop previous polling, if already started
     // TODO: Rename / document further
     if (this._tickInterval) {
@@ -186,8 +179,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._isDestroyed) {
       return;
     }
-
-    // this._pollingStartTime = this.getTime();
 
     // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
@@ -246,8 +237,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Start initial detection
     this.audioLevelDidChange(0);
 
-    // const pollingStartTime = this._pollingStartTime;
-
     // Start polling for audio level detection
     this._tickInterval = interval(
       // NOTE: _handlePollTick will retain scope reference to this class
@@ -274,11 +263,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @return {void}
    */
   _handlePollTick() {
-    if (
-      this._isDestroyed /* || pollingStartTime !== this._pollingStartTime */
-    ) {
-      // this.log.debug("Check audio level loop time is ending");
-
+    if (this._isDestroyed) {
       return;
     }
 
