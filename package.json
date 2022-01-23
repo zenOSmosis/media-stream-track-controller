@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
+    "d3-timer": "^3.0.1",
     "phantom-core": "github:zenosmosis/phantom-core#v2.2.2"
   },
   "devDependencies": {

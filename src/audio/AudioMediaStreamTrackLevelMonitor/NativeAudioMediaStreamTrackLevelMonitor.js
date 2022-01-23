@@ -2,6 +2,7 @@ const PhantomCore = require("phantom-core");
 const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
+const { interval, timeout } = require("d3-timer");
 
 // Emits after audio level has changed, with a value from 0 - 10
 /** @exports */
@@ -23,11 +24,11 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // whether there is audio in the stream or not
 const MUTED_AUDIO_LEVEL = -1;
 
-// Number of ms before determining next poll interval
-const DEFAULT_FRAME_TIME = 50;
+// Number of ms wait before capturing next audio frame
+const DEFAULT_TICK_TIME = 100;
 
 /**
- * Directly listens to the given MediaStreamTrack.
+ * Directly listens to the given audio MediaStreamTrack.
  *
  * IMPORTANT: For most purposes, this class should not be used directly,
  * because it is not CPU efficient when multiple listeners are attached to the
@@ -74,7 +75,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // track
     this._mediaStreamTrack = mediaStreamTrack.clone();
 
-    // window.setTimeout instance used for silence-to-error detection
+    // d3 timeout instance used for silence-to-error detection
     this._silenceErrorDetectionTimeout = null;
 
     // Error, if set, of silence
@@ -83,7 +84,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._prevAudioLevel = 0;
 
     // TODO: Document why this is needed
-    this._pollingStartTime = null;
+    // this._pollingStartTime = null;
 
     this._isMuted = false;
 
@@ -91,20 +92,23 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._stream = null;
     this._source = null;
 
+    // Will be populated w/ Uint8Array once initialized
+    this._samples = null;
+
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
       this.destroy();
     });
 
+    // TODO: Cite reference link for Twilio audio level indicator
     // (Modified from AudioLevelIndicator.tsx in Twilio Video App React demo app)
     //
     // Here we re-initialize the AnalyserNode on focus to avoid an issue in Safari
     // where the analyzers stop functioning when the user switches to a new tab
     // and switches back to the app.
     (() => {
-      const _handleFocus = () => {
-        this._initAudioLevelPolling();
-      };
+      // TODO: Debounce this
+      const _handleFocus = () => this._initAudioLevelPolling();
 
       window.addEventListener("focus", _handleFocus);
 
@@ -114,17 +118,20 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     })();
 
     // Start initial polling
-    //
-    // NOTE (jh): Timeout is added as a grace period to smooth over some rapid
-    // lifecycles caused by components mounting / unmounting
-    setTimeout(() => this._initAudioLevelPolling(), 50);
+    // IMPORTANT: This doesn't use normal PhantomCore async init convention because it may be called more than once to restart the polling sequence
+    const initTimeout = timeout(() => this._initAudioLevelPolling(), 50);
+    this.registerShutdownHandler(() => initTimeout.stop());
   }
 
   /**
    * @return {Promise<void>}
    */
   async destroy() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+    if (this._tickInterval) {
+      this._tickInterval.stop();
+    }
+
+    this._silenceErrorDetectionTimeout.stop();
 
     // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
     // track on its own (nor should it).  This prevents an issue in Google
@@ -160,14 +167,25 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
    */
   async _initAudioLevelPolling() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+    // TODO: Remove
+    console.log("initAudioLevelPolling");
+
+    // Stop previous polling, if already started
+    // TODO: Rename / document further
+    if (this._tickInterval) {
+      this._tickInterval.stop();
+    }
+
+    if (this._silenceErrorDetectionTimeout) {
+      this._silenceErrorDetectionTimeout.stop();
+    }
 
     // If we're destroyed, there's nothing we can do about it
     if (this._isDestroyed) {
       return;
     }
 
-    this._pollingStartTime = this.getTime();
+    // this._pollingStartTime = this.getTime();
 
     // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
@@ -196,6 +214,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Create an analyser to access the raw audio samples from the microphone.
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
+
+      // TODO: Can this fftSize be optimized?  Look at Twilio's version
+      // TODO: Make this user-configurable
       this._analyser.fftSize = 1024;
       this._analyser.smoothingTimeConstant = 0.5;
     }
@@ -216,21 +237,26 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       });
     }
 
-    const samples = new Uint8Array(this._analyser.frequencyBinCount);
+    if (!this._samples) {
+      this._samples = new Uint8Array(this._analyser.frequencyBinCount);
+    }
 
     // Start initial detection
     this.audioLevelDidChange(0);
 
-    const pollingStartTime = this._pollingStartTime;
+    // const pollingStartTime = this._pollingStartTime;
 
     // Start polling for audio level detection
-    this._handlePollTick({
-      pollingStartTime,
-      analyser: this._analyser,
-      samples,
-    });
+    this._tickInterval = interval(
+      // NOTE: _handlePollTick will retain scope reference to this class
+      // because of PhantomCore bindings
+      this._handlePollTick,
+      // TODO: Allow this setting to be user-overridable
+      DEFAULT_TICK_TIME
+    );
   }
 
+  // TODO: Document
   _emitAudioLevelTick({ rms = 0, log2Rms = 0 }) {
     this.emit(EVT_AUDIO_LEVEL_TICK, {
       rms,
@@ -238,14 +264,17 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     });
   }
 
+  // TODO: Rename
   /**
    * Handles one tick cycle of audio level polling by capturing the audio
    * frequency data and then sending it to the audio level checker.
    *
-   * @param {AudioLevelPollLoopParams}
+   * @return {void}
    */
-  _handlePollTick({ pollingStartTime, analyser, samples }) {
-    if (this._isDestroyed || pollingStartTime !== this._pollingStartTime) {
+  _handlePollTick() {
+    if (
+      this._isDestroyed /* || pollingStartTime !== this._pollingStartTime */
+    ) {
       // this.log.debug("Check audio level loop time is ending");
 
       return;
@@ -262,8 +291,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         this.audioLevelDidChange(MUTED_AUDIO_LEVEL);
       }
     } else {
-      analyser.getByteFrequencyData(samples);
-      const rms = this.rootMeanSquare(samples);
+      this._analyser.getByteFrequencyData(this._samples);
+      const rms = this.rootMeanSquare(this._samples);
       const log2Rms = rms && Math.log2(rms);
 
       // Clear any levels
@@ -285,18 +314,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         this.audioLevelDidChange(newAudioLevel);
       }
     }
-
-    setTimeout(
-      () => {
-        this._handlePollTick({
-          pollingStartTime,
-          analyser,
-          samples,
-        });
-      },
-      // TODO: Allow this setting to be user-overridable
-      DEFAULT_FRAME_TIME
-    );
   }
 
   /**
@@ -353,9 +370,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * Called after period of silence has started.
    */
   silenceDidStart() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+    if (this._silenceErrorDetectionTimeout) {
+      this._silenceErrorDetectionTimeout.stop();
+    }
 
-    this._silenceErrorDetectionTimeout = setTimeout(() => {
+    this._silenceErrorDetectionTimeout = timeout(() => {
       if (this._isDestroyed || this._isMuted) {
         return;
       }
@@ -376,7 +395,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * Called after period of silence has ended.
    */
   silenceDidEnd() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+    if (this._silenceErrorDetectionTimeout) {
+      this._silenceErrorDetectionTimeout.stop();
+    }
 
     // Detect if existing error should be a false-positive
     if (this._silenceAudioError) {
