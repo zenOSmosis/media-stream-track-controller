@@ -44,11 +44,13 @@ const DEFAULT_TICK_TIME = 100;
  */
 class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
+   * TODO: Some references call this "RMS pressure"... use that in documentation
+   *
    * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
    * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
    *
    * @param {Uint8Array} samples
-   * @return {number} A float value between 0 - 100
+   * @return {number} TODO: Verify this is correct; should it be 0 - 1 instead? A float value between 0 - 100
    */
   static calculateRMS(samples) {
     const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
@@ -287,7 +289,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._prevRMS !== rms) {
       this._prevRMS = rms;
 
-      this._audioLevelDidChange(newAudioLevel);
+      this._audioLevelDidChange(rms);
     }
   }
 
@@ -304,6 +306,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     } else {
       this._silenceDidEnd();
     }
+
+    // TODO: Remove
+    console.log({ audioLevel });
 
     this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
   }
