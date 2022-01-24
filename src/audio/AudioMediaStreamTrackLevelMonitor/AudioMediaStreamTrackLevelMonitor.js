@@ -18,14 +18,14 @@ const {
  * The underlying audio monitors which are being proxied to, keyed by the
  * respective MediaStreamTrack id.
  *
- * @type {{key: string, value: AudioMediaStreamTrackLevelMonitor}}
+ * @type {Object.<string, AudioMediaStreamTrackLevelMonitor>}
  */
 const _monitorInstances = {};
 
 /**
  * The number of proxies, per MediaStreamTrack id.
  *
- * @type {{key: string, value: number}}
+ * @type {Object.<string, number>}
  */
 const _proxyCounts = {};
 
