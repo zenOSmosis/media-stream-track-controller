@@ -280,7 +280,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
     } else {
       this._analyser.getByteFrequencyData(this._samples);
-      const rms = this.rootMeanSquare(this._samples);
+      const rms = this.calculateRMS(this._samples);
       const log2Rms = rms && Math.log2(rms);
 
       // Clear any levels
@@ -308,7 +308,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @param {Uint8Array} samples
    * @return {number}
    */
-  rootMeanSquare(samples) {
+  calculateRMS(samples) {
     const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
     return Math.sqrt(sumSq / samples.length);
   }
