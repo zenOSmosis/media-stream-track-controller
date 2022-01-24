@@ -185,7 +185,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
     // the user has interacted with your app, after which the Promise returned
-    // here is resolved.
+    // here is resolved
     await audioContext.resume();
 
     // This class may have a rapid lifecycle inside of a React component, so
@@ -208,7 +208,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
-      // TODO: Can this fftSize be optimized?  Look at Twilio's version
       // TODO: Make this user-configurable
       // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
       this._analyser.fftSize = 256;
@@ -235,7 +234,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._samples = new Uint8Array(this._analyser.frequencyBinCount);
     }
 
-    // Start initial detection
+    // Set initial audio level to 0
     this.audioLevelDidChange(0);
 
     // Start polling for audio level detection
@@ -305,6 +304,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
+   *
    * @param {Uint8Array} samples
    * @return {number}
    */
@@ -348,7 +350,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
-   * Called after period of silence has started.
+   * Internally called after period of silence has started.
+   *
+   * @return {void}
    */
   silenceDidStart() {
     if (this._silenceErrorDetectionTimeout) {
@@ -373,7 +377,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
-   * Called after period of silence has ended.
+   * Internally called after period of silence has ended.
+   *
+   * @return {void}
    */
   silenceDidEnd() {
     if (this._silenceErrorDetectionTimeout) {
