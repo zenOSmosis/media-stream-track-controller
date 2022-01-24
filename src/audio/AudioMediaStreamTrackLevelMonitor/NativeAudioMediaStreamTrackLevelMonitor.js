@@ -30,6 +30,9 @@ const DEFAULT_TICK_TIME = 100;
 /**
  * Directly listens to the given audio MediaStreamTrack.
  *
+ * Portions of this class were derived from Twilio's Reference React App:
+ * @see {@link https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx}
+ *
  * IMPORTANT: For most purposes, this class should not be used directly,
  * because it is not CPU efficient when multiple listeners are attached to the
  * same MediaStreamTrack.  The AudioMediaStreamTrackLevelMonitor remediates
@@ -308,7 +311,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
    *
    * @param {Uint8Array} samples
-   * @return {number}
+   * @return {number} // TODO: Document range
    */
   calculateRMS(samples) {
     const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
