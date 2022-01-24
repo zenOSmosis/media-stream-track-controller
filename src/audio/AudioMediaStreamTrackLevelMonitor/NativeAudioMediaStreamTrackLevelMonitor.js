@@ -210,7 +210,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       // TODO: Can this fftSize be optimized?  Look at Twilio's version
       // TODO: Make this user-configurable
-      this._analyser.fftSize = 1024;
+      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
+      this._analyser.fftSize = 256;
       this._analyser.smoothingTimeConstant = 0.5;
     }
 
