@@ -23,10 +23,6 @@ const EVT_AUDIO_ERROR_RECOVERED = "audio-error-recovered";
 // Number of ms to wait before track silence should raise an error
 const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 
-// Audio level is changed to this value when muting is specified, regardless
-// whether there is audio in the stream or not
-const MUTED_AUDIO_LEVEL = -1;
-
 // Number of ms wait before capturing next audio frame
 const DEFAULT_TICK_TIME = 100;
 
