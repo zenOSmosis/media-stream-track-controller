@@ -44,6 +44,18 @@ const DEFAULT_TICK_TIME = 100;
  */
 class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
+   *
+   * @param {Uint8Array} samples
+   * @return {number} A float value between 0 - 100
+   */
+  static calculateRMS(samples) {
+    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
+    return Math.sqrt(sumSq / samples.length);
+  }
+
+  /**
    * Validates the given MediaStreamTrack, throwing an exception if it is not
    * of valid type for use here.
    *
@@ -243,7 +255,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }
 
     // Set initial audio level to 0
-    this.audioLevelDidChange(0);
+    this._audioLevelDidChange(0);
 
     // Start polling for audio level detection
     this._tickInterval = interval(
@@ -268,53 +280,40 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }
 
     this._analyser.getByteFrequencyData(this._samples);
-    const rms = this.calculateRMS(this._samples);
+    const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMS(
+      this._samples
+    );
 
     if (this._prevRMS !== rms) {
       this._prevRMS = rms;
 
-      this.audioLevelDidChange(newAudioLevel);
+      this._audioLevelDidChange(newAudioLevel);
     }
   }
 
-  // TODO: Make protected
   /**
    * Internally called after audio level has changed.
    *
    * @param {number} audioLevel // TODO: Document
    */
-  audioLevelDidChange(audioLevel) {
+  _audioLevelDidChange(audioLevel) {
     this._audioLevel = audioLevel;
 
     if (!audioLevel) {
-      this.silenceDidStart();
+      this._silenceDidStart();
     } else {
-      this.silenceDidEnd();
+      this._silenceDidEnd();
     }
 
     this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
   }
 
-  // TODO: Make static
-  /**
-   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
-   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
-   *
-   * @param {Uint8Array} samples
-   * @return {number} A float value between 0 - 100
-   */
-  calculateRMS(samples) {
-    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
-    return Math.sqrt(sumSq / samples.length);
-  }
-
-  // TODO: Make protected
   /**
    * Internally called after period of silence has started.
    *
    * @return {void}
    */
-  silenceDidStart() {
+  _silenceDidStart() {
     if (this._silenceErrorDetectionTimeout) {
       this._silenceErrorDetectionTimeout.stop();
     }
@@ -339,13 +338,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }, SILENCE_TO_ERROR_THRESHOLD_TIME);
   }
 
-  // TODO: Make protected
   /**
    * Internally called after period of silence has ended.
    *
    * @return {void}
    */
-  silenceDidEnd() {
+  _silenceDidEnd() {
     if (this._silenceErrorDetectionTimeout) {
       this._silenceErrorDetectionTimeout.stop();
     }
