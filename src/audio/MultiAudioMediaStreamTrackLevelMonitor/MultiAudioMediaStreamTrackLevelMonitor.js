@@ -3,7 +3,7 @@ const { EVT_CHILD_INSTANCE_REMOVED } = PhantomCollection;
 const AudioMediaStreamTrackLevelMonitor = require("../AudioMediaStreamTrackLevelMonitor");
 const {
   /** @exports */
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
+  EVT_AUDIO_LEVEL_UPDATED,
   /** @exports */
   EVT_AUDIO_LEVEL_TICK,
   /** @exports */
@@ -34,7 +34,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     super(initialMediaStreamTracks);
 
     // The proxy events this class should proxy from the children
-    this.bindChildEventName(EVT_AVERAGE_AUDIO_LEVEL_CHANGED);
+    this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATED);
     this.bindChildEventName(EVT_AUDIO_ERROR);
     this.bindChildEventName(EVT_AUDIO_ERROR_RECOVERED);
     this.bindChildEventName(EVT_AUDIO_LEVEL_TICK);
@@ -213,8 +213,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
 
 module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
+module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
 module.exports.EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK =
   EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK;

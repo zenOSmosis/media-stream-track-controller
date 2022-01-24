@@ -7,9 +7,8 @@ const { AUDIO_TRACK_KIND } = require("../../constants");
 // setTimeout / setInterval (also moving into PhantomCore)
 const { interval, timeout } = require("d3-timer");
 
-// TODO: Reimplement and document
 /** @exports */
-const EVT_AVERAGE_AUDIO_LEVEL_CHANGED = "audio-level-changed";
+const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
 const EVT_AUDIO_LEVEL_TICK = "audio-level-tick";
@@ -155,13 +154,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // the source has been stopped.
     this._mediaStreamTrack.stop();
 
-    // Reset the levels
-    //
-    // TODO: Typedef this object
-    this.emit(EVT_AUDIO_LEVEL_TICK, {
-      rms: 0,
-      log2Rms: 0,
-    });
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    this._audioLevelDidUpdate(0);
 
     await super.destroy();
   }
@@ -257,7 +252,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }
 
     // Set initial audio level to 0
-    this._audioLevelDidChange(0);
+    this._audioLevelDidUpdate(0);
 
     // Start polling for audio level detection
     this._tickInterval = interval(
@@ -289,7 +284,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._prevRMS !== rms) {
       this._prevRMS = rms;
 
-      this._audioLevelDidChange(rms);
+      this._audioLevelDidUpdate(rms);
     }
   }
 
@@ -298,7 +293,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * @param {number} audioLevel // TODO: Document
    */
-  _audioLevelDidChange(audioLevel) {
+  _audioLevelDidUpdate(audioLevel) {
     this._audioLevel = audioLevel;
 
     if (!audioLevel) {
@@ -310,7 +305,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // TODO: Remove
     console.log({ audioLevel });
 
-    this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
+    this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
   }
 
   /**
@@ -366,8 +361,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
+module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
 module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
