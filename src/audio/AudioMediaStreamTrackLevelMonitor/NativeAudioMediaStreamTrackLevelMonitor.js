@@ -26,6 +26,10 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // Number of ms wait before capturing next audio frame
 const DEFAULT_TICK_TIME = 100;
 
+// TODO: Borrow AudioWorkletNode processing:
+//  - https://www.w3.org/TR/webaudio/#vu-meter-mode
+//  - https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet
+
 /**
  * Directly listens to the given audio MediaStreamTrack.
  *
