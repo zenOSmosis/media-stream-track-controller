@@ -2,9 +2,12 @@ const PhantomCore = require("phantom-core");
 const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
+
+// TODO: Consider keeping (and moving into PhantomCore) or replacing w/
+// setTimeout / setInterval (also moving into PhantomCore)
 const { interval, timeout } = require("d3-timer");
 
-// Emits after audio level has changed, with a value from 0 - 10
+// TODO: Reimplement and document
 /** @exports */
 const EVT_AVERAGE_AUDIO_LEVEL_CHANGED = "audio-level-changed";
 
@@ -84,9 +87,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Error, if set, of silence
     this._silenceAudioError = null;
 
-    this._prevAudioLevel = 0;
-
-    this._isMuted = false;
+    this._prevRMS = 0;
 
     this._analyser = null;
     this._stream = null;
@@ -166,6 +167,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * Derived from Twilio's documentation.
    * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
+   *
+   * @return {Promise<void>}
    */
   async _initAudioLevelPolling() {
     // Stop previous polling, if already started
@@ -211,6 +214,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
+      this.registerShutdownHandler(() => this._analyser.disconnect());
+
       // TODO: Make this user-configurable
       // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
       this._analyser.fftSize = 256;
@@ -228,9 +233,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.once(EVT_DESTROYED, () => {
-        this._source.disconnect(this._analyser);
-      });
+      this.registerShutdownHandler(() =>
+        this._source.disconnect(this._analyser)
+      );
     }
 
     if (!this._samples) {
@@ -250,14 +255,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     );
   }
 
-  // TODO: Document
-  _emitAudioLevelTick({ rms = 0, log2Rms = 0 }) {
-    this.emit(EVT_AUDIO_LEVEL_TICK, {
-      rms,
-      log2Rms,
-    });
-  }
-
   // TODO: Rename
   /**
    * Handles one tick cycle of audio level polling by capturing the audio
@@ -270,75 +267,21 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       return;
     }
 
-    // Note: For debugging: A way to simulate unintentional silence is to force
-    // this._isMuted to true, while also muting a device's audio. That will
-    // convince the following code into thinking there's unintentional silence.
+    this._analyser.getByteFrequencyData(this._samples);
+    const rms = this.calculateRMS(this._samples);
 
-    if (this._isMuted) {
-      if (this._prevAudioLevel !== MUTED_AUDIO_LEVEL) {
-        this._prevAudioLevel = MUTED_AUDIO_LEVEL;
+    if (this._prevRMS !== rms) {
+      this._prevRMS = rms;
 
-        this.audioLevelDidChange(MUTED_AUDIO_LEVEL);
-      }
-    } else {
-      this._analyser.getByteFrequencyData(this._samples);
-      const rms = this.calculateRMS(this._samples);
-      const log2Rms = rms && Math.log2(rms);
-
-      // Clear any levels
-      this._emitAudioLevelTick({ rms, log2Rms });
-
-      // Audio audioLevel ranges from 0 (silence) to 10 (loudest).
-      let newAudioLevel = Math.ceil(log2Rms); // Our version; shows quieter, emits more often
-      // let newAudioLevel = Math.ceil((10 * log2Rms) / 8); // Twilio version; shows louder
-
-      if (newAudioLevel < 0) {
-        newAudioLevel = 0;
-      } else if (newAudioLevel > 10) {
-        newAudioLevel = 10;
-      }
-
-      if (this._prevAudioLevel !== newAudioLevel) {
-        this._prevAudioLevel = newAudioLevel;
-
-        this.audioLevelDidChange(newAudioLevel);
-      }
+      this.audioLevelDidChange(newAudioLevel);
     }
   }
 
+  // TODO: Make protected
   /**
-   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
-   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
+   * Internally called after audio level has changed.
    *
-   * @param {Uint8Array} samples
-   * @return {number} // TODO: Document range
-   */
-  calculateRMS(samples) {
-    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
-    return Math.sqrt(sumSq / samples.length);
-  }
-
-  /**
-   * Sets whether the audio for this track should be treated as its muted,
-   * regardless if there is audio data available in the monitor.
-   *
-   * @param {boolean}
-   */
-  setIsMuted(isMuted) {
-    if (isMuted === this._isMuted) {
-      // Silently ignore
-      return;
-    }
-
-    this.log(`Setting muted state to ${isMuted ? "true" : "false"}`);
-
-    this._isMuted = isMuted;
-  }
-
-  /**
-   * Called after audio level has changed.
-   *
-   * @param {number} audioLevel
+   * @param {number} audioLevel // TODO: Document
    */
   audioLevelDidChange(audioLevel) {
     this._audioLevel = audioLevel;
@@ -352,6 +295,20 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
   }
 
+  // TODO: Make static
+  /**
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
+   *
+   * @param {Uint8Array} samples
+   * @return {number} A float value between 0 - 100
+   */
+  calculateRMS(samples) {
+    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
+    return Math.sqrt(sumSq / samples.length);
+  }
+
+  // TODO: Make protected
   /**
    * Internally called after period of silence has started.
    *
@@ -363,7 +320,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }
 
     this._silenceErrorDetectionTimeout = timeout(() => {
-      if (this._isDestroyed || this._isMuted) {
+      if (this._isDestroyed) {
         return;
       }
 
@@ -375,10 +332,14 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this.log.error(this._silenceAudioError.message);
 
       // Tell interested listeners
+      // TODO: Change event name
+      // TODO: Document; should be able to be used to determine if audio is not
+      // being streamed, etc.
       this.emit(EVT_AUDIO_ERROR, this._silenceAudioError);
     }, SILENCE_TO_ERROR_THRESHOLD_TIME);
   }
 
+  // TODO: Make protected
   /**
    * Internally called after period of silence has ended.
    *
