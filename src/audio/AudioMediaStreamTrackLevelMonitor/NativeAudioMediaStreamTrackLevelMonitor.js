@@ -43,7 +43,8 @@ const DEFAULT_TICK_TIME = 100;
  */
 class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
-   * TODO: Some references call this "RMS pressure"... use that in documentation
+   * TODO: Look into reference which uses "rms pressure" reference:
+   * @see {@link https://dosits.org/science/advanced-topics/introduction-to-signal-levels }
    *
    * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
    * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
@@ -51,7 +52,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @param {Uint8Array} samples
    * @return {number} TODO: Verify this is correct; should it be 0 - 1 instead? A float value between 0 - 100
    */
-  static calculateRMS(samples) {
+  static calculateRMSPressure(samples) {
     const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
     return Math.sqrt(sumSq / samples.length);
   }
@@ -277,7 +278,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     }
 
     this._analyser.getByteFrequencyData(this._samples);
-    const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMS(
+    const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMSPressure(
       this._samples
     );
 
