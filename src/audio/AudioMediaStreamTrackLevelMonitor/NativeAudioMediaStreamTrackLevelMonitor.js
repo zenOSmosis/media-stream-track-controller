@@ -3,10 +3,6 @@ const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
-// TODO: Consider keeping (and moving into PhantomCore) or replacing w/
-// setTimeout / setInterval (also moving into PhantomCore)
-const { interval, timeout } = require("d3-timer");
-
 /** @exports */
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
@@ -22,7 +18,7 @@ const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
 // Number of ms wait before capturing next audio frame
 const DEFAULT_TICK_TIME = 100;
 
-// TODO: Borrow AudioWorkletNode processing:
+// TODO: Integrate AudioWorkletNode processing:
 //  - https://www.w3.org/TR/webaudio/#vu-meter-mode
 //  - https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet
 
@@ -92,7 +88,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // track
     this._mediaStreamTrack = mediaStreamTrack.clone();
 
-    // d3 timeout instance used for silence-to-error detection
+    // window.setTimeout used for silence-to-error detection
     this._silenceErrorDetectionTimeout = null;
 
     // Error, if set, of silence
@@ -130,43 +126,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Start initial polling
     // IMPORTANT: This doesn't use normal PhantomCore async init convention because it may be called more than once to restart the polling sequence
-    const initTimeout = timeout(() => this._initAudioLevelPolling(), 50);
-    this.registerShutdownHandler(() => initTimeout.stop());
-  }
-
-  /**
-   * @return {Promise<void>}
-   */
-  async destroy() {
-    if (this._tickInterval) {
-      this._tickInterval.stop();
-    }
-
-    if (this._silenceErrorDetectionTimeout) {
-      this._silenceErrorDetectionTimeout.stop();
-    }
-
-    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-    // track on its own (nor should it).  This prevents an issue in Google
-    // Chrome (maybe others) where the recording indicator would stay lit after
-    // the source has been stopped.
-    this._mediaStreamTrack.stop();
-
-    // Reset the audio level back to 0 so that any listeners to not stay
-    // "stuck" on the last value
-    this._audioLevelDidUpdate(0);
-
-    await super.destroy();
-  }
-
-  /**
-   * Retrieves the original MediaStreamTrack which this instance was
-   * instantiated with.
-   *
-   * @return {MediaStreamTrack}
-   */
-  getMediaStreamTrack() {
-    return this._inputMediaStreamTrack;
+    const initTimeout = window.setTimeout(
+      () => this._initAudioLevelPolling(),
+      50
+    );
+    this.registerShutdownHandler(() => window.clearTimeout(initTimeout));
   }
 
   /**
@@ -181,11 +145,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Stop previous polling, if already started
     // TODO: Rename / document further
     if (this._tickInterval) {
-      this._tickInterval.stop();
+      window.clearInterval(this._tickInterval);
     }
 
     if (this._silenceErrorDetectionTimeout) {
-      this._silenceErrorDetectionTimeout.stop();
+      window.clearTimeout(this._silenceErrorDetectionTimeout);
     }
 
     // If we're destroyed, there's nothing we can do about it
@@ -253,16 +217,13 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._audioLevelDidUpdate(0);
 
     // Start polling for audio level detection
-    this._tickInterval = interval(
-      // NOTE: _handleTick will retain scope reference to this class
-      // because of PhantomCore bindings
-      this._handleTick,
+    this._tickInterval = window.setInterval(
+      () => this._handleTick(),
       // TODO: Allow this setting to be user-overridable
       DEFAULT_TICK_TIME
     );
   }
 
-  // TODO: Rename
   /**
    * Handles one tick cycle of audio level polling by capturing the audio
    * frequency data and then sending it to the audio level checker.
@@ -284,6 +245,41 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       this._audioLevelDidUpdate(rms);
     }
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    if (this._tickInterval) {
+      window.clearInterval(this._tickInterval);
+    }
+
+    if (this._silenceErrorDetectionTimeout) {
+      window.clearTimeout(this._silenceErrorDetectionTimeout);
+    }
+
+    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+    // track on its own (nor should it).  This prevents an issue in Google
+    // Chrome (maybe others) where the recording indicator would stay lit after
+    // the source has been stopped.
+    this._mediaStreamTrack.stop();
+
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    this._audioLevelDidUpdate(0);
+
+    await super.destroy();
+  }
+
+  /**
+   * Retrieves the original MediaStreamTrack which this instance was
+   * instantiated with.
+   *
+   * @return {MediaStreamTrack}
+   */
+  getMediaStreamTrack() {
+    return this._inputMediaStreamTrack;
   }
 
   /**
@@ -310,10 +306,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    */
   _silenceDidStart() {
     if (this._silenceErrorDetectionTimeout) {
-      this._silenceErrorDetectionTimeout.stop();
+      window.clearTimeout(this._silenceErrorDetectionTimeout);
     }
 
-    this._silenceErrorDetectionTimeout = timeout(() => {
+    this._silenceErrorDetectionTimeout = window.setTimeout(() => {
       if (this._isDestroyed) {
         return;
       }
@@ -340,7 +336,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    */
   _silenceDidEnd() {
     if (this._silenceErrorDetectionTimeout) {
-      this._silenceErrorDetectionTimeout.stop();
+      window.clearTimeout(this._silenceErrorDetectionTimeout);
     }
 
     // Detect if existing error should be a false-positive
