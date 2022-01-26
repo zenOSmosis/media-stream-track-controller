@@ -5,8 +5,6 @@ const {
   /** @exports */
   EVT_AUDIO_LEVEL_UPDATED,
   /** @exports */
-  EVT_AUDIO_LEVEL_TICK,
-  /** @exports */
   EVT_AUDIO_ERROR,
   /** @exports */
   EVT_AUDIO_ERROR_RECOVERED,
@@ -87,7 +85,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     /** @type {string[]} */
     const proxyEvents = [
       EVT_AUDIO_LEVEL_UPDATED,
-      EVT_AUDIO_LEVEL_TICK,
       EVT_AUDIO_ERROR,
       EVT_AUDIO_ERROR_RECOVERED,
       EVT_DESTROYED,
@@ -151,7 +148,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 module.exports = AudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;

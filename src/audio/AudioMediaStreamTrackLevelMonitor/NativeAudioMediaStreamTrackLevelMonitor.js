@@ -11,9 +11,6 @@ const { interval, timeout } = require("d3-timer");
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
-const EVT_AUDIO_LEVEL_TICK = "audio-level-tick";
-
-/** @exports */
 const EVT_AUDIO_ERROR = "audio-error";
 
 /** @exports */
@@ -257,9 +254,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Start polling for audio level detection
     this._tickInterval = interval(
-      // NOTE: _handlePollTick will retain scope reference to this class
+      // NOTE: _handleTick will retain scope reference to this class
       // because of PhantomCore bindings
-      this._handlePollTick,
+      this._handleTick,
       // TODO: Allow this setting to be user-overridable
       DEFAULT_TICK_TIME
     );
@@ -272,7 +269,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * @return {void}
    */
-  _handlePollTick() {
+  _handleTick() {
     if (this._isDestroyed) {
       return;
     }
@@ -302,9 +299,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     } else {
       this._silenceDidEnd();
     }
-
-    // TODO: Remove
-    console.log({ audioLevel });
 
     this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
   }
@@ -363,7 +357,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;

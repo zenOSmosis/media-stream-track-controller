@@ -1,11 +1,8 @@
 const { PhantomCollection } = require("phantom-core");
-const { EVT_CHILD_INSTANCE_REMOVED } = PhantomCollection;
 const AudioMediaStreamTrackLevelMonitor = require("../AudioMediaStreamTrackLevelMonitor");
 const {
   /** @exports */
   EVT_AUDIO_LEVEL_UPDATED,
-  /** @exports */
-  EVT_AUDIO_LEVEL_TICK,
   /** @exports */
   EVT_AUDIO_ERROR,
   /** @exports */
@@ -13,9 +10,6 @@ const {
   /** @exports */
   EVT_DESTROYED,
 } = AudioMediaStreamTrackLevelMonitor;
-
-/** @exports */
-const EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK = `debounced-peak-${EVT_AUDIO_LEVEL_TICK}`;
 
 /**
  * Listens to the audio levels of multiple audio tracks at once and emits a
@@ -37,7 +31,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATED);
     this.bindChildEventName(EVT_AUDIO_ERROR);
     this.bindChildEventName(EVT_AUDIO_ERROR_RECOVERED);
-    this.bindChildEventName(EVT_AUDIO_LEVEL_TICK);
 
     // Additional safeguard before trying to perform audio detection; This
     // shouldn't be required to be here but is good for safeguarding
@@ -45,51 +38,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
       throw new ReferenceError(
         "Could not locate this._lenChildren in super class"
       );
-    }
-
-    // Call every time a child emits a new audio level tick
-    this._handleAudioLevelTick = this._handleAudioLevelTick.bind(this);
-    this.on(EVT_AUDIO_LEVEL_TICK, this._handleAudioLevelTick);
-
-    // The current tick index of children, used determination of when to emit EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK
-    this._childTickIdx = -1;
-
-    // The current peak audio level in the EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK loop
-    // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
-    this._currentPeakLevel = { rms: 0, log2Rms: 0 };
-
-    // Reset current peak level to 0 after all children have been removed
-    this.on(EVT_CHILD_INSTANCE_REMOVED, () => {
-      if (!this._lenChildren) {
-        // TODO: Typedef this; also used in NativeAudioMediaStreamTrackLevelMonitor
-        this.emit(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, { rms: 0, log2Rms: 0 });
-      }
-    });
-  }
-
-  /**
-   * Internally called when any child module emits an audio level.
-   *
-   * @param {Object} audioLevel TODO: Typedef this; also used in
-   * NativeAudioMediaStreamTrackLevelMonitor
-   * @emits EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK
-   */
-  _handleAudioLevelTick(audioLevel) {
-    ++this._childTickIdx;
-
-    // Determine peak audio level and set it
-    if (audioLevel.rms > this._currentPeakLevel.rms) {
-      this._currentPeakLevel = audioLevel;
-    }
-
-    // Once iterated through all children ...
-    if (!((this._childTickIdx + 1) % this._lenChildren)) {
-      // ... emit the current audio peak for the loop
-      this.emit(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, this._currentPeakLevel);
-
-      // ... then reset the loop tick state back to its initial values
-      this._childTickIdx = -1;
-      this._currentPeakLevel = { rms: 0, log2Rms: 0 };
     }
   }
 
@@ -214,9 +162,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
 module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
-module.exports.EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK =
-  EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK;
 module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
 module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;
