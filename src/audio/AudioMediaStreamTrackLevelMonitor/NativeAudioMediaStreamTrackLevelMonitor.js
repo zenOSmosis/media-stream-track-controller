@@ -7,13 +7,13 @@ const { AUDIO_TRACK_KIND } = require("../../constants");
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
-const EVT_AUDIO_ERROR = "audio-error";
+const EVT_AUDIO_SILENCE = "audio-error";
 
 /** @exports */
-const EVT_AUDIO_ERROR_RECOVERED = "audio-error-recovered";
+const EVT_AUDIO_SILENCE_END = "audio-error-recovered";
 
 // Number of ms to wait before track silence should raise an error
-const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
+const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
 
 // Number of ms wait before capturing next audio frame
 const DEFAULT_TICK_TIME = 100;
@@ -89,10 +89,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._mediaStreamTrack = mediaStreamTrack.clone();
 
     // window.setTimeout used for silence-to-error detection
-    this._silenceErrorDetectionTimeout = null;
+    this._silenceDetectionTimeout = null;
 
-    // Error, if set, of silence
-    this._silenceAudioError = null;
+    this._isSilent = false;
 
     this._prevRMS = 0;
 
@@ -148,8 +147,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       window.clearInterval(this._tickInterval);
     }
 
-    if (this._silenceErrorDetectionTimeout) {
-      window.clearTimeout(this._silenceErrorDetectionTimeout);
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
     }
 
     // If we're destroyed, there's nothing we can do about it
@@ -267,9 +266,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._audioLevel = audioLevel;
 
     if (!audioLevel) {
-      this._silenceDidStart();
+      this._silenceDidPotentiallyStart();
     } else {
-      this._silenceDidEnd();
+      this._silenceDidPotentiallyEnd();
     }
 
     this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
@@ -280,29 +279,24 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * @return {void}
    */
-  _silenceDidStart() {
-    if (this._silenceErrorDetectionTimeout) {
-      window.clearTimeout(this._silenceErrorDetectionTimeout);
+  _silenceDidPotentiallyStart() {
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
     }
 
-    this._silenceErrorDetectionTimeout = window.setTimeout(() => {
+    this._silenceDetectionTimeout = window.setTimeout(() => {
       if (this._isDestroyed) {
         return;
       }
 
-      this._silenceAudioError = new Error(
-        "Unintentional silence grace period over"
-      );
+      this._isSilent = true;
 
-      // Silently fail
-      this.log.error(this._silenceAudioError.message);
+      // FIXME: (jh) Keep or change to debug
+      this.log.warn("Silence detected");
 
       // Tell interested listeners
-      // TODO: Change event name
-      // TODO: Document; should be able to be used to determine if audio is not
-      // being streamed, etc.
-      this.emit(EVT_AUDIO_ERROR, this._silenceAudioError);
-    }, SILENCE_TO_ERROR_THRESHOLD_TIME);
+      this.emit(EVT_AUDIO_SILENCE);
+    }, SILENCE_DETECTION_THRESHOLD_TIME);
   }
 
   /**
@@ -310,19 +304,24 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * @return {void}
    */
-  _silenceDidEnd() {
-    if (this._silenceErrorDetectionTimeout) {
-      window.clearTimeout(this._silenceErrorDetectionTimeout);
+  _silenceDidPotentiallyEnd() {
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
     }
 
     // Detect if existing error should be a false-positive
-    if (this._silenceAudioError) {
-      const audioError = this._silenceAudioError;
+    if (this._isSilent) {
+      this._isSilent = false;
 
-      this._silenceAudioError = null;
-
-      this.emit(EVT_AUDIO_ERROR_RECOVERED, audioError);
+      this.emit(EVT_AUDIO_SILENCE_END);
     }
+  }
+
+  /**
+   * @return {boolean}
+   */
+  getIsSilent() {
+    return this._isSilent();
   }
 
   /**
@@ -333,8 +332,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       window.clearInterval(this._tickInterval);
     }
 
-    if (this._silenceErrorDetectionTimeout) {
-      window.clearTimeout(this._silenceErrorDetectionTimeout);
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
     }
 
     // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
@@ -354,6 +353,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
-module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_AUDIO_SILENCE = EVT_AUDIO_SILENCE;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;

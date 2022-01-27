@@ -4,9 +4,9 @@ const {
   /** @exports */
   EVT_AUDIO_LEVEL_UPDATED,
   /** @exports */
-  EVT_AUDIO_ERROR,
+  EVT_AUDIO_SILENCE,
   /** @exports */
-  EVT_AUDIO_ERROR_RECOVERED,
+  EVT_AUDIO_SILENCE_END,
   /** @exports */
   EVT_DESTROYED,
 } = AudioMediaStreamTrackLevelMonitor;
@@ -29,8 +29,8 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
 
     // The proxy events this class should proxy from the children
     this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATED);
-    this.bindChildEventName(EVT_AUDIO_ERROR);
-    this.bindChildEventName(EVT_AUDIO_ERROR_RECOVERED);
+    this.bindChildEventName(EVT_AUDIO_SILENCE);
+    this.bindChildEventName(EVT_AUDIO_SILENCE_END);
 
     // Additional safeguard before trying to perform audio detection; This
     // shouldn't be required to be here but is good for safeguarding
@@ -171,6 +171,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
 module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
-module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_AUDIO_SILENCE = EVT_AUDIO_SILENCE;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;
