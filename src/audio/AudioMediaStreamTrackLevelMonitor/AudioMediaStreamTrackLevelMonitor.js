@@ -16,14 +16,14 @@ const {
  * The underlying audio monitors which are being proxied to, keyed by the
  * respective MediaStreamTrack id.
  *
- * @type {Object.<string, AudioMediaStreamTrackLevelMonitor>}
+ * @type {{key: string, value: AudioMediaStreamTrackLevelMonitor}}
  */
 const _monitorInstances = {};
 
 /**
  * The number of proxies, per MediaStreamTrack id.
  *
- * @type {Object.<string, number>}
+ * @type {{key: string, value: number}}}
  */
 const _proxyCounts = {};
 
@@ -101,8 +101,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       EVT_DESTROYED,
     ];
 
-    // Keyed with event names
-    // TODO: Document type (key [handler name], value: Function)
+    /** @type {{key: string, value: Function}} */
     const proxyHandlers = {};
 
     // Bind the proxy events, registering them with the handlers
