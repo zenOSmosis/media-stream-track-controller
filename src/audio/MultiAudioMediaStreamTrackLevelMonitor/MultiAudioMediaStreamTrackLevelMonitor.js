@@ -63,7 +63,9 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
    */
   addChild(mediaStreamTrack) {
     if (!(mediaStreamTrack instanceof MediaStreamTrack)) {
-      throw new TypeError("mediaStreamTrack is not a MediaStreamTrack");
+      throw new TypeError(
+        "mediaStreamTrack is not a MediaStreamTrack instance"
+      );
     }
 
     // Ignore attempts to add duplicate tracks
