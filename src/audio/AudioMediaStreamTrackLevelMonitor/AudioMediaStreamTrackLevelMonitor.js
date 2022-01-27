@@ -59,15 +59,17 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     const mediaStreamTrack = proxy.getMediaStreamTrack();
 
-    let monitor = _monitorInstances[mediaStreamTrack.id];
+    let nativeMonitor = _monitorInstances[mediaStreamTrack.id];
 
-    if (!monitor) {
-      monitor = new NativeAudioMediaStreamTrackLevelMonitor(mediaStreamTrack);
+    if (!nativeMonitor) {
+      nativeMonitor = new NativeAudioMediaStreamTrackLevelMonitor(
+        mediaStreamTrack
+      );
 
       // Handle monitor destroy
       //
       // Remove all proxies for the given audio level monitor
-      monitor.once(EVT_DESTROYED, () => {
+      nativeMonitor.once(EVT_DESTROYED, () => {
         const proxies = _proxyCounts[mediaStreamTrack.id];
 
         if (proxies) {
@@ -75,10 +77,12 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         }
       });
 
-      logger.debug("Proxied audio monitor created", monitor);
+      logger.debug("Proxied audio monitor created", nativeMonitor);
 
-      _monitorInstances[mediaStreamTrack.id] = monitor;
+      _monitorInstances[mediaStreamTrack.id] = nativeMonitor;
     }
+
+    proxy._nativeMonitor = nativeMonitor;
 
     if (!_proxyCounts[mediaStreamTrack.id]) {
       // Start the count at one proxied instance
@@ -108,14 +112,14 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     proxyEvents.forEach(proxyEvent => {
       proxyHandlers[proxyEvent] = data => proxy.emit(proxyEvent, data);
 
-      monitor.on(proxyEvent, proxyHandlers[proxyEvent]);
+      nativeMonitor.on(proxyEvent, proxyHandlers[proxyEvent]);
     });
 
     // Handle proxy destruct
     proxy.registerShutdownHandler(async () => {
       // Unregister proxy events from the native monitor
       proxyEvents.forEach(proxyEvent =>
-        monitor.off(proxyEvent, proxyHandlers[proxyEvent])
+        nativeMonitor.off(proxyEvent, proxyHandlers[proxyEvent])
       );
 
       // Subtract from the count of proxied instances
@@ -126,9 +130,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         delete _monitorInstances[mediaStreamTrack.id];
         delete _proxyCounts[mediaStreamTrack.id];
 
-        await monitor.destroy();
+        await nativeMonitor.destroy();
 
-        logger.debug("Proxied audio monitor destroyed", monitor);
+        logger.debug("Proxied audio monitor destroyed", nativeMonitor);
       }
     });
   }
@@ -144,6 +148,8 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     super();
 
     this._mediaStreamTrack = mediaStreamTrack;
+
+    this._nativeMonitor = null;
 
     // Bind this instance as a proxy to the native listener
     AudioMediaStreamTrackLevelMonitor.addProxyInstance(this);
