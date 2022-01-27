@@ -157,6 +157,13 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
+   * @return {boolean}
+   */
+  getIsSilent() {
+    return this._nativeMonitor.getIsSilent();
+  }
+
+  /**
    * @return {Promise<void>}
    */
   async destroy() {

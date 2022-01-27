@@ -318,6 +318,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
+   * Retrieves whether or not the associated audio stream is silent.
+   *
    * @return {boolean}
    */
   getIsSilent() {

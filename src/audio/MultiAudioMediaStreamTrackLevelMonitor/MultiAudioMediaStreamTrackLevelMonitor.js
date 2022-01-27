@@ -139,6 +139,15 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
+   * Retrieves whether or not all associated audio streams are silent.
+   *
+   * @return {boolean}
+   */
+  getIsSilent() {
+    return this.getChildren().every(child => child.getIsSilent());
+  }
+
+  /**
    * Removes all associated MediaStreamTracks and destructs their associated
    * track level monitors.
    *
