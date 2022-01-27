@@ -260,7 +260,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
    * Internally called after audio level has changed.
    *
-   * @param {number} audioLevel // TODO: Document
+   * @param {number} audioLevel Float range from 0 - 100, representing RMS
+   * level.
    */
   _audioLevelDidUpdate(audioLevel) {
     this._audioLevel = audioLevel;
