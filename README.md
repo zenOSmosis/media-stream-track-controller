@@ -38,14 +38,12 @@ One thing which could help alleviate this would be to be able to capture input d
 
 ## Development
 
-TODO: Update this... these instructions are out of date w/ ReShell dev frontend
-
 There is a React-based frontend for prototyping this utility in a browser, which is not to be utilized in a production setting.  It utilizes a Unix symlink to link the dev.frontend/src to the src directory and is therefore not compatible w/ Windows unless running in a WSL terminal (maybe Cygwin could work).
 
 To start the dev frontend:
 
 ```bash
-$ cd dev.frontend
+$ cd dev.frontend.old
 $ npm run start
 ```
 
