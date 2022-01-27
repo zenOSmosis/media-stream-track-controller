@@ -7,10 +7,10 @@ const { AUDIO_TRACK_KIND } = require("../../constants");
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
-const EVT_AUDIO_SILENCE = "audio-error";
+const EVT_AUDIO_SILENCE_STARTED = "audio-error";
 
 /** @exports */
-const EVT_AUDIO_SILENCE_END = "audio-error-recovered";
+const EVT_AUDIO_SILENCE_ENDED = "audio-error-recovered";
 
 // Number of ms to wait before track silence should raise an error
 const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
@@ -295,7 +295,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this.log.warn("Silence detected");
 
       // Tell interested listeners
-      this.emit(EVT_AUDIO_SILENCE);
+      this.emit(EVT_AUDIO_SILENCE_STARTED);
     }, SILENCE_DETECTION_THRESHOLD_TIME);
   }
 
@@ -313,7 +313,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._isSilent) {
       this._isSilent = false;
 
-      this.emit(EVT_AUDIO_SILENCE_END);
+      this.emit(EVT_AUDIO_SILENCE_ENDED);
     }
   }
 
@@ -353,6 +353,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE = EVT_AUDIO_SILENCE;
-module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
+module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
+module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;

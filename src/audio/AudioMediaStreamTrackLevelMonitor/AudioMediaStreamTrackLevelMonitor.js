@@ -5,9 +5,9 @@ const {
   /** @exports */
   EVT_AUDIO_LEVEL_UPDATED,
   /** @exports */
-  EVT_AUDIO_SILENCE,
+  EVT_AUDIO_SILENCE_STARTED,
   /** @exports */
-  EVT_AUDIO_SILENCE_END,
+  EVT_AUDIO_SILENCE_ENDED,
   /** @exports */
   EVT_DESTROYED,
 } = NativeAudioMediaStreamTrackLevelMonitor;
@@ -96,8 +96,8 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
      **/
     const proxyEvents = [
       EVT_AUDIO_LEVEL_UPDATED,
-      EVT_AUDIO_SILENCE,
-      EVT_AUDIO_SILENCE_END,
+      EVT_AUDIO_SILENCE_STARTED,
+      EVT_AUDIO_SILENCE_ENDED,
       EVT_DESTROYED,
     ];
 
@@ -171,6 +171,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 module.exports = AudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE = EVT_AUDIO_SILENCE;
-module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
+module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
+module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;
