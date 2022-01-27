@@ -43,7 +43,7 @@ There is a React-based frontend for prototyping this utility in a browser, which
 To start the dev frontend:
 
 ```bash
-$ cd dev.frontend
+$ cd dev.frontend.old
 $ npm run start
 ```
 

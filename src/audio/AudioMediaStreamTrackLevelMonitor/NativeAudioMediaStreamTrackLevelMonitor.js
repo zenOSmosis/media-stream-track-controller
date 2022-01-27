@@ -3,31 +3,30 @@ const { /** @exports */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
-// Emits after audio level has changed, with a value from 0 - 10
 /** @exports */
-const EVT_AVERAGE_AUDIO_LEVEL_CHANGED = "audio-level-changed";
+const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
-const EVT_AUDIO_LEVEL_TICK = "audio-level-tick";
+const EVT_AUDIO_SILENCE_STARTED = "audio-error";
 
 /** @exports */
-const EVT_AUDIO_ERROR = "audio-error";
-
-/** @exports */
-const EVT_AUDIO_ERROR_RECOVERED = "audio-error-recovered";
+const EVT_AUDIO_SILENCE_ENDED = "audio-error-recovered";
 
 // Number of ms to wait before track silence should raise an error
-const SILENCE_TO_ERROR_THRESHOLD_TIME = 10000;
+const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
 
-// Audio level is changed to this value when muting is specified, regardless
-// whether there is audio in the stream or not
-const MUTED_AUDIO_LEVEL = -1;
+// Number of ms wait before capturing next audio frame
+const DEFAULT_TICK_TIME = 100;
 
-// Number of ms before determining next poll interval
-const DEFAULT_FRAME_TIME = 50;
+// TODO: Integrate AudioWorkletNode processing:
+//  - https://www.w3.org/TR/webaudio/#vu-meter-mode
+//  - https://developer.mozilla.org/en-US/docs/Web/API/AudioWorklet
 
 /**
- * Directly listens to the given MediaStreamTrack.
+ * Directly listens to the given audio MediaStreamTrack.
+ *
+ * Portions of this class were derived from Twilio's Reference React App:
+ * @see {@link https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx}
  *
  * IMPORTANT: For most purposes, this class should not be used directly,
  * because it is not CPU efficient when multiple listeners are attached to the
@@ -36,6 +35,21 @@ const DEFAULT_FRAME_TIME = 50;
  * monitor.
  */
 class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
+  /**
+   * TODO: Look into reference which uses "rms pressure" reference:
+   * @see {@link https://dosits.org/science/advanced-topics/introduction-to-signal-levels }
+   *
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-audiolevel}
+   * @see {@link https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-totalaudioenergy}
+   *
+   * @param {Uint8Array} samples
+   * @return {number} TODO: Verify this is correct; should it be 0 - 1 instead? A float value between 0 - 100
+   */
+  static calculateRMSPressure(samples) {
+    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
+    return Math.sqrt(sumSq / samples.length);
+  }
+
   /**
    * Validates the given MediaStreamTrack, throwing an exception if it is not
    * of valid type for use here.
@@ -74,37 +88,33 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // track
     this._mediaStreamTrack = mediaStreamTrack.clone();
 
-    // window.setTimeout instance used for silence-to-error detection
-    this._silenceErrorDetectionTimeout = null;
+    // window.setTimeout used for silence-to-error detection
+    this._silenceDetectionTimeout = null;
 
-    // Error, if set, of silence
-    this._silenceAudioError = null;
+    this._isSilent = false;
 
-    this._prevAudioLevel = 0;
-
-    // TODO: Document why this is needed
-    this._pollingStartTime = null;
-
-    this._isMuted = false;
+    this._prevRMS = 0;
 
     this._analyser = null;
     this._stream = null;
     this._source = null;
+
+    // Will be populated w/ Uint8Array once initialized
+    this._samples = null;
 
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
       this.destroy();
     });
 
+    // TODO: Cite reference link for Twilio audio level indicator
     // (Modified from AudioLevelIndicator.tsx in Twilio Video App React demo app)
     //
     // Here we re-initialize the AnalyserNode on focus to avoid an issue in Safari
     // where the analyzers stop functioning when the user switches to a new tab
     // and switches back to the app.
     (() => {
-      const _handleFocus = () => {
-        this._initAudioLevelPolling();
-      };
+      const _handleFocus = () => this._initAudioLevelPolling();
 
       window.addEventListener("focus", _handleFocus);
 
@@ -114,43 +124,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     })();
 
     // Start initial polling
-    //
-    // NOTE (jh): Timeout is added as a grace period to smooth over some rapid
-    // lifecycles caused by components mounting / unmounting
-    setTimeout(() => this._initAudioLevelPolling(), 50);
-  }
-
-  /**
-   * @return {Promise<void>}
-   */
-  async destroy() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
-
-    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-    // track on its own (nor should it).  This prevents an issue in Google
-    // Chrome (maybe others) where the recording indicator would stay lit after
-    // the source has been stopped.
-    this._mediaStreamTrack.stop();
-
-    // Reset the levels
-    //
-    // TODO: Typedef this object
-    this.emit(EVT_AUDIO_LEVEL_TICK, {
-      rms: 0,
-      log2Rms: 0,
-    });
-
-    await super.destroy();
-  }
-
-  /**
-   * Retrieves the original MediaStreamTrack which this instance was
-   * instantiated with.
-   *
-   * @return {MediaStreamTrack}
-   */
-  getMediaStreamTrack() {
-    return this._inputMediaStreamTrack;
+    // IMPORTANT: This doesn't use normal PhantomCore async init convention because it may be called more than once to restart the polling sequence
+    const initTimeout = window.setTimeout(
+      () => this._initAudioLevelPolling(),
+      50
+    );
+    this.registerShutdownHandler(() => window.clearTimeout(initTimeout));
   }
 
   /**
@@ -158,23 +137,31 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    *
    * Derived from Twilio's documentation.
    * @link https://www.twilio.com/docs/video/build-js-video-application-recommendations-and-best-practices
+   *
+   * @return {Promise<void>}
    */
   async _initAudioLevelPolling() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+    // Stop previous polling, if already started
+    // TODO: Rename / document further
+    if (this._tickInterval) {
+      window.clearInterval(this._tickInterval);
+    }
+
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
+    }
 
     // If we're destroyed, there's nothing we can do about it
     if (this._isDestroyed) {
       return;
     }
 
-    this._pollingStartTime = this.getTime();
-
     // TODO: Use OfflineAudioContext, if possible... should be a lot more performant
     const audioContext = getSharedAudioContext();
 
     // Due to browsers' autoplay policy, the AudioContext is only active after
     // the user has interacted with your app, after which the Promise returned
-    // here is resolved.
+    // here is resolved
     await audioContext.resume();
 
     // This class may have a rapid lifecycle inside of a React component, so
@@ -196,7 +183,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Create an analyser to access the raw audio samples from the microphone.
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
-      this._analyser.fftSize = 1024;
+
+      this.registerShutdownHandler(() => this._analyser.disconnect());
+
+      // TODO: Make this user-configurable
+      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
+      this._analyser.fftSize = 256;
       this._analyser.smoothingTimeConstant = 0.5;
     }
 
@@ -211,189 +203,158 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.once(EVT_DESTROYED, () => {
-        this._source.disconnect(this._analyser);
-      });
+      this.registerShutdownHandler(() =>
+        this._source.disconnect(this._analyser)
+      );
     }
 
-    const samples = new Uint8Array(this._analyser.frequencyBinCount);
+    if (!this._samples) {
+      this._samples = new Uint8Array(this._analyser.frequencyBinCount);
+    }
 
-    // Start initial detection
-    this.audioLevelDidChange(0);
-
-    const pollingStartTime = this._pollingStartTime;
+    // Set initial audio level to 0
+    this._audioLevelDidUpdate(0);
 
     // Start polling for audio level detection
-    this._handlePollTick({
-      pollingStartTime,
-      analyser: this._analyser,
-      samples,
-    });
-  }
-
-  _emitAudioLevelTick({ rms = 0, log2Rms = 0 }) {
-    this.emit(EVT_AUDIO_LEVEL_TICK, {
-      rms,
-      log2Rms,
-    });
+    this._tickInterval = window.setInterval(
+      () => this._handleTick(),
+      // TODO: Allow this setting to be user-overridable
+      DEFAULT_TICK_TIME
+    );
   }
 
   /**
    * Handles one tick cycle of audio level polling by capturing the audio
    * frequency data and then sending it to the audio level checker.
    *
-   * @param {AudioLevelPollLoopParams}
+   * @return {void}
    */
-  _handlePollTick({ pollingStartTime, analyser, samples }) {
-    if (this._isDestroyed || pollingStartTime !== this._pollingStartTime) {
-      // this.log.debug("Check audio level loop time is ending");
-
+  _handleTick() {
+    if (this._isDestroyed) {
       return;
     }
 
-    // Note: For debugging: A way to simulate unintentional silence is to force
-    // this._isMuted to true, while also muting a device's audio. That will
-    // convince the following code into thinking there's unintentional silence.
-
-    if (this._isMuted) {
-      if (this._prevAudioLevel !== MUTED_AUDIO_LEVEL) {
-        this._prevAudioLevel = MUTED_AUDIO_LEVEL;
-
-        this.audioLevelDidChange(MUTED_AUDIO_LEVEL);
-      }
-    } else {
-      analyser.getByteFrequencyData(samples);
-      const rms = this.rootMeanSquare(samples);
-      const log2Rms = rms && Math.log2(rms);
-
-      // Clear any levels
-      this._emitAudioLevelTick({ rms, log2Rms });
-
-      // Audio audioLevel ranges from 0 (silence) to 10 (loudest).
-      let newAudioLevel = Math.ceil(log2Rms); // Our version; shows quieter, emits more often
-      // let newAudioLevel = Math.ceil((10 * log2Rms) / 8); // Twilio version; shows louder
-
-      if (newAudioLevel < 0) {
-        newAudioLevel = 0;
-      } else if (newAudioLevel > 10) {
-        newAudioLevel = 10;
-      }
-
-      if (this._prevAudioLevel !== newAudioLevel) {
-        this._prevAudioLevel = newAudioLevel;
-
-        this.audioLevelDidChange(newAudioLevel);
-      }
-    }
-
-    setTimeout(
-      () => {
-        this._handlePollTick({
-          pollingStartTime,
-          analyser,
-          samples,
-        });
-      },
-      // TODO: Allow this setting to be user-overridable
-      DEFAULT_FRAME_TIME
+    this._analyser.getByteFrequencyData(this._samples);
+    const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMSPressure(
+      this._samples
     );
-  }
 
-  /**
-   * @param {Uint8Array} samples
-   * @return {number}
-   */
-  rootMeanSquare(samples) {
-    const sumSq = samples.reduce((sumSq, sample) => sumSq + sample * sample, 0);
-    return Math.sqrt(sumSq / samples.length);
-  }
+    if (this._prevRMS !== rms) {
+      this._prevRMS = rms;
 
-  /**
-   * @return {number}
-   */
-  getTime() {
-    return new Date().getTime();
-  }
-
-  /**
-   * Sets whether the audio for this track should be treated as its muted,
-   * regardless if there is audio data available in the monitor.
-   *
-   * @param {boolean}
-   */
-  setIsMuted(isMuted) {
-    if (isMuted === this._isMuted) {
-      // Silently ignore
-      return;
+      this._audioLevelDidUpdate(rms);
     }
-
-    this.log(`Setting muted state to ${isMuted ? "true" : "false"}`);
-
-    this._isMuted = isMuted;
   }
 
   /**
-   * Called after audio level has changed.
+   * Retrieves the original MediaStreamTrack which this instance was
+   * instantiated with.
    *
-   * @param {number} audioLevel
+   * @return {MediaStreamTrack}
    */
-  audioLevelDidChange(audioLevel) {
+  getMediaStreamTrack() {
+    return this._inputMediaStreamTrack;
+  }
+
+  /**
+   * Internally called after audio level has changed.
+   *
+   * @param {number} audioLevel Float range from 0 - 100, representing RMS
+   * level.
+   */
+  _audioLevelDidUpdate(audioLevel) {
     this._audioLevel = audioLevel;
 
     if (!audioLevel) {
-      this.silenceDidStart();
+      this._silenceDidPotentiallyStart();
     } else {
-      this.silenceDidEnd();
+      this._silenceDidPotentiallyEnd();
     }
 
-    this.emit(EVT_AVERAGE_AUDIO_LEVEL_CHANGED, audioLevel);
+    this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
   }
 
   /**
-   * Called after period of silence has started.
+   * Internally called after period of silence has started.
+   *
+   * @return {void}
    */
-  silenceDidStart() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+  _silenceDidPotentiallyStart() {
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
+    }
 
-    this._silenceErrorDetectionTimeout = setTimeout(() => {
-      if (this._isDestroyed || this._isMuted) {
+    this._silenceDetectionTimeout = window.setTimeout(() => {
+      if (this._isDestroyed) {
         return;
       }
 
-      this._silenceAudioError = new Error(
-        "Unintentional silence grace period over"
-      );
+      this._isSilent = true;
 
-      // Silently fail
-      this.log.error(this._silenceAudioError.message);
+      // FIXME: (jh) Keep or change to debug
+      this.log.warn("Silence detected");
 
       // Tell interested listeners
-      this.emit(EVT_AUDIO_ERROR, this._silenceAudioError);
-    }, SILENCE_TO_ERROR_THRESHOLD_TIME);
+      this.emit(EVT_AUDIO_SILENCE_STARTED);
+    }, SILENCE_DETECTION_THRESHOLD_TIME);
   }
 
   /**
-   * Called after period of silence has ended.
+   * Internally called after period of silence has ended.
+   *
+   * @return {void}
    */
-  silenceDidEnd() {
-    clearTimeout(this._silenceErrorDetectionTimeout);
+  _silenceDidPotentiallyEnd() {
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
+    }
 
     // Detect if existing error should be a false-positive
-    if (this._silenceAudioError) {
-      const audioError = this._silenceAudioError;
+    if (this._isSilent) {
+      this._isSilent = false;
 
-      this._silenceAudioError = null;
-
-      this.emit(EVT_AUDIO_ERROR_RECOVERED, audioError);
+      this.emit(EVT_AUDIO_SILENCE_ENDED);
     }
+  }
+
+  /**
+   * Retrieves whether or not the associated audio stream is silent.
+   *
+   * @return {boolean}
+   */
+  getIsSilent() {
+    return this._isSilent();
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    if (this._tickInterval) {
+      window.clearInterval(this._tickInterval);
+    }
+
+    if (this._silenceDetectionTimeout) {
+      window.clearTimeout(this._silenceDetectionTimeout);
+    }
+
+    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+    // track on its own (nor should it).  This prevents an issue in Google
+    // Chrome (maybe others) where the recording indicator would stay lit after
+    // the source has been stopped.
+    this._mediaStreamTrack.stop();
+
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    this._audioLevelDidUpdate(0);
+
+    await super.destroy();
   }
 }
 
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
-module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
-module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
-module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
+module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
+module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;

@@ -1,0 +1,3 @@
+[submodule "dev.frontend"]
+	path = dev.frontend
+	url = https://github.com/jzombie/pre-re-shell.git

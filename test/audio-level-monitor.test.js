@@ -5,8 +5,7 @@ const {
   utils,
 } = require("../src");
 
-const { EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK } =
-  MultiAudioMediaStreamTrackLevelMonitor;
+const { EVT_AUDIO_LEVEL_UPDATED } = MultiAudioMediaStreamTrackLevelMonitor;
 
 test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations / shutdown handling", async t => {
   t.plan(30);
@@ -151,6 +150,40 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
   t.end();
 });
 
+test("AudioMediaStreamTrackLevelMonitor emit 0 audio level on destruct", async t => {
+  t.plan(1);
+
+  const testTrack = utils.mediaStream.generators
+    .createTestAudioMediaStream()
+    .getTracks()[0];
+
+  const audioMonitor = new AudioMediaStreamTrackLevelMonitor(testTrack);
+
+  let isDestructing = false;
+
+  await Promise.all([
+    new Promise(resolve => {
+      audioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+        if (isDestructing && audioLevel === 0) {
+          t.ok(true, "captured 0 RMS level after signaling for destruct");
+
+          resolve();
+        }
+      });
+    }),
+
+    new Promise(async resolve => {
+      isDestructing = true;
+
+      await audioMonitor.destroy();
+
+      resolve();
+    }),
+  ]);
+
+  t.end();
+});
+
 test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
   t.plan(1);
 
@@ -175,9 +208,9 @@ test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
   ]);
 
   await Promise.all([
-    new Promise(async resolve => {
-      multiAudioMonitor.on(EVT_DEBOUNCED_PEAK_AUDIO_LEVEL_TICK, ({ rms }) => {
-        if (!multiAudioMonitor.getChildren().length && rms === 0) {
+    new Promise(resolve => {
+      multiAudioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+        if (!multiAudioMonitor.getChildren().length && audioLevel === 0) {
           t.ok(
             true,
             "captured 0 RMS level after removing all media stream tracks"

@@ -3,13 +3,11 @@ const { logger } = PhantomCore;
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
   /** @exports */
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
+  EVT_AUDIO_LEVEL_UPDATED,
   /** @exports */
-  EVT_AUDIO_LEVEL_TICK,
+  EVT_AUDIO_SILENCE_STARTED,
   /** @exports */
-  EVT_AUDIO_ERROR,
-  /** @exports */
-  EVT_AUDIO_ERROR_RECOVERED,
+  EVT_AUDIO_SILENCE_ENDED,
   /** @exports */
   EVT_DESTROYED,
 } = NativeAudioMediaStreamTrackLevelMonitor;
@@ -25,7 +23,7 @@ const _monitorInstances = {};
 /**
  * The number of proxies, per MediaStreamTrack id.
  *
- * @type {{key: string, value: number}}
+ * @type {{key: string, value: number}}}
  */
 const _proxyCounts = {};
 
@@ -53,17 +51,25 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
    * @return {void}
    */
   static addProxyInstance(proxy) {
+    if (!(proxy instanceof AudioMediaStreamTrackLevelMonitor)) {
+      throw new TypeError(
+        "proxy is not an AudioMediaStreamTrackLevelMonitor instance"
+      );
+    }
+
     const mediaStreamTrack = proxy.getMediaStreamTrack();
 
-    let monitor = _monitorInstances[mediaStreamTrack.id];
+    let nativeMonitor = _monitorInstances[mediaStreamTrack.id];
 
-    if (!monitor) {
-      monitor = new NativeAudioMediaStreamTrackLevelMonitor(mediaStreamTrack);
+    if (!nativeMonitor) {
+      nativeMonitor = new NativeAudioMediaStreamTrackLevelMonitor(
+        mediaStreamTrack
+      );
 
       // Handle monitor destroy
       //
       // Remove all proxies for the given audio level monitor
-      monitor.once(EVT_DESTROYED, () => {
+      nativeMonitor.once(EVT_DESTROYED, () => {
         const proxies = _proxyCounts[mediaStreamTrack.id];
 
         if (proxies) {
@@ -71,10 +77,12 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         }
       });
 
-      _monitorInstances[mediaStreamTrack.id] = monitor;
+      logger.debug("Proxied audio monitor created", nativeMonitor);
 
-      logger.debug("Proxied audio monitor created", monitor);
+      _monitorInstances[mediaStreamTrack.id] = nativeMonitor;
     }
+
+    proxy._nativeMonitor = nativeMonitor;
 
     if (!_proxyCounts[mediaStreamTrack.id]) {
       // Start the count at one proxied instance
@@ -84,43 +92,47 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       ++_proxyCounts[mediaStreamTrack.id];
     }
 
-    /** @type {string[]} */
+    /**
+     * These events will be proxied from the native monitor to the proxy
+     * monitor.
+     *
+     * @type {string[]}
+     **/
     const proxyEvents = [
-      EVT_AVERAGE_AUDIO_LEVEL_CHANGED,
-      EVT_AUDIO_LEVEL_TICK,
-      EVT_AUDIO_ERROR,
-      EVT_AUDIO_ERROR_RECOVERED,
+      EVT_AUDIO_LEVEL_UPDATED,
+      EVT_AUDIO_SILENCE_STARTED,
+      EVT_AUDIO_SILENCE_ENDED,
       EVT_DESTROYED,
     ];
 
-    // Keyed with event names
+    /** @type {{key: string, value: Function}} */
     const proxyHandlers = {};
 
+    // Bind the proxy events, registering them with the handlers
     proxyEvents.forEach(proxyEvent => {
       proxyHandlers[proxyEvent] = data => proxy.emit(proxyEvent, data);
 
-      monitor.on(proxyEvent, proxyHandlers[proxyEvent]);
+      nativeMonitor.on(proxyEvent, proxyHandlers[proxyEvent]);
     });
 
-    // Handle proxy destroy
-    //
-    // If no remaining proxies, destroy the audio level monitor
-    proxy.once(EVT_DESTROYED, async () => {
+    // Handle proxy destruct
+    proxy.registerShutdownHandler(async () => {
+      // Unregister proxy events from the native monitor
       proxyEvents.forEach(proxyEvent =>
-        monitor.off(proxyEvent, proxyHandlers[proxyEvent])
+        nativeMonitor.off(proxyEvent, proxyHandlers[proxyEvent])
       );
 
       // Subtract from the count of proxied instances
       --_proxyCounts[mediaStreamTrack.id];
 
-      // Destroy the monitor if all proxies are destroyed
+      // Destruct the monitor once all proxies are destructed
       if (!_proxyCounts[mediaStreamTrack.id]) {
         delete _monitorInstances[mediaStreamTrack.id];
         delete _proxyCounts[mediaStreamTrack.id];
 
-        await monitor.destroy();
+        await nativeMonitor.destroy();
 
-        logger.debug("Proxied audio monitor destroyed", monitor);
+        logger.debug("Proxied audio monitor destroyed", nativeMonitor);
       }
     });
   }
@@ -137,6 +149,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     this._mediaStreamTrack = mediaStreamTrack;
 
+    this._nativeMonitor = null;
+
+    // Bind this instance as a proxy to the native listener
     AudioMediaStreamTrackLevelMonitor.addProxyInstance(this);
   }
 
@@ -146,13 +161,29 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
   getMediaStreamTrack() {
     return this._mediaStreamTrack;
   }
+
+  /**
+   * @return {boolean}
+   */
+  getIsSilent() {
+    return this._nativeMonitor.getIsSilent();
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    this.emit(EVT_AUDIO_LEVEL_UPDATED, 0);
+
+    return super.destroy();
+  }
 }
 
 module.exports = AudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AVERAGE_AUDIO_LEVEL_CHANGED =
-  EVT_AVERAGE_AUDIO_LEVEL_CHANGED;
-module.exports.EVT_AUDIO_LEVEL_TICK = EVT_AUDIO_LEVEL_TICK;
-module.exports.EVT_AUDIO_ERROR = EVT_AUDIO_ERROR;
-module.exports.EVT_AUDIO_ERROR_RECOVERED = EVT_AUDIO_ERROR_RECOVERED;
+module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
+module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
+module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
 module.exports.EVT_DESTROYED = EVT_DESTROYED;
