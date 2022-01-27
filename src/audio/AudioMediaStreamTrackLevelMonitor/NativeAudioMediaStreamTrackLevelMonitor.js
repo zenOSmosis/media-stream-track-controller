@@ -248,31 +248,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
-   * @return {Promise<void>}
-   */
-  async destroy() {
-    if (this._tickInterval) {
-      window.clearInterval(this._tickInterval);
-    }
-
-    if (this._silenceErrorDetectionTimeout) {
-      window.clearTimeout(this._silenceErrorDetectionTimeout);
-    }
-
-    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-    // track on its own (nor should it).  This prevents an issue in Google
-    // Chrome (maybe others) where the recording indicator would stay lit after
-    // the source has been stopped.
-    this._mediaStreamTrack.stop();
-
-    // Reset the audio level back to 0 so that any listeners to not stay
-    // "stuck" on the last value
-    this._audioLevelDidUpdate(0);
-
-    await super.destroy();
-  }
-
-  /**
    * Retrieves the original MediaStreamTrack which this instance was
    * instantiated with.
    *
@@ -347,6 +322,31 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       this.emit(EVT_AUDIO_ERROR_RECOVERED, audioError);
     }
+  }
+
+  /**
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    if (this._tickInterval) {
+      window.clearInterval(this._tickInterval);
+    }
+
+    if (this._silenceErrorDetectionTimeout) {
+      window.clearTimeout(this._silenceErrorDetectionTimeout);
+    }
+
+    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+    // track on its own (nor should it).  This prevents an issue in Google
+    // Chrome (maybe others) where the recording indicator would stay lit after
+    // the source has been stopped.
+    this._mediaStreamTrack.stop();
+
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    this._audioLevelDidUpdate(0);
+
+    await super.destroy();
   }
 }
 

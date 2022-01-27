@@ -42,18 +42,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   }
 
   /**
-   * Destructs all children and shuts down.
-   *
-   * @return {Promise<void>}
-   */
-  async destroy() {
-    // Associated track level monitors should stop listening after destruct
-    await this.removeAllMediaStreamTracks();
-
-    return super.destroy();
-  }
-
-  /**
    * Adds a MediaStreamTrack to the given collection.
    *
    * If a duplicate track is added, it will silently ignore the duplicate.
@@ -156,8 +144,27 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
    *
    * @return {Promise<void>}
    */
-  removeAllMediaStreamTracks() {
-    return this.destroyAllChildren();
+  async removeAllMediaStreamTracks() {
+    await this.destroyAllChildren();
+
+    // Reset the audio level back to 0 so that any listeners to not stay
+    // "stuck" on the last value
+    //
+    // FIXME: (jh) This used to not be required here to pass the tests; it
+    // might need to be debugged in PhantomCollection
+    this.emit(EVT_AUDIO_LEVEL_UPDATED, 0);
+  }
+
+  /**
+   * Destructs all children and shuts down.
+   *
+   * @return {Promise<void>}
+   */
+  async destroy() {
+    // Associated track level monitors should stop listening after destruct
+    await this.removeAllMediaStreamTracks();
+
+    return super.destroy();
   }
 }
 
