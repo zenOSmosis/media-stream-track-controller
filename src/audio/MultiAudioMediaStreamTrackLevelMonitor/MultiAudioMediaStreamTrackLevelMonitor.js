@@ -108,16 +108,13 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
         : this.getChildWithKey(trackOrMonitor.id);
 
     if (trackLevelMonitor) {
-      // NOTE: Destroying the track should also remove the child from super,
-      // but to be on the safe side, we'll just call it anyway
-      super.removeChild(trackLevelMonitor);
-
       return trackLevelMonitor.destroy();
     }
   }
 
   /**
-   * Removes a MediaStreamTrack from the collection.
+   * Removes a MediaStreamTrack from the collection and destructs its
+   * associated track level monitor.
    *
    * @param {MediaStreamTrack} mediaStreamTrack
    * @return {Promise<void>} NOTE: A promise is used because it needs to shut
@@ -125,6 +122,16 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
    */
   async removeMediaStreamTrack(mediaStreamTrack) {
     return this.removeChild(mediaStreamTrack);
+  }
+
+  /**
+   * Removes all associated MediaStreamTracks and destructs their associated
+   * track level monitors.
+   *
+   * @return {Promise<void>}
+   */
+  async removeAllMediaStreamTracks() {
+    return this.destroyAllChildren();
   }
 
   /**
@@ -145,23 +152,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
    */
   getIsSilent() {
     return this.getChildren().every(child => child.getIsSilent());
-  }
-
-  /**
-   * Removes all associated MediaStreamTracks and destructs their associated
-   * track level monitors.
-   *
-   * @return {Promise<void>}
-   */
-  async removeAllMediaStreamTracks() {
-    await this.destroyAllChildren();
-
-    // Reset the audio level back to 0 so that any listeners to not stay
-    // "stuck" on the last value
-    //
-    // FIXME: (jh) This used to not be required here to pass the tests; it
-    // might need to be debugged in PhantomCollection
-    this.emit(EVT_AUDIO_LEVEL_UPDATED, 0);
   }
 
   /**

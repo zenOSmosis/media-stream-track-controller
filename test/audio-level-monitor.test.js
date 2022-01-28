@@ -209,23 +209,31 @@ test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
 
   await Promise.all([
     new Promise(resolve => {
-      multiAudioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
-        if (!multiAudioMonitor.getChildren().length && audioLevel === 0) {
-          t.ok(
-            true,
-            "captured 0 RMS level after removing all media stream tracks"
-          );
+      let debouncedTimeout = null;
 
-          resolve();
-        }
+      multiAudioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+        clearTimeout(debouncedTimeout);
+
+        // IMPORTANT: This timeout is necessary because getChildren() won't
+        // return 0 exactly when this final audioLevel event emits, but will be
+        // soon afterwards
+        debouncedTimeout = window.setTimeout(() => {
+          if (
+            multiAudioMonitor.getChildren().length === 0 &&
+            audioLevel === 0
+          ) {
+            t.ok(
+              true,
+              "captured 0 RMS level after removing all media stream tracks"
+            );
+
+            resolve();
+          }
+        }, 0);
       });
     }),
 
-    new Promise(async resolve => {
-      multiAudioMonitor.removeAllMediaStreamTracks();
-
-      resolve();
-    }),
+    multiAudioMonitor.removeAllMediaStreamTracks(),
   ]);
 
   t.end();
