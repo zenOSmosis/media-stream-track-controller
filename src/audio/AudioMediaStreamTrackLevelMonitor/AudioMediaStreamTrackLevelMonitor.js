@@ -82,6 +82,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       _monitorInstances[mediaStreamTrack.id] = nativeMonitor;
     }
 
+    // Register the native monitor with the proxy
     proxy._nativeMonitor = nativeMonitor;
 
     if (!_proxyCounts[mediaStreamTrack.id]) {
@@ -150,6 +151,12 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._mediaStreamTrack = mediaStreamTrack;
 
     this._nativeMonitor = null;
+
+    // IMPORTANT: Don't destruct the native monitor here on shutdown because
+    // the native monitor might be utilized across multiple proxy instances,
+    // just unregister it as a class property so that "lingering PhantomCore
+    // instance" warning does not appear
+    this.registerShutdownHandler(() => (this._nativeMonitor = null));
 
     // Bind this instance as a proxy to the native listener
     AudioMediaStreamTrackLevelMonitor.addProxyInstance(this);
