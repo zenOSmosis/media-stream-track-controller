@@ -344,10 +344,6 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // the source has been stopped.
     this._mediaStreamTrack.stop();
 
-    // Reset the audio level back to 0 so that any listeners to not stay
-    // "stuck" on the last value
-    this._audioLevelDidUpdate(0);
-
     await super.destroy();
   }
 }
