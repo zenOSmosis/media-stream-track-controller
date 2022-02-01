@@ -7,10 +7,10 @@ const { AUDIO_TRACK_KIND } = require("../../constants");
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
 /** @exports */
-const EVT_AUDIO_SILENCE_STARTED = "audio-error";
+const EVT_AUDIO_SILENCE_STARTED = "audio-silence-started";
 
 /** @exports */
-const EVT_AUDIO_SILENCE_ENDED = "audio-error-recovered";
+const EVT_AUDIO_SILENCE_ENDED = "audio-silence-ended";
 
 // Number of ms to wait before track silence should raise an error
 const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
