@@ -1,4 +1,5 @@
 const test = require("tape");
+const { sleep } = require("phantom-core");
 const { MediaStreamTrackControllerFactory, utils } = require("../src");
 
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerFactory;
@@ -183,7 +184,7 @@ test("factory auto-destruct when all track controllers are removed", async t => 
         t.ok(true, `child ${idx + 1} destructed`);
 
         // Not needed, but prolonging time between calls just as a test
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await sleep(10);
       }
 
       resolve();
