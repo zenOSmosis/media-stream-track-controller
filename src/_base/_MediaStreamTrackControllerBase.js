@@ -278,7 +278,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
     delete _instances[this._uuid];
 
-    super.destroy();
+    return super.destroy();
   }
 }
 
