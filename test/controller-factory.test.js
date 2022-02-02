@@ -30,15 +30,20 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
     1,
     "instantiated factory has one track controller"
   );
+
   t.equals(
     factory.getAudioTrackControllers().length,
     1,
     "instantiated factory has one audio track controller"
   );
+
+  // FIXME: (jh) The reasoning behind this is that all test environments may
+  // not be able to initialize this controller; perhaps it should be refactored
+  // into a test w/ an if condition to determine if the test should run
   t.equals(
     factory.getVideoTrackControllers().length,
     0,
-    "instantiated factory has one audio track controller"
+    "instantiated factory has no video track controllers"
   );
 
   await Promise.all([
