@@ -5,11 +5,11 @@ const { logger } = require("phantom-core");
  * Returns a MediaStream with a single test video track which automatically
  * ends at the specified duration.
  *
- * @param {number} duration? [default = 5] Number of seconds the pulse should
+ * @param {number} duration? [default = 10000] Number of milliseconds the pulse should
  * last.
  * @return {MediaStream}
  */
-module.exports = function createTestVideoMediaStream(duration = 5) {
+module.exports = function createTestVideoMediaStream(duration = 10000) {
   const canvas = document.createElement("canvas");
 
   document.body.appendChild(canvas);
@@ -22,7 +22,7 @@ module.exports = function createTestVideoMediaStream(duration = 5) {
     document.body.removeChild(canvas);
 
     logger.log("stopped media stream");
-  }, duration * 1000);
+  }, duration);
 
   return mediaStream;
 };

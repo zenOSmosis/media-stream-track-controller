@@ -6,11 +6,11 @@ const { logger } = require("phantom-core");
  * Returns a MediaStream with a single pulsing, test audio track which
  * automatically ends at the specified duration.
  *
- * @param {number} duration? [default = 5] Number of seconds the pulse should
- * last.
+ * @param {number} duration? [default = 10000] Number of milliseconds the pulse
+ * should last.
  * @return {MediaStream}
  */
-module.exports = function createTestAudioMediaStream(duration = 5) {
+module.exports = function createTestAudioMediaStream(duration = 10000) {
   const pulseHz = 880;
   const lfoHz = 30;
 
@@ -45,7 +45,7 @@ module.exports = function createTestAudioMediaStream(duration = 5) {
     logger.log("stopped media stream");
 
     audioCtx.close().then(() => logger.log("audio context closed"));
-  }, duration * 1000);
+  }, duration);
 
   return mediaStream;
 };
