@@ -111,7 +111,7 @@ test("empty MediaStream initialization", async t => {
 });
 
 test("factory options", async t => {
-  // t.plan(3);
+  t.plan(3);
 
   const mediaStream1 =
     utils.mediaStream.generators.createTestAudioMediaStream();

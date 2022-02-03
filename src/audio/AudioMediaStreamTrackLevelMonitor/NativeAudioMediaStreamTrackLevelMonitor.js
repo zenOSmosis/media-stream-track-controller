@@ -327,24 +327,25 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
+   * TODO: Utilize destroyHandler?
    * @return {Promise<void>}
    */
   async destroy() {
-    if (this._tickInterval) {
-      window.clearInterval(this._tickInterval);
-    }
+    return super.destroy(() => {
+      if (this._tickInterval) {
+        window.clearInterval(this._tickInterval);
+      }
 
-    if (this._silenceDetectionTimeout) {
-      window.clearTimeout(this._silenceDetectionTimeout);
-    }
+      if (this._silenceDetectionTimeout) {
+        window.clearTimeout(this._silenceDetectionTimeout);
+      }
 
-    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-    // track on its own (nor should it).  This prevents an issue in Google
-    // Chrome (maybe others) where the recording indicator would stay lit after
-    // the source has been stopped.
-    this._mediaStreamTrack.stop();
-
-    await super.destroy();
+      // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+      // track on its own (nor should it).  This prevents an issue in Google
+      // Chrome (maybe others) where the recording indicator would stay lit after
+      // the source has been stopped.
+      this._mediaStreamTrack.stop();
+    });
   }
 }
 

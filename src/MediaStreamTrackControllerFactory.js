@@ -105,15 +105,18 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
   }
 
   /**
+   * TODO: Document destroyHandler
    * @return {Promise<void>}
    */
-  async destroy() {
-    delete _factoryInstances[this._uuid];
+  async destroy(destroyHandler = () => null) {
+    return super.destroy(async () => {
+      await destroyHandler();
 
-    // Destruct all children on shutdown
-    await this.destroyAllChildren();
+      delete _factoryInstances[this._uuid];
 
-    return super.destroy();
+      // Destruct all children on shutdown
+      await this.destroyAllChildren();
+    });
   }
 }
 

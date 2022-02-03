@@ -157,13 +157,14 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   /**
    * Destructs all children and shuts down.
    *
+   * TODO: Utilize destroyHandler?
    * @return {Promise<void>}
    */
   async destroy() {
-    // Associated track level monitors should stop listening after destruct
-    await this.removeAllMediaStreamTracks();
-
-    return super.destroy();
+    return super.destroy(async () => {
+      // Associated track level monitors should stop listening after destruct
+      await this.removeAllMediaStreamTracks();
+    });
   }
 }
 
