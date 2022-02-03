@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "npm run test-remote",
-    "test-remote": "dotenv airtap test/*.test.js",
-    "test-local": "airtap --coverage --preset local test/*.test.js",
+    "test-remote": "dotenv airtap --concurrency 1 test/*.test.js",
+    "test-local": "airtap --coverage --concurrency 1 --preset local test/*.test.js",
     "coverage": "nyc npm run test-local",
     "// document": "documentation build src/** -f html --github -o docs"
   },
