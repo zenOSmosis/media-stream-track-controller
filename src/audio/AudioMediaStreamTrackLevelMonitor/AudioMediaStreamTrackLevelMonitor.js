@@ -103,7 +103,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       EVT_AUDIO_LEVEL_UPDATED,
       EVT_AUDIO_SILENCE_STARTED,
       EVT_AUDIO_SILENCE_ENDED,
-      EVT_DESTROYED,
     ];
 
     /** @type {{key: string, value: Function}} */
