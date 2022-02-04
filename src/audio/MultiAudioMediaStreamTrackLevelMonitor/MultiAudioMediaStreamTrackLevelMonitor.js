@@ -107,7 +107,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
         ? trackOrMonitor
         : this.getChildWithKey(trackOrMonitor.id);
 
-    if (trackLevelMonitor) {
+    if (trackLevelMonitor && !trackLevelMonitor.getIsDestroying()) {
       return trackLevelMonitor.destroy();
     }
   }
@@ -163,6 +163,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   async destroy() {
     return super.destroy(async () => {
       // Associated track level monitors should stop listening after destruct
+
       await this.removeAllMediaStreamTracks();
     });
   }
