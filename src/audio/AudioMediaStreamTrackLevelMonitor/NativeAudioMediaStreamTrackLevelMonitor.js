@@ -30,7 +30,7 @@ const DEFAULT_TICK_TIME = 100;
  *
  * IMPORTANT: For most purposes, this class should not be used directly,
  * because it is not CPU efficient when multiple listeners are attached to the
- * same MediaStreamTrack.  The AudioMediaStreamTrackLevelMonitor remediates
+ * same MediaStreamTrack. The AudioMediaStreamTrackLevelMonitor remediates
  * that by proxying events from multiple programmatic listeners to this native
  * monitor.
  */
@@ -343,7 +343,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       }
 
       // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-      // track on its own (nor should it).  This prevents an issue in Google
+      // track on its own (nor should it). This prevents an issue in Google
       // Chrome (maybe others) where the recording indicator would stay lit after
       // the source has been stopped.
       this._mediaStreamTrack.stop();
