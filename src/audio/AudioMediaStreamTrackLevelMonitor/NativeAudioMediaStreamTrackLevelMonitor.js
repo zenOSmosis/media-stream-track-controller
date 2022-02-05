@@ -151,8 +151,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       window.clearTimeout(this._silenceDetectionTimeout);
     }
 
-    // If we're destroyed, there's nothing we can do about it
-    if (this._isDestroyed) {
+    // This class may have a rapid lifecycle inside of a React component, so
+    // this subsequent check will ensure we're still running and prevent
+    // potential errors
+    if (this.getIsDestroying()) {
       return;
     }
 
@@ -164,10 +166,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // here is resolved
     await audioContext.resume();
 
-    // This class may have a rapid lifecycle inside of a React component, so
-    // this subsequent check will ensure we're still running and prevent
-    // potential errors
-    if (this.getIsDestroyed()) {
+    // Perform a final check for destroying state after audio context resume
+    if (this.getIsDestroying()) {
       return;
     }
 
