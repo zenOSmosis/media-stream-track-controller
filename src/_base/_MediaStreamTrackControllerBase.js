@@ -83,7 +83,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
           if (!this._isTrackEnded) {
             this._isTrackEnded = true;
 
-            this.destroy();
+            if (!this.getIsDestroying()) {
+              this.destroy();
+            }
           }
         };
 

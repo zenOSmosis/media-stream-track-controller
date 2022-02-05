@@ -73,7 +73,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         const proxies = _proxyCounts[mediaStreamTrack.id];
 
         if (proxies) {
-          Object.values(proxies).forEach(proxy => proxy && proxy.destroy());
+          Object.values(proxies).forEach(
+            proxy => proxy && !proxy.getIsDestroying() && proxy.destroy()
+          );
         }
       });
 
@@ -134,7 +136,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         delete _monitorInstances[mediaStreamTrack.id];
         delete _proxyCounts[mediaStreamTrack.id];
 
-        await nativeMonitor.destroy();
+        if (!nativeMonitor.getIsDestroying()) {
+          await nativeMonitor.destroy();
+        }
 
         logger.debug("Proxied audio monitor destroyed", nativeMonitor);
       }

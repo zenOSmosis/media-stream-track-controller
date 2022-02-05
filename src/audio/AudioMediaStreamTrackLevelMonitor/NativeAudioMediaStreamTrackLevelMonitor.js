@@ -104,7 +104,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
-      this.destroy();
+      if (!this.getIsDestroying) {
+        this.destroy();
+      }
     });
 
     // TODO: Cite reference link for Twilio audio level indicator

@@ -20,6 +20,6 @@ module.exports = async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
   return Promise.all(
     MediaStreamTrackControllerBase.getTrackControllerInstances()
       .filter(controller => controller.getInputDeviceId() === deviceId)
-      .map(controller => controller.destroy())
+      .map(controller => !controller.getIsDestroying() && controller.destroy())
   );
 };
