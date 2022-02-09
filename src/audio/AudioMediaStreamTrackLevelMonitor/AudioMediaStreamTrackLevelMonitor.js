@@ -118,7 +118,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     });
 
     // Handle proxy destruct
-    proxy.registerShutdownHandler(async () => {
+    proxy.once(EVT_DESTROYED, async () => {
       // Unregister proxy events from the native monitor (any new audio levels
       // won't come through at this point)
       proxyEvents.forEach(proxyEvent =>
