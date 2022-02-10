@@ -163,7 +163,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // the native monitor might be utilized across multiple proxy instances,
     // just unregister it as a class property so that "lingering PhantomCore
     // instance" warning does not appear
-    this.registerShutdownHandler(() => (this._nativeMonitor = null));
+    this.registerCleanupHandler(() => (this._nativeMonitor = null));
 
     // Bind this instance as a proxy to the native listener
     AudioMediaStreamTrackLevelMonitor.addProxyInstance(this);

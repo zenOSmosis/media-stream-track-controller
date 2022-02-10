@@ -131,7 +131,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       () => this._initAudioLevelPolling(),
       50
     );
-    this.registerShutdownHandler(() => window.clearTimeout(initTimeout));
+    this.registerCleanupHandler(() => window.clearTimeout(initTimeout));
   }
 
   /**
@@ -186,7 +186,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
-      this.registerShutdownHandler(() => this._analyser.disconnect());
+      this.registerCleanupHandler(() => this._analyser.disconnect());
 
       // TODO: Make this user-configurable
       // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
@@ -205,7 +205,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.registerShutdownHandler(() =>
+      this.registerCleanupHandler(() =>
         this._source.disconnect(this._analyser)
       );
     }
