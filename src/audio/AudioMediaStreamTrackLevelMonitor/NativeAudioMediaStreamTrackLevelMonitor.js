@@ -73,13 +73,22 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
    * @param {MediaStreamTrack} mediaStreamTrack The track from which to monitor
    * the audio levels. Must be of audio type.
+   * @param {Object} options? [default={}]
    */
-  constructor(mediaStreamTrack) {
+  constructor(mediaStreamTrack, options = {}) {
     NativeAudioMediaStreamTrackLevelMonitor.validateAudioTrack(
       mediaStreamTrack
     );
 
-    super();
+    const DEFAULT_OPTIONS = {
+      tickTime: DEFAULT_TICK_TIME,
+
+      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
+      fftSize: 256,
+      smoothingTimeConstant: 0.5,
+    };
+
+    super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
 
     this._inputMediaStreamTrack = mediaStreamTrack;
 
@@ -188,10 +197,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       this.registerCleanupHandler(() => this._analyser.disconnect());
 
-      // TODO: Make this user-configurable
-      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
-      this._analyser.fftSize = 256;
-      this._analyser.smoothingTimeConstant = 0.5;
+      this._analyser.fftSize = this.getOptions().fftSize;
+      this._analyser.smoothingTimeConstant =
+        this.getOptions().smoothingTimeConstant;
     }
 
     if (!this._stream) {
@@ -220,8 +228,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Start polling for audio level detection
     this._tickInterval = window.setInterval(
       () => this._handleTick(),
-      // TODO: Allow this setting to be user-overridable
-      DEFAULT_TICK_TIME
+      this.getOptions().tickTime
     );
   }
 
