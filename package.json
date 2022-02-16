@@ -8,6 +8,7 @@
     "test-remote": "dotenv airtap --concurrency 1 test/*.test.js",
     "test-local": "airtap --coverage --concurrency 1 --preset local test/*.test.js",
     "coverage": "nyc npm run test-local",
+    "start:dev.frontend": "cd dev.frontend && npm run exec MSTCDebugPortal dev-link.mjs && npm start MSTCDebugPortal",
     "// document": "documentation build src/** -f html --github -o docs"
   },
   "repository": {
