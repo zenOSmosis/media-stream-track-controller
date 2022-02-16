@@ -3,7 +3,7 @@
  * @link https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackConstraints
  */
 
-/** @exports */
+/** @export */
 const AUDIO_QUALITY_PRESET_TALK_RADIO = {
   name: "Talk Radio",
   constraints: {
@@ -21,7 +21,7 @@ const AUDIO_QUALITY_PRESET_TALK_RADIO = {
   },
 };
 
-/** @exports */
+/** @export */
 const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   name: "Music - Low Quality",
   constraints: {
@@ -39,7 +39,7 @@ const AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY = {
   },
 };
 
-/** @exports */
+/** @export */
 const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   name: "Music - High Quality",
   constraints: {
@@ -57,7 +57,7 @@ const AUDIO_QUALITY_PRESET_MUSIC_HIGH_QUALITY = {
   },
 };
 
-/** @exports */
+/** @export */
 const audioQualityPresets = [
   AUDIO_QUALITY_PRESET_TALK_RADIO,
   AUDIO_QUALITY_PRESET_MUSIC_LOW_QUALITY,

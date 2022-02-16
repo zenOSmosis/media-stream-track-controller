@@ -1,15 +1,15 @@
 const { logger } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
-  /** @exports */
+  /** @export */
   EVT_READY,
-  /** @exports */
+  /** @export */
   EVT_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
-  /** @exports */
+  /** @export */
   EVT_CHILD_INSTANCE_ADDED,
-  /** @exports */
+  /** @export */
   EVT_CHILD_INSTANCE_REMOVED,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");

@@ -2,13 +2,13 @@ const PhantomCore = require("phantom-core");
 const { logger } = PhantomCore;
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
-  /** @exports */
+  /** @export */
   EVT_AUDIO_LEVEL_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_STARTED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_ENDED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
 } = NativeAudioMediaStreamTrackLevelMonitor;
 

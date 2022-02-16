@@ -1,15 +1,15 @@
 const PhantomCore = require("phantom-core");
-const { /** @exports */ EVT_DESTROYED } = PhantomCore;
+const { /** @export */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
-/** @exports */
+/** @export */
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
-/** @exports */
+/** @export */
 const EVT_AUDIO_SILENCE_STARTED = "audio-silence-started";
 
-/** @exports */
+/** @export */
 const EVT_AUDIO_SILENCE_ENDED = "audio-silence-ended";
 
 // Number of ms to wait before track silence should raise an error
