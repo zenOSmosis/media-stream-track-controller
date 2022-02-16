@@ -1,15 +1,15 @@
 const { logger } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
-  /** @exports */
+  /** @export */
   EVT_READY,
-  /** @exports */
+  /** @export */
   EVT_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
-  /** @exports */
+  /** @export */
   EVT_CHILD_INSTANCE_ADDED,
-  /** @exports */
+  /** @export */
   EVT_CHILD_INSTANCE_REMOVED,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
@@ -93,27 +93,30 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     // Handle auto-destruct once track controllers have ended
 
     this.on(EVT_CHILD_INSTANCE_REMOVED, () => {
-      if (!this.getChildren().length) {
+      if (!this.getChildren().length && !this.getIsDestroying()) {
         this.destroy();
       }
     });
 
     // If no children are already present, self-destruct
-    if (!this.getChildren().length) {
+    if (!this.getChildren().length && !this.getIsDestroying()) {
       this.destroy();
     }
   }
 
   /**
+   * TODO: Document destroyHandler
    * @return {Promise<void>}
    */
-  async destroy() {
-    delete _factoryInstances[this._uuid];
+  async destroy(destroyHandler = () => null) {
+    return super.destroy(async () => {
+      await destroyHandler();
 
-    // Destruct all children on shutdown
-    await this.destroyAllChildren();
+      delete _factoryInstances[this._uuid];
 
-    return super.destroy();
+      // Destruct all children on shutdown
+      await this.destroyAllChildren();
+    });
   }
 }
 

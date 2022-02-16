@@ -1,4 +1,5 @@
 const test = require("tape");
+const { sleep } = require("phantom-core");
 const {
   AudioMediaStreamTrackController,
   MediaStreamTrackControllerCollection,
@@ -130,7 +131,7 @@ test("MediaStreamTrackControllerCollection", async t => {
     new Promise(async resolve => {
       collection.addTrackController(controller4);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await sleep(1000);
 
       collection.removeTrackController(controller4);
 
@@ -211,7 +212,7 @@ test("MediaStreamTrackControllerCollection MediaStream", async t => {
 
     new Promise(async resolve => {
       // FIXME: Uncomment if the above FIXME is ever resolved
-      // await new Promise(resolve => setTimeout(resolve, 500));
+      // await sleep(500)
 
       t.doesNotThrow(
         () => collection.removeTrackController(controller3),
@@ -231,7 +232,7 @@ test("MediaStreamTrackControllerCollection MediaStream", async t => {
     "mediaStream.getTracks() contains 3 tracks"
   );
 
-  await new Promise(resolve => setTimeout(resolve, 500));
+  await sleep(500);
 
   t.equals(
     collection.getOutputMediaStream().getTracks()[2].readyState,

@@ -2,13 +2,13 @@ const PhantomCore = require("phantom-core");
 const { logger } = PhantomCore;
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
-  /** @exports */
+  /** @export */
   EVT_AUDIO_LEVEL_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_STARTED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_ENDED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
 } = NativeAudioMediaStreamTrackLevelMonitor;
 
@@ -73,7 +73,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         const proxies = _proxyCounts[mediaStreamTrack.id];
 
         if (proxies) {
-          Object.values(proxies).forEach(proxy => proxy && proxy.destroy());
+          Object.values(proxies).forEach(
+            proxy => proxy && !proxy.getIsDestroying() && proxy.destroy()
+          );
         }
       });
 
@@ -103,7 +105,6 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       EVT_AUDIO_LEVEL_UPDATED,
       EVT_AUDIO_SILENCE_STARTED,
       EVT_AUDIO_SILENCE_ENDED,
-      EVT_DESTROYED,
     ];
 
     /** @type {{key: string, value: Function}} */
@@ -117,7 +118,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     });
 
     // Handle proxy destruct
-    proxy.registerShutdownHandler(async () => {
+    proxy.once(EVT_DESTROYED, async () => {
       // Unregister proxy events from the native monitor (any new audio levels
       // won't come through at this point)
       proxyEvents.forEach(proxyEvent =>
@@ -135,7 +136,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         delete _monitorInstances[mediaStreamTrack.id];
         delete _proxyCounts[mediaStreamTrack.id];
 
-        await nativeMonitor.destroy();
+        if (!nativeMonitor.getIsDestroying()) {
+          await nativeMonitor.destroy();
+        }
 
         logger.debug("Proxied audio monitor destroyed", nativeMonitor);
       }
@@ -160,7 +163,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // the native monitor might be utilized across multiple proxy instances,
     // just unregister it as a class property so that "lingering PhantomCore
     // instance" warning does not appear
-    this.registerShutdownHandler(() => (this._nativeMonitor = null));
+    this.registerCleanupHandler(() => (this._nativeMonitor = null));
 
     // Bind this instance as a proxy to the native listener
     AudioMediaStreamTrackLevelMonitor.addProxyInstance(this);

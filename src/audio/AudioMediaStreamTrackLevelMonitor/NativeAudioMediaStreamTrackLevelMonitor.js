@@ -1,16 +1,16 @@
 const PhantomCore = require("phantom-core");
-const { /** @exports */ EVT_DESTROYED } = PhantomCore;
+const { /** @export */ EVT_DESTROYED } = PhantomCore;
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
-/** @exports */
+/** @export */
 const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
 
-/** @exports */
-const EVT_AUDIO_SILENCE_STARTED = "audio-error";
+/** @export */
+const EVT_AUDIO_SILENCE_STARTED = "audio-silence-started";
 
-/** @exports */
-const EVT_AUDIO_SILENCE_ENDED = "audio-error-recovered";
+/** @export */
+const EVT_AUDIO_SILENCE_ENDED = "audio-silence-ended";
 
 // Number of ms to wait before track silence should raise an error
 const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
@@ -30,7 +30,7 @@ const DEFAULT_TICK_TIME = 100;
  *
  * IMPORTANT: For most purposes, this class should not be used directly,
  * because it is not CPU efficient when multiple listeners are attached to the
- * same MediaStreamTrack.  The AudioMediaStreamTrackLevelMonitor remediates
+ * same MediaStreamTrack. The AudioMediaStreamTrackLevelMonitor remediates
  * that by proxying events from multiple programmatic listeners to this native
  * monitor.
  */
@@ -73,13 +73,22 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   /**
    * @param {MediaStreamTrack} mediaStreamTrack The track from which to monitor
    * the audio levels. Must be of audio type.
+   * @param {Object} options? [default={}]
    */
-  constructor(mediaStreamTrack) {
+  constructor(mediaStreamTrack, options = {}) {
     NativeAudioMediaStreamTrackLevelMonitor.validateAudioTrack(
       mediaStreamTrack
     );
 
-    super();
+    const DEFAULT_OPTIONS = {
+      tickTime: DEFAULT_TICK_TIME,
+
+      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
+      fftSize: 256,
+      smoothingTimeConstant: 0.5,
+    };
+
+    super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
 
     this._inputMediaStreamTrack = mediaStreamTrack;
 
@@ -104,7 +113,9 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
-      this.destroy();
+      if (!this.getIsDestroying) {
+        this.destroy();
+      }
     });
 
     // TODO: Cite reference link for Twilio audio level indicator
@@ -129,7 +140,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       () => this._initAudioLevelPolling(),
       50
     );
-    this.registerShutdownHandler(() => window.clearTimeout(initTimeout));
+    this.registerCleanupHandler(() => window.clearTimeout(initTimeout));
   }
 
   /**
@@ -151,8 +162,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       window.clearTimeout(this._silenceDetectionTimeout);
     }
 
-    // If we're destroyed, there's nothing we can do about it
-    if (this._isDestroyed) {
+    // This class may have a rapid lifecycle inside of a React component, so
+    // this subsequent check will ensure we're still running and prevent
+    // potential errors
+    if (this.getIsDestroying()) {
       return;
     }
 
@@ -164,10 +177,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // here is resolved
     await audioContext.resume();
 
-    // This class may have a rapid lifecycle inside of a React component, so
-    // this subsequent check will ensure we're still running and prevent
-    // potential errors
-    if (this.getIsDestroyed()) {
+    // Perform a final check for destroying state after audio context resume
+    if (this.getIsDestroying()) {
       return;
     }
 
@@ -184,12 +195,11 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
-      this.registerShutdownHandler(() => this._analyser.disconnect());
+      this.registerCleanupHandler(() => this._analyser.disconnect());
 
-      // TODO: Make this user-configurable
-      // Analyser config derived from https://github.com/twilio/twilio-video-app-react/blob/master/src/components/AudioLevelIndicator/AudioLevelIndicator.tsx#L20
-      this._analyser.fftSize = 256;
-      this._analyser.smoothingTimeConstant = 0.5;
+      this._analyser.fftSize = this.getOptions().fftSize;
+      this._analyser.smoothingTimeConstant =
+        this.getOptions().smoothingTimeConstant;
     }
 
     if (!this._stream) {
@@ -203,7 +213,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.registerShutdownHandler(() =>
+      this.registerCleanupHandler(() =>
         this._source.disconnect(this._analyser)
       );
     }
@@ -218,8 +228,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // Start polling for audio level detection
     this._tickInterval = window.setInterval(
       () => this._handleTick(),
-      // TODO: Allow this setting to be user-overridable
-      DEFAULT_TICK_TIME
+      this.getOptions().tickTime
     );
   }
 
@@ -327,24 +336,25 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
   }
 
   /**
+   * TODO: Utilize destroyHandler?
    * @return {Promise<void>}
    */
   async destroy() {
-    if (this._tickInterval) {
-      window.clearInterval(this._tickInterval);
-    }
+    return super.destroy(() => {
+      if (this._tickInterval) {
+        window.clearInterval(this._tickInterval);
+      }
 
-    if (this._silenceDetectionTimeout) {
-      window.clearTimeout(this._silenceDetectionTimeout);
-    }
+      if (this._silenceDetectionTimeout) {
+        window.clearTimeout(this._silenceDetectionTimeout);
+      }
 
-    // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-    // track on its own (nor should it).  This prevents an issue in Google
-    // Chrome (maybe others) where the recording indicator would stay lit after
-    // the source has been stopped.
-    this._mediaStreamTrack.stop();
-
-    await super.destroy();
+      // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
+      // track on its own (nor should it). This prevents an issue in Google
+      // Chrome (maybe others) where the recording indicator would stay lit after
+      // the source has been stopped.
+      this._mediaStreamTrack.stop();
+    });
   }
 }
 

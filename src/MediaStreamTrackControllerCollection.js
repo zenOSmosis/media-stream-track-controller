@@ -1,13 +1,13 @@
 const {
   PhantomCollection,
-  /** @exports */
+  /** @export */
   EVT_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
 } = require("phantom-core");
 const {
-  /** @exports */ EVT_CHILD_INSTANCE_ADDED,
-  /** @exports */ EVT_CHILD_INSTANCE_REMOVED,
+  /** @export */ EVT_CHILD_INSTANCE_ADDED,
+  /** @export */ EVT_CHILD_INSTANCE_REMOVED,
 } = PhantomCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
@@ -303,7 +303,9 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @return {Promise<void>}
    */
   async stop() {
-    return this.destroy();
+    if (!this.getIsDestroying()) {
+      return this.destroy();
+    }
   }
 }
 

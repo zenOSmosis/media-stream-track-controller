@@ -1,13 +1,13 @@
 const { PhantomCollection } = require("phantom-core");
 const AudioMediaStreamTrackLevelMonitor = require("../AudioMediaStreamTrackLevelMonitor");
 const {
-  /** @exports */
+  /** @export */
   EVT_AUDIO_LEVEL_UPDATED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_STARTED,
-  /** @exports */
+  /** @export */
   EVT_AUDIO_SILENCE_ENDED,
-  /** @exports */
+  /** @export */
   EVT_DESTROYED,
 } = AudioMediaStreamTrackLevelMonitor;
 
@@ -107,7 +107,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
         ? trackOrMonitor
         : this.getChildWithKey(trackOrMonitor.id);
 
-    if (trackLevelMonitor) {
+    if (trackLevelMonitor && !trackLevelMonitor.getIsDestroying()) {
       return trackLevelMonitor.destroy();
     }
   }
@@ -157,13 +157,15 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
   /**
    * Destructs all children and shuts down.
    *
+   * TODO: Utilize destroyHandler?
    * @return {Promise<void>}
    */
   async destroy() {
-    // Associated track level monitors should stop listening after destruct
-    await this.removeAllMediaStreamTracks();
+    return super.destroy(async () => {
+      // Associated track level monitors should stop listening after destruct
 
-    return super.destroy();
+      await this.removeAllMediaStreamTracks();
+    });
   }
 }
 

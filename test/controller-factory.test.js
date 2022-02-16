@@ -1,4 +1,5 @@
 const test = require("tape");
+const { sleep } = require("phantom-core");
 const { MediaStreamTrackControllerFactory, utils } = require("../src");
 
 const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerFactory;
@@ -30,15 +31,20 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
     1,
     "instantiated factory has one track controller"
   );
+
   t.equals(
     factory.getAudioTrackControllers().length,
     1,
     "instantiated factory has one audio track controller"
   );
+
+  // FIXME: (jh) The reasoning behind this is that all test environments may
+  // not be able to initialize this controller; perhaps it should be refactored
+  // into a test w/ an if condition to determine if the test should run
   t.equals(
     factory.getVideoTrackControllers().length,
     0,
-    "instantiated factory has one audio track controller"
+    "instantiated factory has no video track controllers"
   );
 
   await Promise.all([
@@ -105,7 +111,7 @@ test("empty MediaStream initialization", async t => {
 });
 
 test("factory options", async t => {
-  // t.plan(3);
+  t.plan(3);
 
   const mediaStream1 =
     utils.mediaStream.generators.createTestAudioMediaStream();
@@ -178,7 +184,7 @@ test("factory auto-destruct when all track controllers are removed", async t => 
         t.ok(true, `child ${idx + 1} destructed`);
 
         // Not needed, but prolonging time between calls just as a test
-        await new Promise(resolve => setTimeout(resolve, 10));
+        await sleep(10);
       }
 
       resolve();

@@ -83,7 +83,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
           if (!this._isTrackEnded) {
             this._isTrackEnded = true;
 
-            this.destroy();
+            if (!this.getIsDestroying()) {
+              this.destroy();
+            }
           }
         };
 
@@ -269,16 +271,17 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   }
 
   /**
+   * TODO: Utilize destroyHandler?
    * @return {Promise<void>}
    */
   async destroy() {
-    // Automatically stop input and output tracks
-    stopMediaStreamTrack(this._inputMediaStreamTrack);
-    stopMediaStreamTrack(this._outputMediaStreamTrack);
+    return super.destroy(() => {
+      // Automatically stop input and output tracks
+      stopMediaStreamTrack(this._inputMediaStreamTrack);
+      stopMediaStreamTrack(this._outputMediaStreamTrack);
 
-    delete _instances[this._uuid];
-
-    super.destroy();
+      delete _instances[this._uuid];
+    });
   }
 }
 
