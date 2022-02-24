@@ -31,14 +31,6 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATED);
     this.bindChildEventName(EVT_AUDIO_SILENCE_STARTED);
     this.bindChildEventName(EVT_AUDIO_SILENCE_ENDED);
-
-    // Additional safeguard before trying to perform audio detection; This
-    // shouldn't be required to be here but is good for safeguarding
-    if (typeof this._lenChildren !== "number") {
-      throw new ReferenceError(
-        "Could not locate this._lenChildren in super class"
-      );
-    }
   }
 
   /**
