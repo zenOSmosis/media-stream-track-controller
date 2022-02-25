@@ -210,11 +210,19 @@ test("stop calls destruct", async t => {
   const factory2 = new MediaStreamTrackControllerFactory(mediaStream2);
   const factory2TrackController = factory2.getTrackControllers()[0];
 
-  t.equals(factory2._lenChildren, 1, "factory2 has one child before stop");
+  t.equals(
+    factory2.getChildren().length,
+    1,
+    "factory2 has one child before stop"
+  );
 
   await factory2.stop();
 
-  t.equals(factory2._lenChildren, 0, "factory2 has no children after stop");
+  t.equals(
+    factory2.getChildren().length,
+    0,
+    "factory2 has no children after stop"
+  );
 
   t.ok(
     factory2TrackController.getIsDestroyed(),
