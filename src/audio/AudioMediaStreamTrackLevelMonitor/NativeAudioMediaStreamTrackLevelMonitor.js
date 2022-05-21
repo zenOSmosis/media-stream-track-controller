@@ -1,5 +1,4 @@
-const PhantomCore = require("phantom-core");
-const { /** @export */ EVT_DESTROYED } = PhantomCore;
+const { PhantomCore, /** @export */ EVT_DESTROYED } = require("phantom-core");
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 

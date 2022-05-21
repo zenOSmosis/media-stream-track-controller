@@ -1,5 +1,5 @@
 const test = require("tape");
-const PhantomCore = require("phantom-core");
+const { PhantomCore } = require("phantom-core");
 const {
   MediaStreamTrackControllerFactory,
   MediaStreamTrackControllerFactoryCollection,

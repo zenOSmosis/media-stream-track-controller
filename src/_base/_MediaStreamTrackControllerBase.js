@@ -1,5 +1,4 @@
-const PhantomCore = require("phantom-core");
-const { EVT_UPDATED, EVT_DESTROYED } = PhantomCore;
+const { PhantomCore, EVT_UPDATED, EVT_DESTROYED } = require("phantom-core");
 const stopMediaStreamTrack = require("../utils/mediaStreamTrack/stopMediaStreamTrack");
 
 // FIXME: Use PhantomCollection instead?

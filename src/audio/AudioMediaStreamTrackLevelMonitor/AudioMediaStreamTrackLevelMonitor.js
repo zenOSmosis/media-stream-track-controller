@@ -1,5 +1,4 @@
-const PhantomCore = require("phantom-core");
-const { logger } = PhantomCore;
+const { PhantomCore, logger } = require("phantom-core");
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
   /** @export */
