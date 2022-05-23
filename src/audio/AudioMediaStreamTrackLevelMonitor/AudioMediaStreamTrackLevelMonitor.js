@@ -8,7 +8,7 @@ const {
   /** @export */
   EVT_AUDIO_SILENCE_ENDED,
   /** @export */
-  EVT_DESTROYED,
+  EVT_DESTROY,
 } = NativeAudioMediaStreamTrackLevelMonitor;
 
 /**
@@ -68,7 +68,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       // Handle monitor destroy
       //
       // Remove all proxies for the given audio level monitor
-      nativeMonitor.once(EVT_DESTROYED, () => {
+      nativeMonitor.once(EVT_DESTROY, () => {
         const proxies = _proxyCounts[mediaStreamTrack.id];
 
         if (proxies) {
@@ -117,7 +117,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
     });
 
     // Handle proxy destruct
-    proxy.once(EVT_DESTROYED, async () => {
+    proxy.once(EVT_DESTROY, async () => {
       // Unregister proxy events from the native monitor (any new audio levels
       // won't come through at this point)
       proxyEvents.forEach(proxyEvent =>
@@ -188,4 +188,4 @@ module.exports = AudioMediaStreamTrackLevelMonitor;
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
 module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
 module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_DESTROY = EVT_DESTROY;

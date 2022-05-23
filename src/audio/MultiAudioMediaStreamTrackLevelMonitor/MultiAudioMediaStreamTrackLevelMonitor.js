@@ -8,7 +8,7 @@ const {
   /** @export */
   EVT_AUDIO_SILENCE_ENDED,
   /** @export */
-  EVT_DESTROYED,
+  EVT_DESTROY,
 } = AudioMediaStreamTrackLevelMonitor;
 
 /**
@@ -168,4 +168,4 @@ module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
 module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
 module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_DESTROY = EVT_DESTROY;

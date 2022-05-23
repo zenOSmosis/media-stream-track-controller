@@ -1,4 +1,4 @@
-const { PhantomCore, EVT_UPDATED, EVT_DESTROYED } = require("phantom-core");
+const { PhantomCore, EVT_UPDATE, EVT_DESTROY } = require("phantom-core");
 const stopMediaStreamTrack = require("../utils/mediaStreamTrack/stopMediaStreamTrack");
 
 // FIXME: Use PhantomCollection instead?
@@ -97,7 +97,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
           _handleTrackEnded
         );
 
-        this.once(EVT_DESTROYED, () => {
+        this.once(EVT_DESTROY, () => {
           this._inputMediaStreamTrack.removeEventListener(
             "ended",
             _handleTrackEnded
@@ -227,7 +227,7 @@ class MediaStreamTrackControllerBase extends PhantomCore {
   async setIsMuted(isMuted) {
     this._isMuted = isMuted;
 
-    this.emit(EVT_UPDATED);
+    this.emit(EVT_UPDATE);
   }
 
   /**
@@ -285,5 +285,5 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 }
 
 module.exports = MediaStreamTrackControllerBase;
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;

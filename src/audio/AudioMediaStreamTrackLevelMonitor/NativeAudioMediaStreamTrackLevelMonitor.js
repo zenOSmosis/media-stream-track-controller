@@ -1,4 +1,4 @@
-const { PhantomCore, /** @export */ EVT_DESTROYED } = require("phantom-core");
+const { PhantomCore, /** @export */ EVT_DESTROY } = require("phantom-core");
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
@@ -128,7 +128,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       window.addEventListener("focus", _handleFocus);
 
-      this.once(EVT_DESTROYED, () => {
+      this.once(EVT_DESTROY, () => {
         window.removeEventListener("focus", _handleFocus);
       });
     })();
@@ -362,4 +362,4 @@ module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
 module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
 module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_DESTROY = EVT_DESTROY;

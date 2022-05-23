@@ -1,5 +1,5 @@
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
-const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
+const { EVT_UPDATE, EVT_DESTROY } = MediaStreamTrackControllerBase;
 
 /**
  * Utilized for live-manipulation of video MediaStreamTrack instances.
@@ -30,5 +30,5 @@ class VideoMediaStreamTrackController extends MediaStreamTrackControllerBase {
 }
 
 module.exports = VideoMediaStreamTrackController;
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;

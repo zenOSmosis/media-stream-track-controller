@@ -2,7 +2,7 @@ const test = require("tape");
 const { sleep } = require("phantom-core");
 const { MediaStreamTrackControllerFactory, utils } = require("../src");
 
-const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerFactory;
+const { EVT_UPDATE, EVT_DESTROY } = MediaStreamTrackControllerFactory;
 
 test("instantiates MediaStreamTrackControllerFactory", async t => {
   t.plan(7);
@@ -51,15 +51,13 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
     new Promise(resolve => {
       factory
         .getTrackControllers()[0]
-        .on(EVT_UPDATED, function testUpdatePassing(data) {
+        .on(EVT_UPDATE, function testUpdatePassing(data) {
           if (data === "test") {
-            factory
-              .getTrackControllers()[0]
-              .off(EVT_UPDATED, testUpdatePassing);
+            factory.getTrackControllers()[0].off(EVT_UPDATE, testUpdatePassing);
 
             t.ok(
               true,
-              "EVT_UPDATED event passed through track controller to factory"
+              "EVT_UPDATE event passed through track controller to factory"
             );
 
             resolve();
@@ -67,12 +65,12 @@ test("instantiates MediaStreamTrackControllerFactory", async t => {
         });
     }),
 
-    factory.getTrackControllers()[0].emit(EVT_UPDATED, "test"),
+    factory.getTrackControllers()[0].emit(EVT_UPDATE, "test"),
   ]);
 
   await Promise.all([
     new Promise(resolve => {
-      factory.once(EVT_UPDATED, () => {
+      factory.once(EVT_UPDATE, () => {
         t.equals(
           factory.getTrackControllers().length,
           0,
@@ -97,7 +95,7 @@ test("empty MediaStream initialization", async t => {
   );
 
   await new Promise(resolve => {
-    selfDestructFactory.once(EVT_DESTROYED, () => {
+    selfDestructFactory.once(EVT_DESTROY, () => {
       t.ok(
         selfDestructFactory.UNSAFE_getIsDestroyed(),
         "factory auto destructs when initialized with empty MediaStream"
@@ -161,7 +159,7 @@ test("factory auto-destruct when all track controllers are removed", async t => 
 
   await Promise.all([
     new Promise(async resolve => {
-      selfDestructFactory.once(EVT_DESTROYED, () => {
+      selfDestructFactory.once(EVT_DESTROY, () => {
         t.equals(
           selfDestructFactory.getChildren().length,
           0,

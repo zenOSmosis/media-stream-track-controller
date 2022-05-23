@@ -121,25 +121,22 @@ function App() {
 
     mediaStreamTrackControllerFactories.forEach(controller => {
       controller.once(
-        MediaStreamTrackControllerFactory.EVT_DESTROYED,
+        MediaStreamTrackControllerFactory.EVT_DESTROY,
         handleUpdate
       );
 
-      controller.on(
-        MediaStreamTrackControllerFactory.EVT_UPDATED,
-        handleUpdate
-      );
+      controller.on(MediaStreamTrackControllerFactory.EVT_UPDATE, handleUpdate);
     });
 
     return function unmount() {
       mediaStreamTrackControllerFactories.forEach(controller => {
         controller.off(
-          MediaStreamTrackControllerFactory.EVT_DESTROYED,
+          MediaStreamTrackControllerFactory.EVT_DESTROY,
           handleUpdate
         );
 
         controller.off(
-          MediaStreamTrackControllerFactory.EVT_UPDATED,
+          MediaStreamTrackControllerFactory.EVT_UPDATE,
           handleUpdate
         );
       });
@@ -386,10 +383,7 @@ function TrackControllerCollectionView({
   const collection = useMemo(() => {
     const collection = new MediaStreamTrackControllerCollection();
 
-    collection.on(
-      MediaStreamTrackControllerCollection.EVT_UPDATED,
-      forceUpdate
-    );
+    collection.on(MediaStreamTrackControllerCollection.EVT_UPDATE, forceUpdate);
 
     return collection;
   }, [forceUpdate]);

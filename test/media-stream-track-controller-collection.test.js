@@ -6,7 +6,7 @@ const {
   utils,
 } = require("../src");
 
-const { EVT_CHILD_INSTANCE_ADDED, EVT_CHILD_INSTANCE_REMOVED } =
+const { EVT_CHILD_INSTANCE_ADD, EVT_CHILD_INSTANCE_REMOVE } =
   MediaStreamTrackControllerCollection;
 
 const _createTestAudioMediaStreamController = () => {
@@ -87,10 +87,10 @@ test("MediaStreamTrackControllerCollection", async t => {
 
   await Promise.all([
     new Promise(resolve => {
-      collection.once(EVT_CHILD_INSTANCE_ADDED, refController4 => {
+      collection.once(EVT_CHILD_INSTANCE_ADD, refController4 => {
         t.ok(
           Object.is(refController4, controller4),
-          "EVT_CHILD_INSTANCE_ADDED passes expected controller"
+          "EVT_CHILD_INSTANCE_ADD passes expected controller"
         );
 
         t.ok(
@@ -108,10 +108,10 @@ test("MediaStreamTrackControllerCollection", async t => {
     }),
 
     new Promise(resolve => {
-      collection.once(EVT_CHILD_INSTANCE_REMOVED, refController4 => {
+      collection.once(EVT_CHILD_INSTANCE_REMOVE, refController4 => {
         t.ok(
           Object.is(refController4, controller4),
-          "EVT_CHILD_INSTANCE_REMOVED passes expected controller"
+          "EVT_CHILD_INSTANCE_REMOVE passes expected controller"
         );
 
         t.ok(
