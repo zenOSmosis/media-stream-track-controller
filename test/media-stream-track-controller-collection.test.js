@@ -142,23 +142,23 @@ test("MediaStreamTrackControllerCollection", async t => {
   // Ensure that track controllers remain running after collection is destroyed
   await collection.destroy();
   t.ok(
-    collection.UNSAFE_getIsDestroyed(),
+    collection.getHasDestroyStarted(),
     "collection reports it is destructed"
   );
   t.ok(
-    !controller1.UNSAFE_getIsDestroyed(),
+    !controller1.getHasDestroyStarted(),
     "controller1 reports that it is not destructed"
   );
   t.ok(
-    !controller2.UNSAFE_getIsDestroyed(),
+    !controller2.getHasDestroyStarted(),
     "controller2 reports that it is not destructed"
   );
   t.ok(
-    !controller3.UNSAFE_getIsDestroyed(),
+    !controller3.getHasDestroyStarted(),
     "controller3 reports that it is not destructed"
   );
   t.ok(
-    !controller4.UNSAFE_getIsDestroyed(),
+    !controller4.getHasDestroyStarted(),
     "controller4 reports that it is not destructed"
   );
 

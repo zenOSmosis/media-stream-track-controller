@@ -21,8 +21,7 @@ module.exports = async function uncaptureSpecificMediaDevice(mediaDeviceInfo) {
     MediaStreamTrackControllerBase.getTrackControllerInstances()
       .filter(controller => controller.getInputDeviceId() === deviceId)
       .map(
-        controller =>
-          !controller.UNSAFE_getIsDestroying() && controller.destroy()
+        controller => !controller.getHasDestroyStarted() && controller.destroy()
       )
   );
 };

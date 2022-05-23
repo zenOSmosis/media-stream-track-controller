@@ -93,13 +93,13 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     // Handle auto-destruct once track controllers have ended
 
     this.on(EVT_CHILD_INSTANCE_REMOVE, () => {
-      if (!this.getChildren().length && !this.UNSAFE_getIsDestroying()) {
+      if (!this.getChildren().length && !this.getHasDestroyStarted()) {
         this.destroy();
       }
     });
 
     // If no children are already present, self-destruct
-    if (!this.getChildren().length && !this.UNSAFE_getIsDestroying()) {
+    if (!this.getChildren().length && !this.getHasDestroyStarted()) {
       this.destroy();
     }
   }

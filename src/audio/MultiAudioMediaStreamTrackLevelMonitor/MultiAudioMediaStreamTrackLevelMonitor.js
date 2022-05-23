@@ -99,7 +99,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
         ? trackOrMonitor
         : this.getChildWithKey(trackOrMonitor.id);
 
-    if (trackLevelMonitor && !trackLevelMonitor.UNSAFE_getIsDestroying()) {
+    if (trackLevelMonitor && !trackLevelMonitor.getHasDestroyStarted()) {
       await trackLevelMonitor.destroy();
     }
 
