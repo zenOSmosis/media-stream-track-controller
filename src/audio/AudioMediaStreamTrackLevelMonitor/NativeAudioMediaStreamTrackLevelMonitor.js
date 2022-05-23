@@ -112,7 +112,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
-      if (!this.getIsDestroying) {
+      if (!this.UNSAFE_getIsDestroying) {
         this.destroy();
       }
     });
@@ -164,7 +164,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // This class may have a rapid lifecycle inside of a React component, so
     // this subsequent check will ensure we're still running and prevent
     // potential errors
-    if (this.getIsDestroying()) {
+    if (this.UNSAFE_getIsDestroying()) {
       return;
     }
 
@@ -177,7 +177,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     await audioContext.resume();
 
     // Perform a final check for destroying state after audio context resume
-    if (this.getIsDestroying()) {
+    if (this.UNSAFE_getIsDestroying()) {
       return;
     }
 

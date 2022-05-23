@@ -99,7 +99,7 @@ test("empty MediaStream initialization", async t => {
   await new Promise(resolve => {
     selfDestructFactory.once(EVT_DESTROYED, () => {
       t.ok(
-        selfDestructFactory.getIsDestroyed(),
+        selfDestructFactory.UNSAFE_getIsDestroyed(),
         "factory auto destructs when initialized with empty MediaStream"
       );
 
@@ -203,7 +203,7 @@ test("stop calls destruct", async t => {
 
   await factory1.stop();
 
-  t.ok(factory1.getIsDestroyed(), "calling stop() destructs factory1");
+  t.ok(factory1.UNSAFE_getIsDestroyed(), "calling stop() destructs factory1");
 
   const mediaStream2 =
     utils.mediaStream.generators.createTestAudioMediaStream();
@@ -225,12 +225,12 @@ test("stop calls destruct", async t => {
   );
 
   t.ok(
-    factory2TrackController.getIsDestroyed(),
+    factory2TrackController.UNSAFE_getIsDestroyed(),
     "factory2TrackController reports it is destructed after calling factory2 stop"
   );
 
   t.ok(
-    factory2.getIsDestroyed(),
+    factory2.UNSAFE_getIsDestroyed(),
     "factory2TrackController destruct destructs factory2"
   );
 

@@ -87,7 +87,7 @@ test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => 
   );
 
   t.ok(
-    factory2.getIsDestroyed() === false,
+    factory2.UNSAFE_getIsDestroyed() === false,
     "factory is not destructed when removed from collection"
   );
 
@@ -99,7 +99,7 @@ test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => 
   await collection.destroy();
 
   t.ok(
-    factory1.getIsDestroyed() === false,
+    factory1.UNSAFE_getIsDestroyed() === false,
     "factory stays running after removed from collection"
   );
 

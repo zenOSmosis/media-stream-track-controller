@@ -73,7 +73,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
         if (proxies) {
           Object.values(proxies).forEach(
-            proxy => proxy && !proxy.getIsDestroying() && proxy.destroy()
+            proxy => proxy && !proxy.UNSAFE_getIsDestroying() && proxy.destroy()
           );
         }
       });
@@ -135,7 +135,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         delete _monitorInstances[mediaStreamTrack.id];
         delete _proxyCounts[mediaStreamTrack.id];
 
-        if (!nativeMonitor.getIsDestroying()) {
+        if (!nativeMonitor.UNSAFE_getIsDestroying()) {
           await nativeMonitor.destroy();
         }
 

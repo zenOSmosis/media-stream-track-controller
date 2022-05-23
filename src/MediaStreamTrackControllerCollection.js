@@ -303,7 +303,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @return {Promise<void>}
    */
   async stop() {
-    if (!this.getIsDestroying()) {
+    if (!this.UNSAFE_getIsDestroying()) {
       return this.destroy();
     }
   }

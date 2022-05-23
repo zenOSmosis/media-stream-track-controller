@@ -133,7 +133,7 @@ test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor typ
   );
 
   t.ok(
-    !multiAudioMonitor.getIsDestroyed(),
+    !multiAudioMonitor.UNSAFE_getIsDestroyed(),
     "multi audio monitor stays running after all tracks are removed"
   );
 
