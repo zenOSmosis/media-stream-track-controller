@@ -2,11 +2,11 @@ const { PhantomCollection } = require("phantom-core");
 const AudioMediaStreamTrackLevelMonitor = require("../AudioMediaStreamTrackLevelMonitor");
 const {
   /** @export */
-  EVT_AUDIO_LEVEL_UPDATED,
+  EVT_AUDIO_LEVEL_UPDATE,
   /** @export */
-  EVT_AUDIO_SILENCE_STARTED,
+  EVT_AUDIO_SILENCE_START,
   /** @export */
-  EVT_AUDIO_SILENCE_ENDED,
+  EVT_AUDIO_SILENCE_END,
   /** @export */
   EVT_DESTROY,
 } = AudioMediaStreamTrackLevelMonitor;
@@ -28,9 +28,9 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
     super(initialMediaStreamTracks);
 
     // The proxy events this class should proxy from the children
-    this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATED);
-    this.bindChildEventName(EVT_AUDIO_SILENCE_STARTED);
-    this.bindChildEventName(EVT_AUDIO_SILENCE_ENDED);
+    this.bindChildEventName(EVT_AUDIO_LEVEL_UPDATE);
+    this.bindChildEventName(EVT_AUDIO_SILENCE_START);
+    this.bindChildEventName(EVT_AUDIO_SILENCE_END);
   }
 
   /**
@@ -165,7 +165,7 @@ class MultiAudioMediaStreamTrackLevelMonitor extends PhantomCollection {
 
 module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
+module.exports.EVT_AUDIO_LEVEL_UPDATE = EVT_AUDIO_LEVEL_UPDATE;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
 module.exports.EVT_DESTROY = EVT_DESTROY;

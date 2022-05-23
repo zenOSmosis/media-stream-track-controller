@@ -2,11 +2,11 @@ const { PhantomCore, logger } = require("phantom-core");
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
   /** @export */
-  EVT_AUDIO_LEVEL_UPDATED,
+  EVT_AUDIO_LEVEL_UPDATE,
   /** @export */
-  EVT_AUDIO_SILENCE_STARTED,
+  EVT_AUDIO_SILENCE_START,
   /** @export */
-  EVT_AUDIO_SILENCE_ENDED,
+  EVT_AUDIO_SILENCE_END,
   /** @export */
   EVT_DESTROY,
 } = NativeAudioMediaStreamTrackLevelMonitor;
@@ -101,9 +101,9 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
      * @type {string[]}
      **/
     const proxyEvents = [
-      EVT_AUDIO_LEVEL_UPDATED,
-      EVT_AUDIO_SILENCE_STARTED,
-      EVT_AUDIO_SILENCE_ENDED,
+      EVT_AUDIO_LEVEL_UPDATE,
+      EVT_AUDIO_SILENCE_START,
+      EVT_AUDIO_SILENCE_END,
     ];
 
     /** @type {{key: string, value: Function}} */
@@ -125,7 +125,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
       );
 
       // Emit final audio level updated event
-      proxy.emit(EVT_AUDIO_LEVEL_UPDATED, 0);
+      proxy.emit(EVT_AUDIO_LEVEL_UPDATE, 0);
 
       // Subtract from the count of proxied instances
       --_proxyCounts[mediaStreamTrack.id];
@@ -185,7 +185,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
 module.exports = AudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
+module.exports.EVT_AUDIO_LEVEL_UPDATE = EVT_AUDIO_LEVEL_UPDATE;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
 module.exports.EVT_DESTROY = EVT_DESTROY;

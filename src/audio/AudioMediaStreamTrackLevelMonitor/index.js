@@ -2,11 +2,11 @@
 // reduce CPU load when multiple instances of the monitor are present at any
 // given time
 const AudioMediaStreamTrackLevelMonitor = require("./AudioMediaStreamTrackLevelMonitor");
-const { EVT_DESTROY, EVT_AUDIO_SILENCE_STARTED, EVT_AUDIO_SILENCE_ENDED } =
+const { EVT_DESTROY, EVT_AUDIO_SILENCE_START, EVT_AUDIO_SILENCE_END } =
   AudioMediaStreamTrackLevelMonitor;
 
 module.exports = AudioMediaStreamTrackLevelMonitor;
 
 module.exports.EVT_DESTROY = EVT_DESTROY;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;

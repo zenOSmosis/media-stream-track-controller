@@ -3,13 +3,13 @@ const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioCo
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
 /** @export */
-const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
+const EVT_AUDIO_LEVEL_UPDATE = "audio-level-update";
 
 /** @export */
-const EVT_AUDIO_SILENCE_STARTED = "audio-silence-started";
+const EVT_AUDIO_SILENCE_START = "audio-silence-start";
 
 /** @export */
-const EVT_AUDIO_SILENCE_ENDED = "audio-silence-ended";
+const EVT_AUDIO_SILENCE_END = "audio-silence-end";
 
 // Number of ms to wait before track silence should raise an error
 const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
@@ -279,7 +279,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._silenceDidPotentiallyEnd();
     }
 
-    this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
+    this.emit(EVT_AUDIO_LEVEL_UPDATE, audioLevel);
   }
 
   /**
@@ -303,7 +303,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this.log.warn("Silence detected");
 
       // Tell interested listeners
-      this.emit(EVT_AUDIO_SILENCE_STARTED);
+      this.emit(EVT_AUDIO_SILENCE_START);
     }, SILENCE_DETECTION_THRESHOLD_TIME);
   }
 
@@ -321,7 +321,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._isSilent) {
       this._isSilent = false;
 
-      this.emit(EVT_AUDIO_SILENCE_ENDED);
+      this.emit(EVT_AUDIO_SILENCE_END);
     }
   }
 
@@ -359,7 +359,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
+module.exports.EVT_AUDIO_LEVEL_UPDATE = EVT_AUDIO_LEVEL_UPDATE;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
 module.exports.EVT_DESTROY = EVT_DESTROY;

@@ -5,7 +5,7 @@ const {
   utils,
 } = require("../src");
 
-const { EVT_AUDIO_LEVEL_UPDATED } = MultiAudioMediaStreamTrackLevelMonitor;
+const { EVT_AUDIO_LEVEL_UPDATE } = MultiAudioMediaStreamTrackLevelMonitor;
 
 test("MultiAudioMediaStreamTrackLevelMonitor MediaStreamTrack / LevelMonitor type validations / shutdown handling", async t => {
   t.plan(30);
@@ -163,7 +163,7 @@ test("AudioMediaStreamTrackLevelMonitor emit 0 audio level on destruct", async t
 
   await Promise.all([
     new Promise(resolve => {
-      audioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+      audioMonitor.on(EVT_AUDIO_LEVEL_UPDATE, audioLevel => {
         if (isDestructing && audioLevel === 0) {
           t.ok(true, "captured 0 RMS level after signaling for destruct");
 
@@ -211,7 +211,7 @@ test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
     new Promise(resolve => {
       let debouncedTimeout = null;
 
-      multiAudioMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+      multiAudioMonitor.on(EVT_AUDIO_LEVEL_UPDATE, audioLevel => {
         clearTimeout(debouncedTimeout);
 
         // IMPORTANT: This timeout is necessary because getChildren() won't
