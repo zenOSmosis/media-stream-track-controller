@@ -42,9 +42,9 @@ module.exports = function createTestAudioMediaStream(duration = 10000) {
   setTimeout(() => {
     stopMediaStream(mediaStream);
 
-    logger.log("stopped media stream");
+    logger.debug("Stopped media stream");
 
-    audioCtx.close().then(() => logger.log("audio context closed"));
+    audioCtx.close().then(() => logger.debug("Audio context closed"));
   }, duration);
 
   return mediaStream;

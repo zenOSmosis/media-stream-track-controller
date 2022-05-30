@@ -21,9 +21,9 @@ module.exports = function createEmptyAudioMediaStream(duration = 5) {
   setTimeout(() => {
     stopMediaStream(mediaStream);
 
-    logger.log("stopped media stream");
+    logger.debug("Stopped media stream");
 
-    audioCtx.close().then(() => logger.log("audio context closed"));
+    audioCtx.close().then(() => logger.debug("Audio context closed"));
   }, duration * 1000);
 
   return mediaStream;

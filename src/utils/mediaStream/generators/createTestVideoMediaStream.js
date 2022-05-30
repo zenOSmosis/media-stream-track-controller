@@ -21,7 +21,7 @@ module.exports = function createTestVideoMediaStream(duration = 10000) {
 
     document.body.removeChild(canvas);
 
-    logger.log("stopped media stream");
+    logger.debug("Stopped media stream");
   }, duration);
 
   return mediaStream;
