@@ -22,7 +22,7 @@ class VideoMediaStreamTrackController extends MediaStreamTrackControllerBase {
    * @return {Promise<void>}
    */
   setIsMuted(isMuted) {
-    console.warn("video setIsMuted is not currently implemented");
+    this.log.warn("video setIsMuted is not currently implemented");
 
     // TODO: Implement ability to mute video
     return super.setIsMuted(isMuted);

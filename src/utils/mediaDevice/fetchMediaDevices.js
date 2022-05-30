@@ -1,4 +1,5 @@
 const cacheDiffMediaDevices = require("./cacheDiffMediaDevices");
+const { logger } = require("phantom-core");
 
 /**
  * Lists all input and output media devices.
@@ -20,7 +21,7 @@ const fetchMediaDevices = (() => {
 
   return async (isAggressive = true) => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      console.warn("enumerateDevices() not supported.");
+      logger.warn("enumerateDevices() not supported.");
       return [];
     }
 
