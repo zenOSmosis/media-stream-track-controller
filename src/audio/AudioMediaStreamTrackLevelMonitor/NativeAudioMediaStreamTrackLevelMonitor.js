@@ -242,7 +242,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       return;
     }
 
+    // Write the byte frequency data to the samples
     this._analyser.getByteFrequencyData(this._samples);
+
+    // FIXME: Write samples out event pipe for other types of audio analyzers
+    // to consume
+
     const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMSPressure(
       this._samples
     );
