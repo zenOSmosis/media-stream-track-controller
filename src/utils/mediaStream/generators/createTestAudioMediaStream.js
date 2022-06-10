@@ -1,6 +1,6 @@
 const createNewAudioContext = require("../../audioContext/createNewAudioContext");
 const stopMediaStream = require("../stopMediaStream");
-const { logger } = require("phantom-core");
+const { globalLogger } = require("phantom-core");
 
 /**
  * Returns a MediaStream with a single pulsing, test audio track which
@@ -42,9 +42,9 @@ module.exports = function createTestAudioMediaStream(duration = 10000) {
   setTimeout(() => {
     stopMediaStream(mediaStream);
 
-    logger.debug("Stopped media stream");
+    globalLogger.debug("Stopped media stream");
 
-    audioCtx.close().then(() => logger.debug("Audio context closed"));
+    audioCtx.close().then(() => globalLogger.debug("Audio context closed"));
   }, duration);
 
   return mediaStream;

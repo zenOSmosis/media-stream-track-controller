@@ -3,7 +3,7 @@ const {
   GENERIC_AUDIO_DEVICE_KIND,
   GENERIC_VIDEO_DEVICE_KIND,
 } = require("../../constants");
-const { logger } = require("phantom-core");
+const { globalLogger } = require("phantom-core");
 
 /**
  * Helper method for obtaining constraints to capture from a specific media
@@ -18,7 +18,7 @@ module.exports = function makeSpecificDeviceCaptureConstraints(
   userConstraints = {}
 ) {
   if (!(mediaDeviceInfo instanceof MediaDeviceInfo)) {
-    logger.warn(typeof mediaDeviceInfo);
+    globalLoggerwarn(typeof mediaDeviceInfo);
 
     throw new TypeError("mediaDeviceInfo must be of MediaDeviceInfo type");
   }

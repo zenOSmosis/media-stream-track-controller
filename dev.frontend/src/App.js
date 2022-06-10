@@ -16,7 +16,7 @@ import {
   utils,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
-import { logger } from "phantom-core";
+import { globalLogger } from "phantom-core";
 
 import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
@@ -92,7 +92,7 @@ function App() {
    */
   const registerControllerFactory = useCallback(
     controllerFactory => {
-      logger.log("registering controller factory", {
+      globalLogger.log("registering controller factory", {
         controllerFactory,
       });
 
@@ -112,7 +112,7 @@ function App() {
       const factoryInstances =
         MediaStreamTrackControllerFactory.getFactoryInstances();
 
-      logger.log("updating registered controller factory instances", {
+      globalLogger.log("updating registered controller factory instances", {
         factoryInstances,
       });
 

@@ -1,4 +1,4 @@
-const { PhantomCore, logger } = require("phantom-core");
+const { PhantomCore, globalLogger } = require("phantom-core");
 const NativeAudioMediaStreamTrackLevelMonitor = require("./NativeAudioMediaStreamTrackLevelMonitor");
 const {
   /** @export */
@@ -78,7 +78,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
         }
       });
 
-      logger.debug("Proxied audio monitor created", nativeMonitor);
+      globalLogger.debug("Proxied audio monitor created", nativeMonitor);
 
       _monitorInstances[mediaStreamTrack.id] = nativeMonitor;
     }
@@ -139,7 +139,7 @@ class AudioMediaStreamTrackLevelMonitor extends PhantomCore {
           await nativeMonitor.destroy();
         }
 
-        logger.debug("Proxied audio monitor destroyed", nativeMonitor);
+        globalLogger.debug("Proxied audio monitor destroyed", nativeMonitor);
       }
     });
   }

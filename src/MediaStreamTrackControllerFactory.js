@@ -1,4 +1,4 @@
-const { logger } = require("phantom-core");
+const { globalLogger } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
   /** @export */
@@ -58,7 +58,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     // Gracefully ignore mediaDeviceInfo not being present; just warn about it
     // and return an empty array
     if (!mediaDeviceInfo || !mediaDeviceInfo.deviceId) {
-      logger.warn(
+      globalLoggerwarn(
         "Unable to acquire associated factories for this media device because no mediaDeviceInfo is present"
       );
 
