@@ -73,9 +73,9 @@ class MediaStreamTrackControllerBase extends PhantomCore {
 
     // Destroy instance once track ends
     (() => {
-      // IMPORTANT: This setImmediate is utilized so that
+      // IMPORTANT: This queueMicrotask is utilized so that
       // _outputMediaStreamTrack can be overridden by extender's constructor
-      setImmediate(() => {
+      queueMicrotask(() => {
         const _handleTrackEnded = () => {
           // This check is here to prevent an infinite loop resulting in
           // Maximum Callstack Error
