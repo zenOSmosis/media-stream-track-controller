@@ -18,7 +18,7 @@ module.exports = function makeSpecificDeviceCaptureConstraints(
   userConstraints = {}
 ) {
   if (!(mediaDeviceInfo instanceof MediaDeviceInfo)) {
-    globalLoggerwarn(typeof mediaDeviceInfo);
+    globalLogger.warn(typeof mediaDeviceInfo);
 
     throw new TypeError("mediaDeviceInfo must be of MediaDeviceInfo type");
   }

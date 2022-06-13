@@ -21,7 +21,7 @@ const fetchMediaDevices = (() => {
 
   return async (isAggressive = true) => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      globalLoggerwarn("enumerateDevices() not supported.");
+      globalLogger.warn("enumerateDevices() not supported.");
       return [];
     }
 

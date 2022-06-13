@@ -58,7 +58,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     // Gracefully ignore mediaDeviceInfo not being present; just warn about it
     // and return an empty array
     if (!mediaDeviceInfo || !mediaDeviceInfo.deviceId) {
-      globalLoggerwarn(
+      globalLogger.warn(
         "Unable to acquire associated factories for this media device because no mediaDeviceInfo is present"
       );
 
