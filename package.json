@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "phantom-core": "github:zenosmosis/phantom-core#v3.0.0--adjustable-log-levels"
+    "phantom-core": "github:zenosmosis/phantom-core#v3.0.0"
   },
   "devDependencies": {
     "airtap": "^4.0.4",
