@@ -90,13 +90,19 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
 
     this._inputMediaStreamTrack = mediaStreamTrack;
+    this.registerCleanupHandler(() => {
+      this.dereference(this._inputMediaStreamTrack);
+    });
 
     // IMPORTANT: Using a clone of the MediaStreamTrack is necessary because
     // iOS may not work correctly here if multiple readings are of the same
     // track
     this._mediaStreamTrack = mediaStreamTrack.clone();
+    this.registerCleanupHandler(() => {
+      this.dereference(this._mediaStreamTrack);
+    });
 
-    // window.setTimeout used for silence-to-error detection
+    // this.setTimeout used for silence-to-error detection
     this._silenceDetectionTimeout = null;
 
     this._isSilent = false;
@@ -135,7 +141,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Start initial polling
     // IMPORTANT: This doesn't use normal PhantomCore async init convention because it may be called more than once to restart the polling sequence
-    const initTimeout = window.setTimeout(
+    const initTimeout = this.setTimeout(
       () => this._initAudioLevelPolling(),
       50
     );
@@ -194,7 +200,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
-      this.registerCleanupHandler(() => this._analyser.disconnect());
+      this.registerCleanupHandler(() => {
+        this._analyser.disconnect();
+        this.dereference(this._analyser);
+      });
 
       this._analyser.fftSize = this.getOptions().fftSize;
       this._analyser.smoothingTimeConstant =
@@ -203,6 +212,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     if (!this._stream) {
       this._stream = new MediaStream([mediaStreamTrack]);
+
+      this.registerCleanupHandler(() => {
+        this.dereference(this._stream);
+      });
     }
 
     if (!this._source) {
@@ -212,9 +225,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.registerCleanupHandler(() =>
-        this._source.disconnect(this._analyser)
-      );
+      this.registerCleanupHandler(() => {
+        this._source.disconnect(this._analyser);
+        this.dereference(this._source);
+      });
     }
 
     if (!this._samples) {
@@ -225,7 +239,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._audioLevelDidUpdate(0);
 
     // Start polling for audio level detection
-    this._tickInterval = window.setInterval(
+    this._tickInterval = this.setInterval(
       () => this._handleTick(),
       this.getOptions().tickTime
     );
@@ -294,10 +308,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    */
   _silenceDidPotentiallyStart() {
     if (this._silenceDetectionTimeout) {
-      window.clearTimeout(this._silenceDetectionTimeout);
+      this.clearTimeout(this._silenceDetectionTimeout);
     }
 
-    this._silenceDetectionTimeout = window.setTimeout(() => {
+    this._silenceDetectionTimeout = this.setTimeout(() => {
       if (this._isDestroyed) {
         return;
       }
@@ -353,11 +367,8 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         window.clearTimeout(this._silenceDetectionTimeout);
       }
 
-      // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-      // track on its own (nor should it). This prevents an issue in Google
-      // Chrome (maybe others) where the recording indicator would stay lit after
-      // the source has been stopped.
-      this._mediaStreamTrack.stop();
+      // Reset audio level
+      this._audioLevelDidUpdate(0);
     });
   }
 }

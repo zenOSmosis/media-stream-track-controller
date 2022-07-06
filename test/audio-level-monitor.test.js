@@ -217,7 +217,7 @@ test("MultiAudioMediaStreamTrackLevelMonitor clear children reset", async t => {
         // IMPORTANT: This timeout is necessary because getChildren() won't
         // return 0 exactly when this final audioLevel event emits, but will be
         // soon afterwards
-        debouncedTimeout = window.setTimeout(() => {
+        debouncedTimeout = multiAudioMonitor.setTimeout(() => {
           if (
             multiAudioMonitor.getChildren().length === 0 &&
             audioLevel === 0
