@@ -1,16 +1,15 @@
-const PhantomCore = require("phantom-core");
-const { /** @export */ EVT_DESTROYED } = PhantomCore;
+const { PhantomCore, /** @export */ EVT_DESTROY } = require("phantom-core");
 const getSharedAudioContext = require("../../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../../constants");
 
 /** @export */
-const EVT_AUDIO_LEVEL_UPDATED = "audio-level-updated";
+const EVT_AUDIO_LEVEL_UPDATE = "audio-level-update";
 
 /** @export */
-const EVT_AUDIO_SILENCE_STARTED = "audio-silence-started";
+const EVT_AUDIO_SILENCE_START = "audio-silence-start";
 
 /** @export */
-const EVT_AUDIO_SILENCE_ENDED = "audio-silence-ended";
+const EVT_AUDIO_SILENCE_END = "audio-silence-end";
 
 // Number of ms to wait before track silence should raise an error
 const SILENCE_DETECTION_THRESHOLD_TIME = 1000;
@@ -91,13 +90,19 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     super(PhantomCore.mergeOptions(DEFAULT_OPTIONS, options));
 
     this._inputMediaStreamTrack = mediaStreamTrack;
+    this.registerCleanupHandler(() => {
+      this.dereference(this._inputMediaStreamTrack);
+    });
 
     // IMPORTANT: Using a clone of the MediaStreamTrack is necessary because
     // iOS may not work correctly here if multiple readings are of the same
     // track
     this._mediaStreamTrack = mediaStreamTrack.clone();
+    this.registerCleanupHandler(() => {
+      this.dereference(this._mediaStreamTrack);
+    });
 
-    // window.setTimeout used for silence-to-error detection
+    // this.setTimeout used for silence-to-error detection
     this._silenceDetectionTimeout = null;
 
     this._isSilent = false;
@@ -113,7 +118,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     // Handle automatic cleanup once track ends
     mediaStreamTrack.addEventListener("ended", () => {
-      if (!this.getIsDestroying) {
+      if (!this.getHasDestroyStarted) {
         this.destroy();
       }
     });
@@ -129,14 +134,14 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
       window.addEventListener("focus", _handleFocus);
 
-      this.once(EVT_DESTROYED, () => {
+      this.once(EVT_DESTROY, () => {
         window.removeEventListener("focus", _handleFocus);
       });
     })();
 
     // Start initial polling
     // IMPORTANT: This doesn't use normal PhantomCore async init convention because it may be called more than once to restart the polling sequence
-    const initTimeout = window.setTimeout(
+    const initTimeout = this.setTimeout(
       () => this._initAudioLevelPolling(),
       50
     );
@@ -165,7 +170,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     // This class may have a rapid lifecycle inside of a React component, so
     // this subsequent check will ensure we're still running and prevent
     // potential errors
-    if (this.getIsDestroying()) {
+    if (this.getHasDestroyStarted()) {
       return;
     }
 
@@ -178,7 +183,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     await audioContext.resume();
 
     // Perform a final check for destroying state after audio context resume
-    if (this.getIsDestroying()) {
+    if (this.getHasDestroyStarted()) {
       return;
     }
 
@@ -195,7 +200,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (!this._analyser) {
       this._analyser = audioContext.createAnalyser();
 
-      this.registerCleanupHandler(() => this._analyser.disconnect());
+      this.registerCleanupHandler(() => {
+        this._analyser.disconnect();
+        this.dereference(this._analyser);
+      });
 
       this._analyser.fftSize = this.getOptions().fftSize;
       this._analyser.smoothingTimeConstant =
@@ -204,6 +212,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
 
     if (!this._stream) {
       this._stream = new MediaStream([mediaStreamTrack]);
+
+      this.registerCleanupHandler(() => {
+        this.dereference(this._stream);
+      });
     }
 
     if (!this._source) {
@@ -213,9 +225,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._source = audioContext.createMediaStreamSource(this._stream);
       this._source.connect(this._analyser);
 
-      this.registerCleanupHandler(() =>
-        this._source.disconnect(this._analyser)
-      );
+      this.registerCleanupHandler(() => {
+        this._source.disconnect(this._analyser);
+        this.dereference(this._source);
+      });
     }
 
     if (!this._samples) {
@@ -226,7 +239,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     this._audioLevelDidUpdate(0);
 
     // Start polling for audio level detection
-    this._tickInterval = window.setInterval(
+    this._tickInterval = this.setInterval(
       () => this._handleTick(),
       this.getOptions().tickTime
     );
@@ -243,7 +256,12 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       return;
     }
 
+    // Write the byte frequency data to the samples
     this._analyser.getByteFrequencyData(this._samples);
+
+    // FIXME: Write samples out event pipe for other types of audio analyzers
+    // to consume
+
     const rms = NativeAudioMediaStreamTrackLevelMonitor.calculateRMSPressure(
       this._samples
     );
@@ -280,7 +298,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this._silenceDidPotentiallyEnd();
     }
 
-    this.emit(EVT_AUDIO_LEVEL_UPDATED, audioLevel);
+    this.emit(EVT_AUDIO_LEVEL_UPDATE, audioLevel);
   }
 
   /**
@@ -290,10 +308,10 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
    */
   _silenceDidPotentiallyStart() {
     if (this._silenceDetectionTimeout) {
-      window.clearTimeout(this._silenceDetectionTimeout);
+      this.clearTimeout(this._silenceDetectionTimeout);
     }
 
-    this._silenceDetectionTimeout = window.setTimeout(() => {
+    this._silenceDetectionTimeout = this.setTimeout(() => {
       if (this._isDestroyed) {
         return;
       }
@@ -304,7 +322,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
       this.log.warn("Silence detected");
 
       // Tell interested listeners
-      this.emit(EVT_AUDIO_SILENCE_STARTED);
+      this.emit(EVT_AUDIO_SILENCE_START);
     }, SILENCE_DETECTION_THRESHOLD_TIME);
   }
 
@@ -322,7 +340,7 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
     if (this._isSilent) {
       this._isSilent = false;
 
-      this.emit(EVT_AUDIO_SILENCE_ENDED);
+      this.emit(EVT_AUDIO_SILENCE_END);
     }
   }
 
@@ -349,18 +367,15 @@ class NativeAudioMediaStreamTrackLevelMonitor extends PhantomCore {
         window.clearTimeout(this._silenceDetectionTimeout);
       }
 
-      // NOTE: This is a cloned MediaStreamTrack and it does not stop the input
-      // track on its own (nor should it). This prevents an issue in Google
-      // Chrome (maybe others) where the recording indicator would stay lit after
-      // the source has been stopped.
-      this._mediaStreamTrack.stop();
+      // Reset audio level
+      this._audioLevelDidUpdate(0);
     });
   }
 }
 
 module.exports = NativeAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_AUDIO_LEVEL_UPDATE = EVT_AUDIO_LEVEL_UPDATE;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
+module.exports.EVT_DESTROY = EVT_DESTROY;

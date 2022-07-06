@@ -1,6 +1,6 @@
 const { deepMerge } = require("phantom-core");
 const MediaStreamTrackControllerBase = require("../_base/_MediaStreamTrackControllerBase");
-const { EVT_UPDATED, EVT_DESTROYED } = MediaStreamTrackControllerBase;
+const { EVT_UPDATE, EVT_DESTROY } = MediaStreamTrackControllerBase;
 const getSharedAudioContext = require("../utils/audioContext/getSharedAudioContext");
 const { AUDIO_TRACK_KIND } = require("../constants");
 
@@ -87,7 +87,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       this._gainNode.gain.value = gain;
     }
 
-    this.emit(EVT_UPDATED);
+    this.emit(EVT_UPDATE);
   }
 
   /**
@@ -132,7 +132,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       );
     }
 
-    this.emit(EVT_UPDATED);
+    this.emit(EVT_UPDATE);
   }
 
   /**
@@ -164,7 +164,7 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       );
     }
 
-    this.emit(EVT_UPDATED);
+    this.emit(EVT_UPDATE);
   }
 
   /**
@@ -196,10 +196,10 @@ class AudioMediaStreamTrackController extends MediaStreamTrackControllerBase {
       );
     }
 
-    this.emit(EVT_UPDATED);
+    this.emit(EVT_UPDATE);
   }
 }
 
 module.exports = AudioMediaStreamTrackController;
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;

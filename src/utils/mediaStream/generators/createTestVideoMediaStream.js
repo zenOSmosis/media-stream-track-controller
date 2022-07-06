@@ -1,5 +1,5 @@
 const stopMediaStream = require("../stopMediaStream");
-const { logger } = require("phantom-core");
+const { globalLogger } = require("phantom-core");
 
 /**
  * Returns a MediaStream with a single test video track which automatically
@@ -21,7 +21,7 @@ module.exports = function createTestVideoMediaStream(duration = 10000) {
 
     document.body.removeChild(canvas);
 
-    logger.log("stopped media stream");
+    globalLogger.debug("Stopped media stream");
   }, duration);
 
   return mediaStream;

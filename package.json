@@ -1,6 +1,6 @@
 {
   "name": "media-stream-track-controller",
-  "version": "4.0.5",
+  "version": "4.1.0-alpha",
   "description": "Controller library for browser-based MediaStreamTrack objects",
   "main": "src/index.js",
   "scripts": {
@@ -8,7 +8,6 @@
     "test-remote": "dotenv airtap --concurrency 1 test/*.test.js",
     "test-local": "airtap --coverage --concurrency 1 --preset local test/*.test.js",
     "coverage": "nyc npm run test-local",
-    "start:dev.frontend": "cd dev.frontend && npm run exec MSTCDebugPortal dev-link.mjs && npm start MSTCDebugPortal",
     "// document": "documentation build src/** -f html --github -o docs"
   },
   "repository": {
@@ -26,7 +25,7 @@
   },
   "homepage": "https://github.com/zenOSmosis/media-stream-track-controller#readme",
   "dependencies": {
-    "phantom-core": "github:zenosmosis/phantom-core#v2.7.1"
+    "phantom-core": "github:zenosmosis/phantom-core#v3.0.0"
   },
   "devDependencies": {
     "airtap": "^4.0.4",

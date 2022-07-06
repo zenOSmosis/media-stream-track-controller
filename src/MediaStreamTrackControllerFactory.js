@@ -1,16 +1,16 @@
-const { logger } = require("phantom-core");
+const { globalLogger } = require("phantom-core");
 const MediaStreamTrackControllerCollection = require("./MediaStreamTrackControllerCollection");
 const {
   /** @export */
   EVT_READY,
   /** @export */
-  EVT_UPDATED,
+  EVT_UPDATE,
   /** @export */
-  EVT_DESTROYED,
+  EVT_DESTROY,
   /** @export */
-  EVT_CHILD_INSTANCE_ADDED,
+  EVT_CHILD_INSTANCE_ADD,
   /** @export */
-  EVT_CHILD_INSTANCE_REMOVED,
+  EVT_CHILD_INSTANCE_REMOVE,
 } = MediaStreamTrackControllerCollection;
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const createTrackControllersFromMediaStream = require("./utils/mediaStreamTrack/createTrackControllersFromMediaStream");
@@ -58,7 +58,7 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
     // Gracefully ignore mediaDeviceInfo not being present; just warn about it
     // and return an empty array
     if (!mediaDeviceInfo || !mediaDeviceInfo.deviceId) {
-      logger.warn(
+      globalLogger.warn(
         "Unable to acquire associated factories for this media device because no mediaDeviceInfo is present"
       );
 
@@ -92,14 +92,14 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
 
     // Handle auto-destruct once track controllers have ended
 
-    this.on(EVT_CHILD_INSTANCE_REMOVED, () => {
-      if (!this.getChildren().length && !this.getIsDestroying()) {
+    this.on(EVT_CHILD_INSTANCE_REMOVE, () => {
+      if (!this.getChildren().length && !this.getHasDestroyStarted()) {
         this.destroy();
       }
     });
 
     // If no children are already present, self-destruct
-    if (!this.getChildren().length && !this.getIsDestroying()) {
+    if (!this.getChildren().length && !this.getHasDestroyStarted()) {
       this.destroy();
     }
   }
@@ -123,8 +123,8 @@ class MediaStreamTrackControllerFactory extends MediaStreamTrackControllerCollec
 module.exports = MediaStreamTrackControllerFactory;
 
 module.exports.EVT_READY = EVT_READY;
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;
 
-module.exports.EVT_CHILD_INSTANCE_ADDED = EVT_CHILD_INSTANCE_ADDED;
-module.exports.EVT_CHILD_INSTANCE_REMOVED = EVT_CHILD_INSTANCE_REMOVED;
+module.exports.EVT_CHILD_INSTANCE_ADD = EVT_CHILD_INSTANCE_ADD;
+module.exports.EVT_CHILD_INSTANCE_REMOVE = EVT_CHILD_INSTANCE_REMOVE;

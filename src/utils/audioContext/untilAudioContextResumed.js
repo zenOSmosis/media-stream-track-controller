@@ -1,4 +1,5 @@
 const getSharedAudioContext = require("./getSharedAudioContext");
+const { globalLogger } = require("phantom-core");
 
 /**
  * Resolves once audio context is resumed, or if it is currently running.
@@ -20,10 +21,10 @@ module.exports = async function untilAudioContextResumed(audioCtx = null) {
   // the user has interacted with your app, after which the Promise returned
   // here is resolved.
   if (!isRunning) {
-    console.debug("Trying to resume audio context");
+    globalLogger.debug("Trying to resume audio context");
 
     await audioCtx.resume();
 
-    console.debug("Audio context resumed");
+    globalLogger.debug("Audio context resumed");
   }
 };

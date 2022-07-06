@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MultiAudioMediaStreamTrackLevelMonitor } from "../media-stream-track-controller";
 import useArrayDiff from "./useArrayDiff";
 
-const { EVT_AUDIO_LEVEL_UPDATED } = MultiAudioMediaStreamTrackLevelMonitor;
+const { EVT_AUDIO_LEVEL_UPDATE } = MultiAudioMediaStreamTrackLevelMonitor;
 
 /**
  * Utilizes a MultiAudioMediaStreamTrackLevelMonitor as a React hook.
@@ -38,7 +38,7 @@ export default function useAudioMediaStreamTrackLevelMonitor(
 
     // NOTE: This event handler will automatically be unbound once the class
     // destructs
-    mediaStreamMonitor.on(EVT_AUDIO_LEVEL_UPDATED, audioLevel => {
+    mediaStreamMonitor.on(EVT_AUDIO_LEVEL_UPDATE, audioLevel => {
       _setPercent(audioLevel);
     });
 

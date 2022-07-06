@@ -1,7 +1,7 @@
 // TODO: Incorporate into this project
 
 import { useCallback } from "react";
-// import { logger } from "phantom-core";
+// import { globalLogger } from "phantom-core";
 const { VIDEO_TRACK_KIND } = require("../constants");
 
 /**
@@ -47,7 +47,7 @@ export default function useVideoMediaStreamTrackSnapshot() {
 
     // TODO: Remove
     /*
-    logger.log({
+    globalLogger.log({
       videoMediaStreamTrack,
       videoEl,
       canvasEl,

@@ -1,5 +1,5 @@
 const test = require("tape");
-const PhantomCore = require("phantom-core");
+const { PhantomCore } = require("phantom-core");
 const {
   MediaStreamTrackControllerFactory,
   MediaStreamTrackControllerFactoryCollection,
@@ -87,7 +87,7 @@ test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => 
   );
 
   t.ok(
-    factory2.getIsDestroyed() === false,
+    factory2.getHasDestroyStarted() === false,
     "factory is not destructed when removed from collection"
   );
 
@@ -99,7 +99,7 @@ test("MediaStreamTrackControllerFactoryCollection - audio handling", async t => 
   await collection.destroy();
 
   t.ok(
-    factory1.getIsDestroyed() === false,
+    factory1.getHasDestroyStarted() === false,
     "factory stays running after removed from collection"
   );
 

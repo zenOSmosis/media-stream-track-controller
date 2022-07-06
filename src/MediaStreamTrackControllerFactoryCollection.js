@@ -1,16 +1,15 @@
 const MediaStreamTrackControllerFactory = require("./MediaStreamTrackControllerFactory");
-const { PhantomCollection } = require("phantom-core");
 const {
+  PhantomCollection /** @export */,
+  EVT_UPDATE,
   /** @export */
-  EVT_UPDATED,
-  /** @export */
-  EVT_DESTROYED,
+  EVT_DESTROY,
 
   /** @export */
-  EVT_CHILD_INSTANCE_ADDED,
+  EVT_CHILD_INSTANCE_ADD,
   /** @export */
-  EVT_CHILD_INSTANCE_REMOVED,
-} = PhantomCollection;
+  EVT_CHILD_INSTANCE_REMOVE,
+} = require("phantom-core");
 
 /**
  * Maintains a collection of MediaStreamTrackControllerFactory instances.
@@ -150,8 +149,8 @@ module.exports = class MediaStreamTrackControllerFactoryCollection extends (
   }
 };
 
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;
 
-module.exports.EVT_CHILD_INSTANCE_ADDED = EVT_CHILD_INSTANCE_ADDED;
-module.exports.EVT_CHILD_INSTANCE_REMOVED = EVT_CHILD_INSTANCE_REMOVED;
+module.exports.EVT_CHILD_INSTANCE_ADD = EVT_CHILD_INSTANCE_ADD;
+module.exports.EVT_CHILD_INSTANCE_REMOVE = EVT_CHILD_INSTANCE_REMOVE;

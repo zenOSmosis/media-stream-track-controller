@@ -16,7 +16,7 @@ import {
   utils,
 } from "./media-stream-track-controller";
 import { AudioMediaStreamTrackLevelMeter } from "./components/AudioLevelMeter";
-import { logger } from "phantom-core";
+import { globalLogger } from "phantom-core";
 
 import useArrayDiff from "./hooks/useArrayDiff";
 import useForceUpdate from "./hooks/useForceUpdate";
@@ -92,7 +92,7 @@ function App() {
    */
   const registerControllerFactory = useCallback(
     controllerFactory => {
-      logger.log("registering controller factory", {
+      globalLogger.log("registering controller factory", {
         controllerFactory,
       });
 
@@ -112,7 +112,7 @@ function App() {
       const factoryInstances =
         MediaStreamTrackControllerFactory.getFactoryInstances();
 
-      logger.log("updating registered controller factory instances", {
+      globalLogger.log("updating registered controller factory instances", {
         factoryInstances,
       });
 
@@ -121,25 +121,22 @@ function App() {
 
     mediaStreamTrackControllerFactories.forEach(controller => {
       controller.once(
-        MediaStreamTrackControllerFactory.EVT_DESTROYED,
+        MediaStreamTrackControllerFactory.EVT_DESTROY,
         handleUpdate
       );
 
-      controller.on(
-        MediaStreamTrackControllerFactory.EVT_UPDATED,
-        handleUpdate
-      );
+      controller.on(MediaStreamTrackControllerFactory.EVT_UPDATE, handleUpdate);
     });
 
     return function unmount() {
       mediaStreamTrackControllerFactories.forEach(controller => {
         controller.off(
-          MediaStreamTrackControllerFactory.EVT_DESTROYED,
+          MediaStreamTrackControllerFactory.EVT_DESTROY,
           handleUpdate
         );
 
         controller.off(
-          MediaStreamTrackControllerFactory.EVT_UPDATED,
+          MediaStreamTrackControllerFactory.EVT_UPDATE,
           handleUpdate
         );
       });
@@ -386,10 +383,7 @@ function TrackControllerCollectionView({
   const collection = useMemo(() => {
     const collection = new MediaStreamTrackControllerCollection();
 
-    collection.on(
-      MediaStreamTrackControllerCollection.EVT_UPDATED,
-      forceUpdate
-    );
+    collection.on(MediaStreamTrackControllerCollection.EVT_UPDATE, forceUpdate);
 
     return collection;
   }, [forceUpdate]);

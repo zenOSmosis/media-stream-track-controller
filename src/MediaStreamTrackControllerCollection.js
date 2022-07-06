@@ -1,14 +1,13 @@
 const {
   PhantomCollection,
   /** @export */
-  EVT_UPDATED,
+  EVT_UPDATE,
   /** @export */
-  EVT_DESTROYED,
+  EVT_DESTROY,
+  /** @export */ EVT_CHILD_INSTANCE_ADD,
+  /** @export */ EVT_CHILD_INSTANCE_REMOVE,
 } = require("phantom-core");
-const {
-  /** @export */ EVT_CHILD_INSTANCE_ADDED,
-  /** @export */ EVT_CHILD_INSTANCE_REMOVED,
-} = PhantomCollection;
+
 const MediaStreamTrackController = require("./_base/_MediaStreamTrackControllerBase");
 const AudioMediaStreamTrackController = require("./audio/AudioMediaStreamTrackController");
 const VideoMediaStreamTrackController = require("./video/VideoMediaStreamTrackController");
@@ -101,9 +100,9 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
         this._syncTrackControllersMuteState();
       };
 
-      this.on(EVT_UPDATED, _handleUpdate);
-      this.on(EVT_CHILD_INSTANCE_ADDED, _handleUpdate);
-      this.on(EVT_CHILD_INSTANCE_REMOVED, _handleUpdate);
+      this.on(EVT_UPDATE, _handleUpdate);
+      this.on(EVT_CHILD_INSTANCE_ADD, _handleUpdate);
+      this.on(EVT_CHILD_INSTANCE_REMOVE, _handleUpdate);
     })();
   }
 
@@ -227,7 +226,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 
   /**
    * Checks the state of all of the associated track controllers and flips the
-   * this._isMuted flag accordingly without calling EVT_UPDATED.
+   * this._isMuted flag accordingly without calling EVT_UPDATE.
    *
    * This is internally called once each track controller is updated.
    *
@@ -303,7 +302,7 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
    * @return {Promise<void>}
    */
   async stop() {
-    if (!this.getIsDestroying()) {
+    if (!this.getHasDestroyStarted()) {
       return this.destroy();
     }
   }
@@ -311,8 +310,8 @@ class MediaStreamTrackControllerCollection extends PhantomCollection {
 
 module.exports = MediaStreamTrackControllerCollection;
 
-module.exports.EVT_UPDATED = EVT_UPDATED;
-module.exports.EVT_DESTROYED = EVT_DESTROYED;
+module.exports.EVT_UPDATE = EVT_UPDATE;
+module.exports.EVT_DESTROY = EVT_DESTROY;
 
-module.exports.EVT_CHILD_INSTANCE_ADDED = EVT_CHILD_INSTANCE_ADDED;
-module.exports.EVT_CHILD_INSTANCE_REMOVED = EVT_CHILD_INSTANCE_REMOVED;
+module.exports.EVT_CHILD_INSTANCE_ADD = EVT_CHILD_INSTANCE_ADD;
+module.exports.EVT_CHILD_INSTANCE_REMOVE = EVT_CHILD_INSTANCE_REMOVE;

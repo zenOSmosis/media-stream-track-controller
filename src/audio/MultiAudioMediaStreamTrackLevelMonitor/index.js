@@ -1,12 +1,12 @@
 const MultiAudioMediaStreamTrackLevelMonitor = require("./MultiAudioMediaStreamTrackLevelMonitor");
 const {
-  EVT_AUDIO_LEVEL_UPDATED,
-  EVT_AUDIO_SILENCE_STARTED,
-  EVT_AUDIO_SILENCE_ENDED,
+  EVT_AUDIO_LEVEL_UPDATE,
+  EVT_AUDIO_SILENCE_START,
+  EVT_AUDIO_SILENCE_END,
 } = MultiAudioMediaStreamTrackLevelMonitor;
 
 module.exports = MultiAudioMediaStreamTrackLevelMonitor;
 
-module.exports.EVT_AUDIO_LEVEL_UPDATED = EVT_AUDIO_LEVEL_UPDATED;
-module.exports.EVT_AUDIO_SILENCE_STARTED = EVT_AUDIO_SILENCE_STARTED;
-module.exports.EVT_AUDIO_SILENCE_ENDED = EVT_AUDIO_SILENCE_ENDED;
+module.exports.EVT_AUDIO_LEVEL_UPDATE = EVT_AUDIO_LEVEL_UPDATE;
+module.exports.EVT_AUDIO_SILENCE_START = EVT_AUDIO_SILENCE_START;
+module.exports.EVT_AUDIO_SILENCE_END = EVT_AUDIO_SILENCE_END;
